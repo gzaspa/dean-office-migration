@@ -10,7 +10,7 @@ public class Department extends NameEntity{
     private String abbr;
     @ManyToOne
     Faculty faculty;
-    @Column(name="active", nullable = false)
+    @Column(name="active", nullable = false, columnDefinition="default 1")
     private boolean active;
 
     public String getAbbr() {

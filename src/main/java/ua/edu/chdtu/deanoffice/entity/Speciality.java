@@ -20,11 +20,11 @@ public class Speciality extends NameEntity {
     private String qualification;
     @Column(name="qualification_eng", nullable = false, unique = false, length = 100)
     private String qualificationEng;
-    @Column(name="payment_fulltime", nullable = true, unique = false)
+    @Column(name="payment_fulltime", nullable = true, precision=10, scale=2)
     private double paymentFulltime;
-    @Column(name="payment_extramural", nullable = true, unique = false)
+    @Column(name="payment_extramural", nullable = true, precision=10, scale=2)
     private double paymentExtramural;
-    @Column(name="active", nullable = false)
+    @Column(name="active", nullable = false, columnDefinition="default 1")
     private boolean active;
 
     public String getNameEng() {

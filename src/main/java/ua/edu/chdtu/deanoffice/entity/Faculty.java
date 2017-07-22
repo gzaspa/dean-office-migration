@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 public class Faculty extends NameEntity {
     @Column(name="abbr", nullable = false, unique = true, length = 20)
     private String abbr;
-    @Column(name="active", nullable = false)
+    @Column(name="active", nullable = false, columnDefinition="default 1")
     private boolean active;
     //DEAN
 
