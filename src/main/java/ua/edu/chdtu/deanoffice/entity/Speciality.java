@@ -6,7 +6,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Speciality extends NameEntity {
-    @Column(name="nameEng", nullable = false, unique = true, length = 100)
+    @Column(name="name_eng", nullable = false, unique = true, length = 100)
     private String nameEng;
     @ManyToOne
     private Degree degree;
@@ -18,11 +18,11 @@ public class Speciality extends NameEntity {
     Department department;
     @Column(name="qualification", nullable = false, unique = false, length = 100)
     private String qualification;
-    @Column(name="qualificationEng", nullable = false, unique = false, length = 100)
+    @Column(name="qualification_eng", nullable = false, unique = false, length = 100)
     private String qualificationEng;
-    @Column(name="paymentFulltime", nullable = true, unique = false)
+    @Column(name="payment_fulltime", nullable = true, unique = false)
     private double paymentFulltime;
-    @Column(name="paymentExtramural", nullable = true, unique = false)
+    @Column(name="payment_extramural", nullable = true, unique = false)
     private double paymentExtramural;
     @Column(name="active", nullable = false)
     private boolean active;
