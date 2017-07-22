@@ -12,7 +12,7 @@ public class NameEntity {
     @Column(name="id", nullable = false, unique = true, length = 11)
     private int id;
 
-    @Column(name="name", nullable = false, unique = true, length = 40)
+    @Column(name="name", nullable = false, unique = true, length = 100)
     private String name;
 
     public int getId() {
