@@ -3,6 +3,7 @@ package ua.edu.chdtu.deanoffice.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 @Entity
 public class Speciality extends NameEntity {
@@ -20,12 +21,12 @@ public class Speciality extends NameEntity {
     private String qualification;
     @Column(name="qualification_eng", nullable = false, unique = false, length = 100)
     private String qualificationEng;
-    @Column(name="payment_fulltime", nullable = true, precision=10, scale=2)
-    private double paymentFulltime;
-    @Column(name="payment_extramural", nullable = true, precision=10, scale=2)
-    private double paymentExtramural;
-    @Column(name="active", nullable = false, columnDefinition="default 1")
-    private boolean active;
+    @Column(name="payment_fulltime", nullable = true, precision=15, scale=2)
+    private BigDecimal paymentFulltime;
+    @Column(name="payment_extramural", nullable = true, precision=15, scale=2)
+    private BigDecimal paymentExtramural;
+    @Column(name="active", nullable = false)
+    private boolean active = true;
 
     public String getNameEng() {
         return nameEng;
@@ -75,19 +76,19 @@ public class Speciality extends NameEntity {
         this.qualificationEng = qualificationEng;
     }
 
-    public double getPaymentFulltime() {
+    public BigDecimal getPaymentFulltime() {
         return paymentFulltime;
     }
 
-    public void setPaymentFulltime(double paymentFulltime) {
+    public void setPaymentFulltime(BigDecimal paymentFulltime) {
         this.paymentFulltime = paymentFulltime;
     }
 
-    public double getPaymentExtramural() {
+    public BigDecimal getPaymentExtramural() {
         return paymentExtramural;
     }
 
-    public void setPaymentExtramural(double paymentExtramural) {
+    public void setPaymentExtramural(BigDecimal paymentExtramural) {
         this.paymentExtramural = paymentExtramural;
     }
 

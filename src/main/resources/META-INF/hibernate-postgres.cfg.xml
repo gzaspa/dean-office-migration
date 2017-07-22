@@ -20,6 +20,7 @@
         <property name="hbm2ddl.auto">create</property>
 
         <mapping class="ua.edu.chdtu.deanoffice.entity.Degree"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.KnowledgeControl"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Faculty"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Department"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Speciality"/>
