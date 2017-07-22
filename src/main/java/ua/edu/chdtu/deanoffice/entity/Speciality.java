@@ -14,8 +14,8 @@ public class Speciality extends NameEntity {
     private String code;
     @ManyToOne
     Faculty faculty;
-//    @ManyToOne
-//    Department department;
+    @ManyToOne
+    Department department;
     @Column(name="qualification", nullable = false, unique = false, length = 100)
     private String qualification;
     @Column(name="qualificationEng", nullable = false, unique = false, length = 100)
