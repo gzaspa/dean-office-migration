@@ -6,9 +6,7 @@ import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 
 @Entity
-public class Speciality extends NameEntity {
-    @Column(name="name_eng", nullable = false, unique = true, length = 100)
-    private String nameEng;
+public class Speciality extends NameWithEngEntity {
     @ManyToOne
     private Degree degree;
     @Column(name="code", nullable = false, unique = true, length = 20)
@@ -27,14 +25,6 @@ public class Speciality extends NameEntity {
     private BigDecimal paymentExtramural;
     @Column(name="active", nullable = false)
     private boolean active = true;
-
-    public String getNameEng() {
-        return nameEng;
-    }
-
-    public void setNameEng(String nameEng) {
-        this.nameEng = nameEng;
-    }
 
     public Degree getDegree() {
         return degree;

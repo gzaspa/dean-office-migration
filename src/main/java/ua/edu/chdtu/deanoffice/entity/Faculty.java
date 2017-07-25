@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class Faculty extends NameEntity {
+public class Faculty extends NameWithEngEntity {
     @Column(name="abbr", nullable = false, unique = true, length = 20)
     private String abbr;
     @Column(name="active", nullable = false)
