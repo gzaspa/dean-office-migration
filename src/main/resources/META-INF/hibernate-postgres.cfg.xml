@@ -26,5 +26,7 @@
         <mapping class="ua.edu.chdtu.deanoffice.entity.Faculty"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Department"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Speciality"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.Specialization"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.StudentGroup"/>
     </session-factory>
 </hibernate-configuration>
