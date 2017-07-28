@@ -30,5 +30,6 @@
         <mapping class="ua.edu.chdtu.deanoffice.entity.StudentGroup"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Teacher"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.CourseName"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.Course"/>
     </session-factory>
 </hibernate-configuration>
