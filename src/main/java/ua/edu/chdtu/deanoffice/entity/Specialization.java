@@ -12,13 +12,13 @@ public class Specialization extends  NameWithEngEntity {
     @ManyToOne
     private Degree degree;
     @ManyToOne
-    Faculty faculty;
+    private Faculty faculty;
     @ManyToOne
-    Department department;
+    private Department department;
     @Column(name="study_semesters", nullable = false)
-    int studySemesters;
+    private int studySemesters;
     @Column(name="study_years", nullable = false)
-    BigDecimal studyYears;
+    private BigDecimal studyYears;
     @Column(name="qualification", nullable = false, unique = false, length = 100)
     private String qualification;
     @Column(name="qualification_eng", nullable = false, unique = false, length = 100)

@@ -3,6 +3,7 @@ package ua.edu.chdtu.deanoffice.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 @Entity
 public class Course extends BaseEntity {
@@ -16,6 +17,8 @@ public class Course extends BaseEntity {
     private KnowledgeControl knowledgeControl;
     @Column(name="hours", nullable = false)
     private Integer hours;
+    @Column(name="credits", nullable = false, precision=4, scale=1)
+    private BigDecimal credits;
 
     public CourseName getCourseName() {
         return courseName;
@@ -55,5 +58,13 @@ public class Course extends BaseEntity {
 
     public void setHours(Integer hours) {
         this.hours = hours;
+    }
+
+    public BigDecimal getCredits() {
+        return credits;
+    }
+
+    public void setCredits(BigDecimal credits) {
+        this.credits = credits;
     }
 }
