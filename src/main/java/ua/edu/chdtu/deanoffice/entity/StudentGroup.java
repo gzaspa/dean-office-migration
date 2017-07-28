@@ -16,9 +16,9 @@ public class StudentGroup extends NameEntity {
     @Column(name="tuition_term", nullable = false)
     private char tuitionTerm = 'f';
     @Column(name="study_semesters", nullable = false)
-    int studySemesters;
+    private int studySemesters;
     @Column(name="study_years", nullable = false)
-    BigDecimal studyYears;
+    private BigDecimal studyYears;
     @Column(name="active", nullable = false)
     private boolean active = true;
     //CURATOR
