@@ -1,13 +1,12 @@
 package ua.edu.chdtu.deanoffice.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name="courses_for_groups")
+@Table(name="courses_for_groups", uniqueConstraints={
+        @UniqueConstraint(columnNames = {"course_id", "studentgroup_id"})
+})
 public class CoursesForGroups extends BaseEntity {
     @ManyToOne
     private Course course;
