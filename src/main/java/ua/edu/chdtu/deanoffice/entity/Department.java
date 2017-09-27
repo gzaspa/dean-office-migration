@@ -10,8 +10,8 @@ public class Department extends NameEntity{
     private String abbr;
     @ManyToOne
     Faculty faculty;
-    @Column(name="active", nullable = false)
-    private boolean active = true;
+    @Column(name="valid", nullable = false)
+    private boolean valid = true;
 
     public String getAbbr() {
         return abbr;
@@ -29,11 +29,11 @@ public class Department extends NameEntity{
         this.faculty = faculty;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isValid() {
+        return valid;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

@@ -27,8 +27,8 @@ public class Specialization extends  NameWithEngEntity {
     private BigDecimal paymentFulltime;
     @Column(name="payment_extramural", nullable = true, precision=15, scale=2)
     private BigDecimal paymentExtramural;
-    @Column(name="active", nullable = false)
-    private boolean active = true;
+    @Column(name="valid", nullable = false)
+    private boolean valid = true;
 
     public Speciality getSpeciality() {
         return speciality;
@@ -110,11 +110,11 @@ public class Specialization extends  NameWithEngEntity {
         this.paymentExtramural = paymentExtramural;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isValid() {
+        return valid;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

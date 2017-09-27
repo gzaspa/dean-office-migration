@@ -14,8 +14,8 @@ public class Teacher extends Person {
     private String scientificDegree;
     @Column(name="sex", nullable = false)
     char sex = 'm';
-    @Column(name="active", nullable = false)
-    private boolean active = true;
+    @Column(name="valid", nullable = false)
+    private boolean valid = true;
 
     public Department getDepartment() {
         return department;
@@ -49,11 +49,11 @@ public class Teacher extends Person {
         this.sex = sex;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isValid() {
+        return valid;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

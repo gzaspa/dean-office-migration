@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 public class Speciality extends NameWithEngEntity {
     @Column(name="code", nullable = false, unique = true, length = 20)
     private String code;
-    @Column(name="active", nullable = false)
-    private boolean active = true;
+    @Column(name="valid", nullable = false)
+    private boolean valid = true;
 
     public String getCode() {
         return code;
@@ -20,11 +20,11 @@ public class Speciality extends NameWithEngEntity {
         this.code = code;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isValid() {
+        return valid;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

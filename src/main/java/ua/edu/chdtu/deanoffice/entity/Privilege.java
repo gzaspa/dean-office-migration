@@ -6,13 +6,13 @@ import javax.persistence.Entity;
 @Entity
 public class Privilege extends NameEntity {
     @Column(name="active", nullable = false)
-    private boolean active = true;
+    private boolean valid = true;
 
-    public boolean isActive() {
-        return active;
+    public boolean isValid() {
+        return valid;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

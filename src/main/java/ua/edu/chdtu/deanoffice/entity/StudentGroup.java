@@ -19,8 +19,8 @@ public class StudentGroup extends NameEntity {
     private int studySemesters;
     @Column(name="study_years", nullable = false)
     private BigDecimal studyYears;
-    @Column(name="active", nullable = false)
-    private boolean active = true;
+    @Column(name="valid", nullable = false)
+    private boolean valid = true;
     //CURATOR
 
     public Specialization getSpecialization() {
@@ -71,11 +71,11 @@ public class StudentGroup extends NameEntity {
         this.studyYears = studyYears;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isValid() {
+        return valid;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setValid(boolean active) {
+        this.valid = valid;
     }
 }
