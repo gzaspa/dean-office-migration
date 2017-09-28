@@ -9,9 +9,9 @@ import java.util.Date;
 public class Student extends Person {
     @Column(name="surname_eng", length = 20)
     private String surnameEng;
-    @Column(name="nameEng", length = 20)
+    @Column(name="name_eng", length = 20)
     private String nameEng;
-    @Column(name="patronimicEng", length = 20)
+    @Column(name="patronimic_eng", length = 20)
     private String patronimicEng;
     @ManyToOne
     private StudentGroup studentGroup;
@@ -30,6 +30,8 @@ public class Student extends Person {
     private char sex;
     @Column(name="telephone", length = 30)
     private String telephone;
+    @Column(name="email", length = 30)
+    private String email;
     @Column(name="father_name", length = 40)
     private String fatherName;
     @Column(name="father_phone", length = 20)
@@ -204,5 +206,13 @@ public class Student extends Person {
 
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
