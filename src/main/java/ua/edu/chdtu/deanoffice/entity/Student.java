@@ -32,6 +32,8 @@ public class Student extends Person {
     private String telephone;
     @Column(name="email", length = 30)
     private String email;
+    @ManyToOne
+    private Privilege privilege;
     @Column(name="father_name", length = 40)
     private String fatherName;
     @Column(name="father_phone", length = 20)
@@ -214,5 +216,13 @@ public class Student extends Person {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Privilege getPrivilege() {
+        return privilege;
+    }
+
+    public void setPrivilege(Privilege privilege) {
+        this.privilege = privilege;
     }
 }
