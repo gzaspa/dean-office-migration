@@ -7,12 +7,14 @@ import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
-@Table(name="student_expel")
-public class StudentExpel extends BaseEntity {
+@Table(name="student_academic_vacation")
+public class StudentAcademicVacation extends BaseEntity {
     @ManyToOne
     private Student student;
-    @Column(name="expel_date", nullable = false)
-    private Date expelDate;
+    @Column(name="vacation_start_date", nullable = false)
+    private Date vacationStartDate;
+    @Column(name="vacation_end_date", nullable = false)
+    private Date vacationEndDate;
     @Column(name="order_number", nullable = false, length = 15)
     private String orderNumber;
     @Column(name="order_date", nullable = false)
@@ -32,12 +34,20 @@ public class StudentExpel extends BaseEntity {
         this.student = student;
     }
 
-    public Date getExpelDate() {
-        return expelDate;
+    public Date getVacationStartDate() {
+        return vacationStartDate;
     }
 
-    public void setExpelDate(Date expelDate) {
-        this.expelDate = expelDate;
+    public void setVacationStartDate(Date vacationStartDate) {
+        this.vacationStartDate = vacationStartDate;
+    }
+
+    public Date getVacationEndDate() {
+        return vacationEndDate;
+    }
+
+    public void setVacationEndDate(Date vacationEndDate) {
+        this.vacationEndDate = vacationEndDate;
     }
 
     public String getOrderNumber() {

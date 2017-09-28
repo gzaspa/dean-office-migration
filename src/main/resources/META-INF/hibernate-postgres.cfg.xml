@@ -18,11 +18,12 @@
         </property>
         <!-- DB schema will be updated if needed -->
         <property name="hbm2ddl.auto">create</property>
-
+        <mapping class="ua.edu.chdtu.deanoffice.entity.CurrentYear"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Degree"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.KnowledgeControl"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Position"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Privilege"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.OrderReason"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Faculty"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Department"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Speciality"/>
@@ -33,5 +34,7 @@
         <mapping class="ua.edu.chdtu.deanoffice.entity.CourseName"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Course"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.CoursesForGroups"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.StudentExpel"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.StudentAcademicVacation"/>
     </session-factory>
 </hibernate-configuration>
