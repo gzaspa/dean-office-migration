@@ -36,5 +36,6 @@
         <mapping class="ua.edu.chdtu.deanoffice.entity.CoursesForGroups"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.StudentExpel"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.StudentAcademicVacation"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.Grade"/>
     </session-factory>
 </hibernate-configuration>
