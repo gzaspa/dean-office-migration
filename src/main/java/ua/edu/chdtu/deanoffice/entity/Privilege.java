@@ -4,15 +4,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class Privilege extends NameEntity {
-    @Column(name="active", nullable = false)
-    private boolean valid = true;
+public class Privilege extends NameWithActiveEntity {
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
 }

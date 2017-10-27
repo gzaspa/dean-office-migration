@@ -9,7 +9,7 @@ public class Department extends NameEntity{
     @Column(name="abbr", nullable = false, unique = true, length = 20)
     private String abbr;
     @ManyToOne
-    Faculty faculty;
+    private Faculty faculty;
     @Column(name="valid", nullable = false)
     private boolean valid = true;
 
