@@ -4,11 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class Faculty extends NameWithEngEntity {
+public class Faculty extends NameWithEngAndActiveEntity {
     @Column(name="abbr", nullable = false, unique = true, length = 20)
     private String abbr;
-    @Column(name="valid", nullable = false)
-    private boolean valid = true;
     //DEAN
 
     public String getAbbr() {
@@ -17,13 +15,5 @@ public class Faculty extends NameWithEngEntity {
 
     public void setAbbr(String abbr) {
         this.abbr = abbr;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
     }
 }

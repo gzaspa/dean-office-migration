@@ -6,7 +6,7 @@ import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 
 @Entity
-public class StudentGroup extends NameEntity {
+public class StudentGroup extends NameWithActiveEntity {
     @ManyToOne
     private Specialization specialization;
     @Column(name="creation_year", nullable = false)
@@ -19,8 +19,6 @@ public class StudentGroup extends NameEntity {
     private int studySemesters;
     @Column(name="study_years", nullable = false)
     private BigDecimal studyYears;
-    @Column(name="valid", nullable = false)
-    private boolean valid = true;
     //CURATOR
 
     public Specialization getSpecialization() {
@@ -69,13 +67,5 @@ public class StudentGroup extends NameEntity {
 
     public void setStudyYears(BigDecimal studyYears) {
         this.studyYears = studyYears;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean active) {
-        this.valid = valid;
     }
 }

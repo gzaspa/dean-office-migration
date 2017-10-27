@@ -6,11 +6,9 @@ import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 
 @Entity
-public class Speciality extends NameWithEngEntity {
+public class Speciality extends NameWithEngAndActiveEntity {
     @Column(name="code", nullable = false, unique = true, length = 20)
     private String code;
-    @Column(name="valid", nullable = false)
-    private boolean valid = true;
 
     public String getCode() {
         return code;
@@ -20,11 +18,4 @@ public class Speciality extends NameWithEngEntity {
         this.code = code;
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
 }

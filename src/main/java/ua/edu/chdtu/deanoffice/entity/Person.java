@@ -11,6 +11,16 @@ public class Person extends BaseEntity {
     private String name;
     @Column(name="patronimic", nullable = false, length = 20)
     private String patronimic;
+    @Column(name="active", nullable = false)
+    private boolean active = true;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public String getSurname() {
         return surname;

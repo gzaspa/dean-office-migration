@@ -6,10 +6,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="order_reason")
-public class OrderReason extends NameEntity {
+public class OrderReason extends NameWithActiveEntity {
     @Column(name="kind", nullable = false, length = 25)
     private String kind;
-    private boolean valid;
 
     public String getKind() {
         return kind;
@@ -19,11 +18,4 @@ public class OrderReason extends NameEntity {
         this.kind = kind;
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
 }

@@ -5,13 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Department extends NameEntity{
+public class Department extends NameWithActiveEntity {
     @Column(name="abbr", nullable = false, unique = true, length = 20)
     private String abbr;
     @ManyToOne
     private Faculty faculty;
-    @Column(name="valid", nullable = false)
-    private boolean valid = true;
 
     public String getAbbr() {
         return abbr;
@@ -29,11 +27,4 @@ public class Department extends NameEntity{
         this.faculty = faculty;
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
 }

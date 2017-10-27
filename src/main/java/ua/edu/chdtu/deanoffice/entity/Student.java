@@ -48,7 +48,6 @@ public class Student extends Person {
     private String motherInfo;
     @Column(name="notes", length = 150)
     private String notes;
-    private boolean valid;
 
     public String getSurnameEng() {
         return surnameEng;
@@ -218,11 +217,4 @@ public class Student extends Person {
         this.notes = notes;
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
 }

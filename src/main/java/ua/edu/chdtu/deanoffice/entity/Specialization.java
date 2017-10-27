@@ -6,7 +6,7 @@ import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 
 @Entity
-public class Specialization extends  NameWithEngEntity {
+public class Specialization extends  NameWithEngAndActiveEntity {
     @ManyToOne
     private Speciality speciality;
     @ManyToOne
@@ -27,8 +27,6 @@ public class Specialization extends  NameWithEngEntity {
     private BigDecimal paymentFulltime;
     @Column(name="payment_extramural", nullable = true, precision=15, scale=2)
     private BigDecimal paymentExtramural;
-    @Column(name="valid", nullable = false)
-    private boolean valid = true;
 
     public Speciality getSpeciality() {
         return speciality;
@@ -110,11 +108,4 @@ public class Specialization extends  NameWithEngEntity {
         this.paymentExtramural = paymentExtramural;
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public void setValid(boolean valid) {
-        this.valid = valid;
-    }
 }
