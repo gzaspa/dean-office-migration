@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @MappedSuperclass
 public class NameWithEngEntity extends NameEntity {
-    @Column(name="name_eng", nullable = false, unique = true, length = 100)
+    @Column(name="name_eng", nullable = false, length = 100)
     private String nameEng;
 
     public String getNameEng() {
