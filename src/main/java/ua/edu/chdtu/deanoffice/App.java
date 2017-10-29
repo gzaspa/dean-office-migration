@@ -1,26 +1,19 @@
 package ua.edu.chdtu.deanoffice;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import static ua.edu.chdtu.deanoffice.DatabaseConnector.configDatabases;
+import static ua.edu.chdtu.deanoffice.DatabaseConnector.finishWorking;
+import static ua.edu.chdtu.deanoffice.Migration.migrate;
 
-/**
- * Hello world!
- *
- */
+
 public class App {
-    public static void main( String[] args ){
-        Configuration config = new Configuration();
-        config.configure("META-INF/hibernate-postgres.cfg.xml");
-        SessionFactory sessionFactory = config.buildSessionFactory();
-        Session session = sessionFactory.openSession();
-        session.close();
-        sessionFactory.close();
-
-
-//        Degree degree = new Degree();
-//        degree.setId(12);
-//        degree.setName("jkhjkh");
-//        System.out.println( "Hello World! "+degree.getName() );
+    public static void main(String[] args) {
+        configDatabases();
+        try {
+            migrate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            finishWorking();
+        }
     }
 }

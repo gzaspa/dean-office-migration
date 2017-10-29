@@ -7,6 +7,14 @@ public class NameWithEngEntity extends NameEntity {
     @Column(name="name_eng", nullable = false, length = 100)
     private String nameEng;
 
+    public NameWithEngEntity() {
+    }
+
+    public NameWithEngEntity(String name, String nameEng) {
+        this.setName(name);
+        this.nameEng = nameEng;
+    }
+
     public String getNameEng() {
         return nameEng;
     }
