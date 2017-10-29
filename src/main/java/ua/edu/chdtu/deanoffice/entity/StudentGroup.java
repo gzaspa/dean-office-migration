@@ -12,14 +12,24 @@ public class StudentGroup extends NameWithActiveEntity {
     @Column(name="creation_year", nullable = false)
     private int creationYear;
     @Column(name="tuition_form", nullable = false)
-    private char tuitionForm = 'f';
+    private char tuitionForm = 'f';//f - fulltime, e - extramural
     @Column(name="tuition_term", nullable = false)
-    private char tuitionTerm = 'f';
+    private char tuitionTerm = 'r';//r - regular, s - shortened
     @Column(name="study_semesters", nullable = false)
     private int studySemesters;
     @Column(name="study_years", nullable = false)
     private BigDecimal studyYears;
+    @Column(name="begin_years", nullable = false)
+    private int beginYears;//курс, з якого починає навчатись група
     //CURATOR
+
+    public int getBeginYears() {
+        return beginYears;
+    }
+
+    public void setBeginYears(int beginYears) {
+        this.beginYears = beginYears;
+    }
 
     public Specialization getSpecialization() {
         return specialization;
