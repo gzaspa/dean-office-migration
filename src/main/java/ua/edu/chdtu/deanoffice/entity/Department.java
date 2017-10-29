@@ -6,7 +6,7 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Department extends NameWithActiveEntity {
-    @Column(name="abbr", nullable = false, unique = true, length = 20)
+    @Column(name="abbr", nullable = false, length = 20)
     private String abbr;
     @ManyToOne
     private Faculty faculty;

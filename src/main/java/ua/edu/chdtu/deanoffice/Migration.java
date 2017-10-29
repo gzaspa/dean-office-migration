@@ -1,12 +1,11 @@
 package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
-import ua.edu.chdtu.deanoffice.entity.*;
+import ua.edu.chdtu.deanoffice.entity.BaseEntity;
+import ua.edu.chdtu.deanoffice.entity.Degree;
+import ua.edu.chdtu.deanoffice.entity.Faculty;
+import ua.edu.chdtu.deanoffice.entity.Specialization;
 import ua.edu.chdtu.deanoffice.oldentity.*;
-import ua.edu.chdtu.deanoffice.oldentity.Department;
-import ua.edu.chdtu.deanoffice.oldentity.OrderReason;
-import ua.edu.chdtu.deanoffice.oldentity.Position;
-import ua.edu.chdtu.deanoffice.oldentity.Speciality;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class Migration {
             newFaculties.add(f);
             f.setName(oFaculty.getName());
             f.setNameEng("");
-            f.setAbbr(oFaculty.getAbbreviation() == null ? makeAbbreviation(f.getName()) + "*"
+            f.setAbbr(oFaculty.getAbbreviation() == null ? makeAbbreviation(f.getName())
                     : oFaculty.getAbbreviation()
             );
             f.setActive(oFaculty.isActive());
@@ -54,7 +53,7 @@ public class Migration {
             ua.edu.chdtu.deanoffice.entity.Department d = new ua.edu.chdtu.deanoffice.entity.Department();
             newDepartments.add(d);
             d.setName(oDep.getName());
-            d.setAbbr(oDep.getAbbreviation() == null ? makeAbbreviation(oDep.getName()) + "*" + oDep.getId() : oDep.getAbbreviation());
+            d.setAbbr(oDep.getAbbreviation() == null ? "" : oDep.getAbbreviation());
             d.setActive(oDep.isActive());
             d.setFaculty(
                     newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
