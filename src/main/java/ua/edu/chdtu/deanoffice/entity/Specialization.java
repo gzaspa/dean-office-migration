@@ -19,9 +19,9 @@ public class Specialization extends  NameWithEngAndActiveEntity {
     private int studySemesters;
     @Column(name="study_years", nullable = false)
     private BigDecimal studyYears;
-    @Column(name="qualification", nullable = false, unique = false, length = 100)
+    @Column(name="qualification", unique = false, length = 100)
     private String qualification;
-    @Column(name="qualification_eng", nullable = false, unique = false, length = 100)
+    @Column(name="qualification_eng", unique = false, length = 100)
     private String qualificationEng;
     @Column(name="payment_fulltime", nullable = true, precision=15, scale=2)
     private BigDecimal paymentFulltime;
