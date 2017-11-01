@@ -13,4 +13,8 @@ public class KnowledgeControl extends NameWithEngEntity {
     public boolean isHasGrade() {
         return hasGrade;
     }
+
+    public void setHasGrade(boolean hasGrade) {
+        this.hasGrade = hasGrade;
+    }
 }

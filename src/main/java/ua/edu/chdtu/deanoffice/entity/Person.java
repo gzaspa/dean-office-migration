@@ -5,14 +5,16 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class Person extends BaseEntity {
-    @Column(name="surname", nullable = false, length = 20)
+    @Column(name = "surname", nullable = false, length = 20)
     private String surname;
-    @Column(name="name", nullable = false, length = 20)
+    @Column(name = "name", nullable = false, length = 20)
     private String name;
-    @Column(name="patronimic", nullable = false, length = 20)
+    @Column(name = "patronimic", nullable = false, length = 20)
     private String patronimic;
-    @Column(name="active", nullable = false)
+    @Column(name = "active", nullable = false)
     private boolean active = true;
+    @Column(name = "sex", nullable = false)
+    char sex = 'm';
 
     public boolean isActive() {
         return active;
@@ -46,4 +48,11 @@ public class Person extends BaseEntity {
         this.patronimic = patronimic;
     }
 
+    public char getSex() {
+        return sex;
+    }
+
+    public void setSex(char sex) {
+        this.sex = sex;
+    }
 }

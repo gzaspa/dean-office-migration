@@ -27,7 +27,6 @@ public class Student extends Person {
     private String recordBookNumber;
     @Column(name="student_card_number", length = 15)
     private String studentCardNumber;
-    private char sex;
     @Column(name="telephone", length = 30)
     private String telephone;
     @Column(name="email", length = 30)
@@ -127,14 +126,6 @@ public class Student extends Person {
 
     public void setStudentCardNumber(String studentCardNumber) {
         this.studentCardNumber = studentCardNumber;
-    }
-
-    public char getSex() {
-        return sex;
-    }
-
-    public void setSex(char sex) {
-        this.sex = sex;
     }
 
     public String getTelephone() {

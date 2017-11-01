@@ -14,7 +14,7 @@
             postgres
         </property>
         <property name="connection.password">
-            admin
+            password
         </property>
         <!-- DB schema will be updated if needed -->
         <property name="hbm2ddl.auto">create</property>

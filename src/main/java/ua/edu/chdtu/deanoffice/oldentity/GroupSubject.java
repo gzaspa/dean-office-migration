@@ -4,6 +4,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Date;
 
 
 @Entity
@@ -24,6 +25,13 @@ public class GroupSubject implements Serializable {
     @Column(name = "IN_DODATOK")
     @Type(type = "true_false")
     private boolean inDiplomaAddition;
+
+    @ManyToOne
+    @JoinColumn(name = "TEACHER_ID")
+    private Teacher teacher;
+
+    @Column(name = "EXAM_DATE")
+    private Date examDate;
 
     public Subject getSubject() {
         return subject;
@@ -55,5 +63,21 @@ public class GroupSubject implements Serializable {
 
     public void setPrimaryKey(GroupSubjectPrimaryKey primaryKey) {
         this.primaryKey = primaryKey;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public Date getExamDate() {
+        return examDate;
+    }
+
+    public void setExamDate(Date examDate) {
+        this.examDate = examDate;
     }
 }

@@ -19,7 +19,6 @@
         <property name="hibernate.connection.CharSet">windows-1251</property>
         <property name="hibernate.connection.characterEncoding">windows-1251</property>
 
-
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.Student"/>
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.Cathedra"/>
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.Department"/>
@@ -32,7 +31,7 @@
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.CurrentYear"/>
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.Position"/>
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.OrderReason"/>
-        <!-- DB schema will be updated if needed -->
-        <!-- <property name="hbm2ddl.auto">update</property> -->
+        <mapping class="ua.edu.chdtu.deanoffice.oldentity.Privilege"/>
+        <mapping class="ua.edu.chdtu.deanoffice.oldentity.Teacher"/>
     </session-factory>
 </hibernate-configuration>

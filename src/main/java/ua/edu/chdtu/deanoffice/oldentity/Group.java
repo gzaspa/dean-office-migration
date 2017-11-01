@@ -60,6 +60,10 @@ public class Group {
                 String.format("%4d", creationYear + lastSemester / 2);
     }
 
+    public String getFirstPartOfName(){
+        return this.getName().split("-")[0];
+    }
+
     @Override
     public String toString() {
         return getName();

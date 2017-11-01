@@ -12,8 +12,6 @@ public class Teacher extends Person {
     private Position position;
     @Column(name="scientific_degree")
     private String scientificDegree;
-    @Column(name="sex", nullable = false)
-    char sex = 'm';
 
     public Department getDepartment() {
         return department;

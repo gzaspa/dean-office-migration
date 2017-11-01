@@ -25,9 +25,6 @@ public class Subject {
     @JoinColumn(name = "KC_ID")
     private KnowledgeControl knowledgeControl;
 
-    @Column(name = "KC_ID",insertable = false, updatable = false)
-    private int knowledgeControlID;
-
     @OneToMany(mappedBy="subject",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<GroupSubject> groupSubjects;
 
@@ -39,6 +36,12 @@ public class Subject {
 
     @Column(name = "ACTIVE1")
     private boolean active;
+
+    @Column(name = "CREDITS")
+    private Double credits;
+
+    @Column(name = "ABBR")
+    private String abbreviation;
 
     @Override
     public String toString() {
@@ -110,19 +113,27 @@ public class Subject {
         return groupSubjects;
     }
 
-    public int getKnowledgeControlID() {
-        return knowledgeControlID;
-    }
-
-    public void setKnowledgeControlID(int knowledgeControlID) {
-        this.knowledgeControlID = knowledgeControlID;
-    }
-
     public String getNameEnglish() {
         return nameEnglish;
     }
 
     public void setNameEnglish(String nameEnglish) {
         this.nameEnglish = nameEnglish;
+    }
+
+    public Double getCredits() {
+        return credits;
+    }
+
+    public void setCredits(Double credits) {
+        this.credits = credits;
+    }
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
+    public void setAbbreviation(String abbreviation) {
+        this.abbreviation = abbreviation;
     }
 }
