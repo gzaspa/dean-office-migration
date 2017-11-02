@@ -14,14 +14,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>atlassian-3rdparty</id>
-            <name>atlassian</name>
-            <url>https://maven.atlassian.com/3rdparty</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
         <dependency>
@@ -32,9 +24,9 @@
         <!-- https://mvnrepository.com/artifact/postgresql/postgresql -->
         <!-- https://mvnrepository.com/artifact/postgresql/postgresql -->
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1208-jdbc42-atlassian-hosted</version>
+            <version>9.4.1211</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.firebirdsql.jdbc/jaybird -->
         <dependency>
