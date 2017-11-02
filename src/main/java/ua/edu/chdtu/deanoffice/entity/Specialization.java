@@ -15,10 +15,6 @@ public class Specialization extends  NameWithEngAndActiveEntity {
     private Faculty faculty;
     @ManyToOne
     private Department department;
-    @Column(name="study_semesters", nullable = false)
-    private int studySemesters;
-    @Column(name="study_years", nullable = false)
-    private BigDecimal studyYears;
     @Column(name="qualification", unique = false, length = 100)
     private String qualification;
     @Column(name="qualification_eng", unique = false, length = 100)
@@ -58,22 +54,6 @@ public class Specialization extends  NameWithEngAndActiveEntity {
 
     public void setDepartment(Department department) {
         this.department = department;
-    }
-
-    public int getStudySemesters() {
-        return studySemesters;
-    }
-
-    public void setStudySemesters(int studySemesters) {
-        this.studySemesters = studySemesters;
-    }
-
-    public BigDecimal getStudyYears() {
-        return studyYears;
-    }
-
-    public void setStudyYears(BigDecimal studyYears) {
-        this.studyYears = studyYears;
     }
 
     public String getQualification() {

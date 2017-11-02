@@ -9,15 +9,13 @@ import java.math.BigDecimal;
 public class Course extends BaseEntity {
     @ManyToOne
     private CourseName courseName;
-    @ManyToOne
-    private Specialization specialization;
-    @Column(name="semester", nullable = false)
+    @Column(name = "semester", nullable = false)
     private Integer semester;
     @ManyToOne
     private KnowledgeControl knowledgeControl;
-    @Column(name="hours", nullable = false)
+    @Column(name = "hours", nullable = false)
     private Integer hours;
-    @Column(name="credits", nullable = false, precision=4, scale=1)
+    @Column(name = "credits", nullable = false, precision = 4, scale = 1)
     private BigDecimal credits;
 
     public CourseName getCourseName() {
@@ -26,14 +24,6 @@ public class Course extends BaseEntity {
 
     public void setCourseName(CourseName courseName) {
         this.courseName = courseName;
-    }
-
-    public Specialization getSpecialization() {
-        return specialization;
-    }
-
-    public void setSpecialization(Specialization specialization) {
-        this.specialization = specialization;
     }
 
     public Integer getSemester() {

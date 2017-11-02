@@ -13,8 +13,10 @@ import ua.edu.chdtu.deanoffice.oldentity.Student;
 import ua.edu.chdtu.deanoffice.oldentity.Teacher;
 
 import java.math.BigDecimal;
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 
 import static ua.edu.chdtu.deanoffice.DatabaseConnector.getFirebirdSession;
@@ -36,6 +38,14 @@ public class Migration {
         } else {
             return o1.equals(o2);
         }
+    }
+
+    private static boolean stringEquals(String s1, String s2) {
+        if (s1 == null || s2 == null) {
+            return false;
+        }
+        Collator ukrainianCollator = Collator.getInstance(new Locale("uk", "UA"));
+        return ukrainianCollator.equals(s1, s2);
     }
 
     public static void migrate() {
@@ -148,11 +158,9 @@ public class Migration {
                 bachSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
                         department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
                 bachSpec.setDegree(degrees.get(0));
-                bachSpec.setStudySemesters(8);
-                bachSpec.setStudyYears(new BigDecimal(4));
                 bachSpec.setActive(oldSpec.isActive());
                 bachSpec.setName(oldSpec.getBachelorName());
-                bachSpec.setNameEng(oldSpec.getBachelorName());
+                bachSpec.setNameEng("");
                 bachSpec.setSpeciality(newSpecialities.get(oldSpecialities.indexOf(oldSpecialities.stream().filter(
                         speciality -> speciality.getName() == oldSpec.getName()).findFirst().get())));
                 bachSpec.setQualification("");
@@ -167,11 +175,9 @@ public class Migration {
                 masterSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
                         department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
                 masterSpec.setDegree(degrees.get(2));
-                masterSpec.setStudySemesters(3);
-                masterSpec.setStudyYears(new BigDecimal(1.5));
                 masterSpec.setActive(oldSpec.isActive());
                 masterSpec.setName(oldSpec.getBachelorName());
-                masterSpec.setNameEng(oldSpec.getBachelorName());
+                masterSpec.setNameEng("");
                 masterSpec.setSpeciality(newSpecialities.get(oldSpecialities.indexOf(oldSpecialities.stream().filter(
                         speciality -> speciality.getName() == oldSpec.getName()).findFirst().get())));
                 masterSpec.setQualification("");
@@ -183,6 +189,7 @@ public class Migration {
         //Groups
         List<Group> oldGroups = getFirebirdSession().createQuery("from Group", Group.class).list();
         List<StudentGroup> newGroups = new ArrayList<>();
+        List<Specialization> additionalSpecializations = new ArrayList<>();
         oldGroups.forEach(oldGroup -> {
             StudentGroup g = new StudentGroup();
             newGroups.add(g);
@@ -190,8 +197,18 @@ public class Migration {
             g.setActive(oldGroup.isActive());
             g.setCreationYear(oldGroup.getCreationYear());
             g.setBeginYears(oldGroup.getStudyStartYear());
-            //TODO
-            //g.setSpecialization();
+
+            Specialization s = new Specialization();
+            s.setName("");
+            s.setNameEng("");
+            s.setSpeciality(newSpecialities.stream().filter(speciality ->
+                    equals(oldGroup.getSpeciality().getBachelorCode(), speciality.getCode()) ||
+                            equals(oldGroup.getSpeciality().getCode(), speciality.getCode()) ||
+                            equals(oldGroup.getSpeciality().getMasterCode(), speciality.getCode())
+            ).findFirst().get());
+            g.setSpecialization(s);
+            additionalSpecializations.add(s);
+
             g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") ||
                     !oldGroup.getFirstPartOfName().endsWith("СКС") ?
                     's' :
@@ -201,11 +218,15 @@ public class Migration {
                     oldGroup.getFirstPartOfName().startsWith("ЗМ")) {
                 g.setStudySemesters(3);
                 g.setStudyYears(new BigDecimal(1.5));
+            } else if (g.getTuitionTerm() == 's') {
+                g.setStudyYears(new BigDecimal(3));
+                g.setStudySemesters(6);
             } else {
                 g.setStudySemesters(8);
                 g.setStudyYears(new BigDecimal(4));
             }
         });
+        saveAllItems(additionalSpecializations);
         saveAllItems(newGroups);
 
         //Privileges
@@ -289,17 +310,120 @@ public class Migration {
         saveAllItems(newKnowledgeControlKinds);
 
         //Subjects -> Courses/CourseNames
-        List<Subject> oldSubjects = getFirebirdSession().createQuery("from Subject", Subject.class).list();
+        //Takes most of the time
+        List<Subject> oldSubjects = getFirebirdSession().createQuery("from Subject order by name", Subject.class).list();
         oldSubjects.forEach(subject -> {
+            subject.setName(subject.getName().replace(",", ", "));
             subject.setName(subject.getName().trim().replaceAll(" +", " "));
             subject.setName(subject.getName().replace("- ", "-"));
             subject.setName(subject.getName().replace(" -", "-"));
             subject.setName(subject.getName().replace(" - ", "-"));
             subject.setName(subject.getName().replace(" ,", ","));
-            subject.setName(subject.getName().replace("і", "i"));
+            subject.setName(subject.getName().replace("i", "і"));
+            subject.setName(subject.getName().replace("c", "с"));
+            subject.setName(subject.getName().replace("I", "І"));
             subject.setName(subject.getName().replace("\"", "'"));
             subject.setName(subject.getName().replace("\'", "'"));
             subject.setName(subject.getName().replace("( ", "("));
+            subject.setName(subject.getName().replace("и", "и"));
+            subject.setName(subject.getName().replace("пю", "п'ю"));
+            subject.setName(subject.getName().replace("п ю", "п'ю"));
+            subject.setName(subject.getName().replace("`", "'"));
+            subject.setName(subject.getName().replace("гое", "го"));
+            subject.setName(subject.getName().replace("Інженерга", "Інженерна"));
+            subject.setName(subject.getName().replace("WEB", "Web"));
+            subject.setName(subject.getName().replace("Web ", "Web-"));
+            subject.setName(subject.getName().replace("ком'п", "комп"));
+            subject.setName(subject.getName().replace("матемитки", "математики"));
+            subject.setName(subject.getName().replace("ии", "и"));
+            subject.setName(subject.getName().replace("системпи", "системи"));
+            subject.setName(subject.getName().replace("Охорони", "Охорона"));
+            subject.setName(subject.getName().replace("діялбності", "діяльності"));
+            subject.setName(subject.getName().replace("охоронип", "охорони п"));
+            subject.setName(subject.getName().replace("житте", "життє"));
+            subject.setName(subject.getName().replace("данних", "даних"));
+            subject.setName(subject.getName().replace("ФІзика", "Фізика"));
+            subject.setName(subject.getName().replace(" І ", " і "));
+            subject.setName(subject.getName().replace("ссемблер", "семблер"));
+            subject.setName(subject.getName().replace("невизначенності", "невизначеності"));
+            subject.setName(subject.getName().replace("іБ", "і Б"));
+            subject.setName(subject.getName().replace("болонський", "Болонський"));
+            subject.setName(subject.getName().replace("Дискретна аналіз", "Дискретний аналіз"));
+            subject.setName(subject.getName().replace("програмног ", "програмного "));
+            subject.setName(subject.getName().replace("порофес", "профес"));
+            subject.setName(subject.getName().replace("властність", "власність"));
+            subject.setName(subject.getName().replace("мернжі", "мережі"));
+            subject.setName(subject.getName().replace("розподіленні", "розподілені"));
+            subject.setName(subject.getName().replace("Корс-", "Крос-"));
+            subject.setName(subject.getName().replace("алгобра", "алгебра"));
+            subject.setName(subject.getName().replace("сиситем", "систем"));
+            subject.setName(subject.getName().replace("Макро-", "Макро "));
+            subject.setName(subject.getName().replace(" т а", " та "));
+            subject.setName(subject.getName().replace("Психологіл", "Психологія"));
+            subject.setName(subject.getName().replace("засобт", "засоби"));
+            subject.setName(subject.getName().replace("С ++", "С++"));
+            subject.setName(subject.getName().replace("С + +", "С++"));
+            subject.setName(subject.getName().replace("еконоліки", "економіки"));
+            subject.setName(subject.getName().replace("еконоліки", "економіки"));
+            subject.setName(subject.getName().replace("Мультимедія", "Мультимедіа"));
+            subject.setName(subject.getName().replace("Науковов", "Науково"));
+            subject.setName(subject.getName().replace("технологї", "технології"));
+            subject.setName(subject.getName().replace("прогрмування", "програмування"));
+            subject.setName(subject.getName().replace("оріентован", "орієнтован"));
+            subject.setName(subject.getName().replace("Операційні систем", "Операційні системи"));
+            subject.setName(subject.getName().replace("фукціонування", "функціонування"));
+            subject.setName(subject.getName().replace("екологіі", "екології"));
+            subject.setName(subject.getName().replace("соціцо", "соціо"));
+            subject.setName(subject.getName().replace("електороніки", "електроніки"));
+            subject.setName(subject.getName().replace("Первінні", "Первинні"));
+            subject.setName(subject.getName().replace("Перифериіїні", "Периферійні"));
+            subject.setName(subject.getName().replace("Політеконоиія", "Політекономія"));
+            subject.setName(subject.getName().replace("теория", "теорія"));
+            subject.setName(subject.getName().replace("пердачі", "передачі"));
+            subject.setName(subject.getName().replace("передачи", "передачі"));
+            subject.setName(subject.getName().replace("вбудоваваних", "вбудованих"));
+            subject.setName(subject.getName().replace("м'ю", "мп'ю"));
+            subject.setName(subject.getName().replace("dovs", "dows"));
+            subject.setName(subject.getName().replace("сситеми", "системи"));
+            subject.setName(subject.getName().replace("новоої", "нової"));
+            subject.setName(subject.getName().replace("\n", ""));
+            subject.setName(subject.getName().replace("проетування", "проектування"));
+            subject.setName(subject.getName().replace("Спеціализовані", "Спеціалізовані"));
+            subject.setName(subject.getName().replace("Спеіалізовані", "Спеціалізовані"));
+            subject.setName(subject.getName().replace("Сснови", "Основи"));
+            subject.setName(subject.getName().replace("інформаціних", "інформаційних"));
+            subject.setName(subject.getName().replace("организація", "організація"));
+            subject.setName(subject.getName().replace("Сучанна", "Сучасна"));
+            subject.setName(subject.getName().replace("Сучасний світова", "Сучасна світова"));
+            subject.setName(subject.getName().replace("Теоритичні", "Теоретичні"));
+            subject.setName(subject.getName().replace("інфрмаційних", "інформаційних"));
+            subject.setName(subject.getName().replace("процкси", "процеси"));
+            subject.setName(subject.getName().replace("імовірністні", "імовірнісні"));
+            subject.setName(subject.getName().replace("ймовірністні", "імовірнісні"));
+            subject.setName(subject.getName().replace("експерімент", "експеримент"));
+            subject.setName(subject.getName().replace("засобиобчислювальної", "засоби обчислювальної"));
+            subject.setName(subject.getName().replace("автоматизованиї", "автоматизованої"));
+            subject.setName(subject.getName().replace("крептозихсті", "криптозахисту"));
+            subject.setName(subject.getName().replace("продктів", "продуктів"));
+            subject.setName(subject.getName().replace(" рограмних", " програмних"));
+            subject.setName(subject.getName().replace("сворення", "створення"));
+            subject.setName(subject.getName().replace("інфомаційних", "інформаційних"));
+            subject.setName(subject.getName().replace("прфесійною", "професійною"));
+            subject.setName(subject.getName().replace("професійною спрямуванням", "професійним спрямуванням"));
+            subject.setName(subject.getName().replace("за (", "(за"));
+            subject.setName(subject.getName().replace(" за професійним спрямуванням", " (за професійним спрямуванням)"));
+            subject.setName(subject.getName().replace("запрофесійним", "за професійним"));
+            subject.setName(subject.getName().replace("релігіознавство", "релігієзнавство"));
+            subject.setName(subject.getName().replace("Цивільна захист", "Цивільний захист"));
+            subject.setName(subject.getName().replace("''", "'"));
+            subject.setName(subject.getName().replace("комерції та бізнесу", "комерції та бізнесі"));
+            subject.setName(subject.getName().replaceAll("[0-9]+", ""));
+            subject.setName(subject.getName().substring(0, 1).toUpperCase() +
+                    subject.getName().substring(1, subject.getName().length()));
+        });
+        oldSubjects.sort((o1, o2) -> {
+            Collator ukrainianCollator = Collator.getInstance(new Locale("uk", "UA"));
+            return ukrainianCollator.compare(o1.getName(), o2.getName());
         });
         List<Course> newCourses = new ArrayList<>();
         List<CourseName> newCourseNames = new ArrayList<>();
@@ -307,12 +431,15 @@ public class Migration {
             Course c = new Course();
             newCourses.add(c);
             CourseName courseName;
-            if (newCourseNames.stream().anyMatch(name -> equals(name.getName(), (oldSubj.getName())))) {
-                courseName = newCourseNames.stream().filter(n -> equals(n.getName(), oldSubj.getName())).findFirst().get();
+            if (newCourseNames.stream().anyMatch(name -> stringEquals(name.getName(), (oldSubj.getName())))) {
+                courseName = newCourseNames.stream().filter(n -> stringEquals(n.getName(), oldSubj.getName())).findFirst().get();
             } else {
                 courseName = new CourseName();
                 newCourseNames.add(courseName);
                 courseName.setName(oldSubj.getName());
+                if (courseName.getName().contains("іі"))// &&
+                    //!courseName.getName().contains("інфо"))
+                    System.out.println(courseName.getName());
                 courseName.setNameEng("");
                 courseName.setAbbreviation(oldSubj.getAbbreviation() == null ? "" : oldSubj.getAbbreviation());
             }
@@ -331,8 +458,6 @@ public class Migration {
                 c.setKnowledgeControl(null);
             }
             c.setSemester(oldSubj.getSemester());
-            //TODO
-            //c.setSpecialization();
         });
         saveAllItems(newCourseNames);
         saveAllItems(newCourses);

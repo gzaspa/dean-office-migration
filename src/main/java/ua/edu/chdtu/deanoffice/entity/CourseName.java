@@ -15,4 +15,5 @@ public class CourseName extends NameWithEngEntity {
     public void setAbbreviation(String abbreviation) {
         this.abbreviation = abbreviation;
     }
+
 }
