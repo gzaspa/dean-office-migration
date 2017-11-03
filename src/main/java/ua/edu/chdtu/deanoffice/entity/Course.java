@@ -2,6 +2,7 @@ package ua.edu.chdtu.deanoffice.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.math.BigDecimal;
 
@@ -12,6 +13,7 @@ public class Course extends BaseEntity {
     @Column(name = "semester", nullable = false)
     private Integer semester;
     @ManyToOne
+    @JoinColumn(name="kc_id")
     private KnowledgeControl knowledgeControl;
     @Column(name = "hours", nullable = false)
     private Integer hours;
