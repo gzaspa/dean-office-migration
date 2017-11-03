@@ -34,11 +34,7 @@ public class Migration {
     }
 
     private static boolean equals(Object o1, Object o2) {
-        if (o1 == null || o2 == null) {
-            return false;
-        } else {
-            return o1.equals(o2);
-        }
+        return o1 != null && o2 != null && o1.equals(o2);
     }
 
     private static boolean stringEquals(String s1, String s2) {
@@ -438,9 +434,6 @@ public class Migration {
                 courseName = new CourseName();
                 newCourseNames.add(courseName);
                 courseName.setName(oldSubj.getName());
-                if (courseName.getName().contains("іі"))// &&
-                    //!courseName.getName().contains("інфо"))
-                    System.out.println(courseName.getName());
                 courseName.setNameEng("");
                 courseName.setAbbreviation(oldSubj.getAbbreviation() == null ? "" : oldSubj.getAbbreviation());
             }
@@ -485,5 +478,42 @@ public class Migration {
         });
         saveAllItems(newCoursesForGroups);
 
+        //Expels
+        List<Expel> oldExpels = getFirebirdSession().createQuery("from Expel", Expel.class).list();
+        List<StudentExpel> newExpels = new ArrayList<>();
+        oldExpels.forEach(oldExpel -> {
+            StudentExpel e = new StudentExpel();
+            newExpels.add(e);
+            e.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
+                    s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get())));
+            e.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
+                    g -> g.getId() == oldExpel.getGroup().getId()).findFirst().get())));
+            e.setOrderDate(oldExpel.getOrderDate());
+            e.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
+                    r -> r.getId() == oldExpel.getOrderReason().getId()).findFirst().get())));
+            e.setOrderNumber(oldExpel.getOrderNumber());
+            e.setApplicationDate(oldExpel.getApplicationDate());
+            e.setExpelDate(oldExpel.getExpelDate());
+        });
+        saveAllItems(newExpels);
+
+        //Academic Vacations
+        List<Expel> oldAcademicVacations = getFirebirdSession().createQuery("from Expel", Expel.class).list();
+        List<StudentAcademicVacation> newAcademicVacations = new ArrayList<>();
+        oldAcademicVacations.forEach(oldVacation -> {
+            StudentAcademicVacation vacation = new StudentAcademicVacation();
+            newAcademicVacations.add(vacation);
+            vacation.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
+                    s -> s.getId() == oldVacation.getStudent().getId()).findFirst().get())));
+            vacation.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
+                    g -> g.getId() == oldVacation.getGroup().getId()).findFirst().get())));
+            vacation.setOrderDate(oldVacation.getOrderDate());
+            vacation.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
+                    r -> r.getId() == oldVacation.getOrderReason().getId()).findFirst().get())));
+            vacation.setOrderNumber(oldVacation.getOrderNumber());
+            vacation.setApplicationDate(oldVacation.getApplicationDate());
+            vacation.setVacationStartDate(oldVacation.getExpelDate());
+        });
+        saveAllItems(newAcademicVacations);
     }
 }

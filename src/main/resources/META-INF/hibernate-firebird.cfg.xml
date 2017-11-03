@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.url">
-            jdbc:firebirdsql://localhost/c:\workspace\DEKANAT.fdb?charSet=windows-1251
+            jdbc:firebirdsql://localhost/d:\workspace\DEKANAT.fdb?charSet=windows-1251
         </property>
         <property name="connection.driver_class">
             org.firebirdsql.jdbc.FBDriver
@@ -33,5 +33,7 @@
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.OrderReason"/>
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.Privilege"/>
         <mapping class="ua.edu.chdtu.deanoffice.oldentity.Teacher"/>
+        <mapping class="ua.edu.chdtu.deanoffice.oldentity.Expel"/>
+        <mapping class="ua.edu.chdtu.deanoffice.oldentity.AcademicVacation"/>
     </session-factory>
 </hibernate-configuration>
