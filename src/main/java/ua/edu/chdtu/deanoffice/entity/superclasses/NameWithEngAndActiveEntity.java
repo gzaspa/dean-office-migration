@@ -1,10 +1,10 @@
-package ua.edu.chdtu.deanoffice.entity;
+package ua.edu.chdtu.deanoffice.entity.superclasses;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class NameWithActiveEntity extends NameEntity {
+public class NameWithEngAndActiveEntity extends NameWithEngEntity {
     @Column(name="active", nullable = false)
     private boolean active = true;
 

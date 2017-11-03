@@ -2,6 +2,7 @@ package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
 import ua.edu.chdtu.deanoffice.entity.*;
+import ua.edu.chdtu.deanoffice.entity.superclasses.BaseEntity;
 import ua.edu.chdtu.deanoffice.oldentity.*;
 import ua.edu.chdtu.deanoffice.oldentity.Department;
 import ua.edu.chdtu.deanoffice.oldentity.KnowledgeControl;

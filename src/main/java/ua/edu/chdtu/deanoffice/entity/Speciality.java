@@ -1,7 +1,8 @@
 package ua.edu.chdtu.deanoffice.entity;
 
+import ua.edu.chdtu.deanoffice.entity.superclasses.NameWithEngAndActiveEntity;
+
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 public class Speciality extends NameWithEngAndActiveEntity {

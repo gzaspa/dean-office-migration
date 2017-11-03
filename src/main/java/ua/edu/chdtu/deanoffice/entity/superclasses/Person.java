@@ -1,4 +1,6 @@
-package ua.edu.chdtu.deanoffice.entity;
+package ua.edu.chdtu.deanoffice.entity.superclasses;
+
+import ua.edu.chdtu.deanoffice.entity.superclasses.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;

@@ -1,5 +1,7 @@
 package ua.edu.chdtu.deanoffice.entity;
 
+import ua.edu.chdtu.deanoffice.entity.superclasses.NameWithEngAndActiveEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 

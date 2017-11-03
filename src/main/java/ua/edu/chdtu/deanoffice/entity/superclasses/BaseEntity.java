@@ -1,4 +1,4 @@
-package ua.edu.chdtu.deanoffice.entity;
+package ua.edu.chdtu.deanoffice.entity.superclasses;
 
 import javax.persistence.*;
 

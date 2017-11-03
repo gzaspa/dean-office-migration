@@ -1,5 +1,7 @@
 package ua.edu.chdtu.deanoffice.entity;
 
+import ua.edu.chdtu.deanoffice.entity.superclasses.Person;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -35,14 +37,6 @@ public class Teacher extends Person {
 
     public void setScientificDegree(String scientificDegree) {
         this.scientificDegree = scientificDegree;
-    }
-
-    public char getSex() {
-        return sex;
-    }
-
-    public void setSex(char sex) {
-        this.sex = sex;
     }
 
 }
