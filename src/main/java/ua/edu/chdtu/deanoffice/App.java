@@ -6,14 +6,18 @@ import static ua.edu.chdtu.deanoffice.Migration.migrate;
 
 
 public class App {
+
     public static void main(String[] args) {
         configDatabases();
         try {
             migrate();
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("Migration error!");
         } finally {
             finishWorking();
         }
+        System.out.println("Migration finished successful!");
     }
+
 }
