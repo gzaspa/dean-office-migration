@@ -11,13 +11,12 @@ public class App {
         configDatabases();
         try {
             migrate();
+            System.out.println("Migration finished successful!");
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Migration error!");
         } finally {
             finishWorking();
         }
-        System.out.println("Migration finished successful!");
     }
-
 }

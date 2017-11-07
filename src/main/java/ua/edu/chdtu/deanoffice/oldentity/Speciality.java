@@ -5,7 +5,6 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.Set;
 
-
 @Entity
 @Table(name = "SPECIALITIES")
 public class Speciality {
@@ -14,7 +13,7 @@ public class Speciality {
     private int id;
 
     @Column(name = "NAME")
-    private String name;
+    private String specialistName;
 
     @Column(name = "NAME_BACH")
     private String bachelorName;
@@ -33,18 +32,90 @@ public class Speciality {
     @JoinColumn(name = "FAKULTET_ID")
     private Department department;
 
-    @Column (name = "ACTIVE1" )
-    @Type(type="true_false")
+    @Column(name = "ACTIVE1")
+    @Type(type = "true_false")
     private boolean active;
 
-    @Column (name = "SHIFR" )
-    private String code;
+    @Column(name = "SHIFR")
+    private String specialistCode;
 
-    @Column (name = "SHIFR_BACH" )
+    @Column(name = "SHIFR_BACH")
     private String bachelorCode;
 
-    @Column (name = "SHIFR_MASTER" )
+    @Column(name = "SHIFR_MASTER")
     private String masterCode;
+
+    public boolean isNew() {
+        return !(getSpecialistCode().contains(".") ||
+                getBachelorCode().contains(".") ||
+                getMasterCode().contains("."));
+    }
+
+    public boolean isOld() {
+        return !isNew();
+    }
+
+    public String getFirstPartOfNewName(String name) {
+        if (isNew() && name != null) {
+            //Unique exception ІТ-проектами
+            if (name.contains("ІТ")) {
+                return name;
+            }
+            String result = "";
+            name = name.trim();
+            String[] words = name.split(" ");
+            for (int i = 0; i < words.length; i++) {
+                String word = words[i];
+                if (!word.toLowerCase().equals(word) && i > 0) {
+                    break;
+                }
+                result += word + " ";
+            }
+            return result.trim();
+        } else return name;
+    }
+
+    public String getSecondPartOfNewName(String name) {
+        if (isNew() && name != null) {
+            //Unique exception ІТ-проектами
+            if (name.contains(" ІТ")) {
+                return "";
+            }
+            String result = "";
+            name = name.trim();
+            String[] words = name.split(" ");
+            int firstWordIndex = 0;
+            for (int i = 0; i < words.length; i++) {
+                String word = words[i];
+                if (firstWordIndex != 0 && firstWordIndex < i) {
+                    result += word + " ";
+                    continue;
+                }
+                if (!word.toLowerCase().equals(word)
+                        && i > 0) {
+                    firstWordIndex = i;
+                    result += word + " ";
+                }
+            }
+            return result.trim();
+        } else return name;
+    }
+
+    public String getSpecialityNameFromNew(String name) {
+        if (isNew()) {
+            if (specialistCode.contains("-"))
+                return "";
+            else return getFirstPartOfNewName(name);
+        } else return name;
+    }
+
+    public String getSpecializationNameFromNew(String name) {
+        if (isNew()) {
+            if (specialistCode.contains("-"))
+                return name;
+            else return getSecondPartOfNewName(name);
+        } else return name;
+    }
 
     public int getId() {
         return id;
@@ -54,12 +125,12 @@ public class Speciality {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getSpecialistName() {
+        return specialistName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSpecialistName(String name) {
+        this.specialistName = name;
     }
 
     public String getBachelorName() {
@@ -102,16 +173,18 @@ public class Speciality {
         this.active = active;
     }
 
-    public String getCode() {
-        return code;
+    public String getSpecialistCode() {
+        return specialistCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setSpecialistCode(String code) {
+        this.specialistCode = code;
     }
 
     public String getMasterName() {
-        return masterName;
+        if (masterName == null)
+            return "";
+        else return masterName;
     }
 
     public void setMasterName(String masterName) {
@@ -127,7 +200,9 @@ public class Speciality {
     }
 
     public String getMasterCode() {
-        return masterCode;
+        if (masterCode == null)
+            return "";
+        else return masterCode;
     }
 
     public void setMasterCode(String masterCode) {

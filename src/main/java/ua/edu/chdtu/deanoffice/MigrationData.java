@@ -34,7 +34,7 @@ public class MigrationData {
     static List<OrderReason> oldReasons = getFirebirdSession().createQuery("from OrderReason", OrderReason.class).list();
     static List<ua.edu.chdtu.deanoffice.entity.OrderReason> newReasons = new ArrayList<>();
 
-    static List<Speciality> oldSpecialities = getFirebirdSession().createQuery("from Speciality", Speciality.class).list();
+    static List<Speciality> oldSpecialities = getFirebirdSession().createQuery("from Speciality s order by s.specialistCode", Speciality.class).list();
     static List<ua.edu.chdtu.deanoffice.entity.Speciality> newSpecialities = new ArrayList<>();
 
     static List<Specialization> newSpecializations = new ArrayList<>();
@@ -42,7 +42,6 @@ public class MigrationData {
     static List<Degree> newDegrees = new ArrayList<>();
 
     static List<Group> oldGroups = getFirebirdSession().createQuery("from Group", Group.class).list();
-    static List<Specialization> additionalSpecializations = new ArrayList<>();
     static List<StudentGroup> newGroups = new ArrayList<>();
 
     static List<Privilege> oldPrivileges = getFirebirdSession().createQuery("from Privilege", Privilege.class).list();
@@ -86,7 +85,6 @@ public class MigrationData {
         saveAllItems(newDegrees);
         saveAllItems(newSpecialities);
         saveAllItems(newSpecializations);
-        saveAllItems(additionalSpecializations);
         saveAllItems(newGroups);
         saveAllItems(newPrivileges);
         saveAllItems(newStudents);

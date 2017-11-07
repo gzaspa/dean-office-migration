@@ -26,28 +26,23 @@ public class Migration extends MigrationData {
     }
 
     public static void migrate() {
-        //Order matters!
+        //Order does matter!
         migrateFaculties();
         migrateDepartments();
         migratePositions();
         migrateOrderReasons();
-        migrateSpecialities();
         createDegrees();
-        createSpecializations();
+        migrateSpecialities();
         migrateGroups();
         migratePrivileges();
         migrateStudents();
         migrateTeachers();
         migrateKnowledgeControlKinds();
-
-        fixSemestersForOldSubjects();
-
         migrateSubjects();
         migrateSubjectsForGroups();
         migrateGrades();
         migrateExpels();
         migrateAcademicVacations();
-
 
         saveAllNewEntities();
     }
@@ -122,6 +117,7 @@ public class Migration extends MigrationData {
     }
 
     private static void migrateSubjects() {
+        fixSemestersForOldSubjects();
         fixSubjectsNames();
         sortSubjects();
         oldSubjects.forEach(oldSubj -> {
@@ -165,10 +161,6 @@ public class Migration extends MigrationData {
                     newSubjects.add(subject);
             });
             newSubjects.forEach(subject -> {
-//                if (subject.getSemester() <= 4 && studentGroup.getStudyStartYear() > 1) {
-//                    subject.setSemester(1);
-//                } else if (subject.getSemester() - studentGroup.getStudyStartYear() * 2 > 0)
-//                    subject.setSemester(subject.getSemester() - studentGroup.getStudyStartYear());
                 if (studentGroup.getFirstPartOfName().startsWith("М")) {
                     //masters
                     subject.setSemester(subject.getSemester() - 8);
@@ -183,8 +175,6 @@ public class Migration extends MigrationData {
             });
             changedSubjects.addAll(newSubjects);
         });
-//        System.out.println(oldSubjects.size());
-//        System.out.println(changedSubjects.size());
         changedSubjects.forEach(changedSubject -> {
             oldSubjects.stream().filter(subject -> subject.getId() == changedSubject.getId()).findFirst()
                     .get().setSemester(changedSubject.getSemester());
@@ -382,18 +372,11 @@ public class Migration extends MigrationData {
             g.setActive(oldGroup.isActive());
             g.setCreationYear(oldGroup.getCreationYear());
             g.setBeginYears(oldGroup.getStudyStartYear());
-
-            Specialization s = new Specialization();
-            s.setName("");
-            s.setNameEng("");
-            s.setSpeciality(newSpecialities.stream().filter(speciality ->
-                    equals(oldGroup.getSpeciality().getBachelorCode(), speciality.getCode()) ||
-                            equals(oldGroup.getSpeciality().getCode(), speciality.getCode()) ||
-                            equals(oldGroup.getSpeciality().getMasterCode(), speciality.getCode())
-            ).findFirst().get());
-            g.setSpecialization(s);
-            additionalSpecializations.add(s);
-
+            g.setSpecialization(newSpecializations.stream().filter(specialization ->
+                    equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
+                            equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
+                            equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()
+                            )).findFirst().get());
             g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") ||
                     !oldGroup.getFirstPartOfName().endsWith("СКС") ?
                     's' :
@@ -422,42 +405,67 @@ public class Migration extends MigrationData {
         });
     }
 
-    private static void createSpecializations() {
-        oldSpecialities.forEach(oldSpec -> {
-            if (oldSpec.getBachelorCode() != null && !oldSpec.getBachelorCode().isEmpty()) {
-                Specialization bachSpec = new Specialization();
-                newSpecializations.add(bachSpec);
-                bachSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
-                        faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
-                bachSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
-                        department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
-                bachSpec.setDegree(newDegrees.get(0));
-                bachSpec.setActive(oldSpec.isActive());
-                bachSpec.setName(oldSpec.getBachelorName());
-                bachSpec.setNameEng("");
-                bachSpec.setSpeciality(newSpecialities.stream().filter(speciality -> speciality.getCode()
-                        .equals(oldSpec.getBachelorCode())).findFirst().get());
-                bachSpec.setQualification("");
-                bachSpec.setQualificationEng("");
-            }
+    private static Specialization createBachelorsSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
+                                                                Speciality sp) {
+        if (oldSpec.getBachelorCode() != null && !oldSpec.getBachelorCode().isEmpty()) {
+            Specialization bachSpec = new Specialization();
+            newSpecializations.add(bachSpec);
+            bachSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
+                    faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
+            bachSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
+                    department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
+            bachSpec.setDegree(newDegrees.get(0));
+            bachSpec.setActive(oldSpec.isActive());
+            bachSpec.setName("");
+            bachSpec.setNameEng("");
+            bachSpec.setSpeciality(sp);
+            bachSpec.setQualification("");
+            bachSpec.setQualificationEng("");
+            return bachSpec;
+        }
+        return null;
+    }
 
-            if (oldSpec.getMasterCode() != null && !oldSpec.getMasterCode().isEmpty()) {
-                Specialization masterSpec = new Specialization();
-                newSpecializations.add(masterSpec);
-                masterSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
-                        faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
-                masterSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
-                        department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
-                masterSpec.setDegree(newDegrees.get(2));
-                masterSpec.setActive(oldSpec.isActive());
-                masterSpec.setName(oldSpec.getMasterName());
-                masterSpec.setNameEng("");
-                masterSpec.setSpeciality(newSpecialities.stream().filter(speciality -> speciality.getCode()
-                        .equals(oldSpec.getMasterCode())).findFirst().get());
-                masterSpec.setQualification("");
-                masterSpec.setQualificationEng("");
-            }
-        });
+    private static Specialization createSpecialistsSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
+                                                                  Speciality sp) {
+        if (oldSpec.getBachelorCode() != null && !oldSpec.getBachelorCode().isEmpty()) {
+            Specialization specialistsSpec = new Specialization();
+            newSpecializations.add(specialistsSpec);
+            specialistsSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
+                    faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
+            specialistsSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
+                    department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
+            specialistsSpec.setDegree(newDegrees.get(1));
+            specialistsSpec.setActive(oldSpec.isActive());
+            specialistsSpec.setName("");
+            specialistsSpec.setNameEng("");
+            specialistsSpec.setSpeciality(sp);
+            specialistsSpec.setQualification("");
+            specialistsSpec.setQualificationEng("");
+            return specialistsSpec;
+        }
+        return null;
+    }
+
+    private static Specialization createMastersSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
+                                                              Speciality sp) {
+        if (oldSpec.getMasterCode() != null && !oldSpec.getMasterCode().isEmpty()) {
+            Specialization masterSpec = new Specialization();
+            newSpecializations.add(masterSpec);
+            masterSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
+                    faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
+            masterSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
+                    department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
+            masterSpec.setDegree(newDegrees.get(2));
+            masterSpec.setActive(oldSpec.isActive());
+            masterSpec.setName("");
+            masterSpec.setNameEng("");
+            masterSpec.setSpeciality(sp);
+            masterSpec.setQualification("");
+            masterSpec.setQualificationEng("");
+            return masterSpec;
+        }
+        return null;
     }
 
     private static void createDegrees() {
@@ -466,8 +474,8 @@ public class Migration extends MigrationData {
         newDegrees.add(new Degree("Магістр", "Master"));
     }
 
-    private static void migrateSpecialities() {
-        oldSpecialities.forEach(oldSpec -> {
+    private static void createBachelorSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
+        if (!(oldSpec.getBachelorName() == null || oldSpec.getBachelorName().isEmpty())) {
             ua.edu.chdtu.deanoffice.entity.Speciality bachSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
             bachSpec.setName(oldSpec.getBachelorName());
             bachSpec.setNameEng("");
@@ -476,28 +484,138 @@ public class Migration extends MigrationData {
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), bachSpec.getCode()))) {
                 newSpecialities.add(bachSpec);
+                createBachelorsSpecialization(oldSpec, bachSpec);
+            } else {
+                createBachelorsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getBachelorCode())).findFirst().get());
             }
+        }
+    }
 
+    private static void createNewBachelorSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
+        if (!(oldSpec.getBachelorName() == null || oldSpec.getBachelorName().isEmpty())) {
+            ua.edu.chdtu.deanoffice.entity.Speciality bachSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
+            bachSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getBachelorName()));
+            bachSpec.setNameEng("");
+            bachSpec.setActive(oldSpec.isActive());
+            if (oldSpec.getBachelorCode().contains("-"))
+                bachSpec.setCode(oldSpec.getBachelorCode().split("-")[0].trim());
+            else bachSpec.setCode(oldSpec.getBachelorCode());
+            if (newSpecialities.stream().noneMatch(
+                    speciality -> equals(speciality.getCode(), bachSpec.getCode()))) {
+                newSpecialities.add(bachSpec);
+                if (!oldSpec.getSecondPartOfNewName(oldSpec.getBachelorName()).isEmpty()) {
+                    Specialization bachSpecialization = createBachelorsSpecialization(oldSpec, bachSpec);
+                    bachSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getBachelorName()));
+                }
+            } else {
+                createBachelorsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getBachelorCode())).findFirst().get())
+                        .setName(oldSpec.getSecondPartOfNewName(oldSpec.getBachelorName()));
+            }
+        }
+    }
+
+    private static void createSpecialistSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
+        if (!(oldSpec.getSpecialistName() == null || oldSpec.getSpecialistName().isEmpty())) {
             ua.edu.chdtu.deanoffice.entity.Speciality specialistsSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
-            specialistsSpec.setName(oldSpec.getName());
+            specialistsSpec.setName(oldSpec.getSpecialistName());
             specialistsSpec.setNameEng("");
             specialistsSpec.setActive(oldSpec.isActive());
-            specialistsSpec.setCode(oldSpec.getCode());
+            if (oldSpec.getSpecialistCode().contains("-")) {
+                specialistsSpec.setCode(oldSpec.getSpecialistCode().split("-")[0].trim());
+            } else specialistsSpec.setCode(oldSpec.getSpecialistCode());
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), specialistsSpec.getCode()))) {
+                createSpecialistsSpecialization(oldSpec, specialistsSpec);
                 newSpecialities.add(specialistsSpec);
-            }
+            } else
+                createSpecialistsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getSpecialistCode().split("-")[0])).findFirst().get());
+        }
+    }
 
-            if (!(oldSpec.getMasterName() == null || oldSpec.getMasterName().isEmpty())) {
-                ua.edu.chdtu.deanoffice.entity.Speciality masterSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
-                masterSpec.setName(oldSpec.getMasterName());
-                masterSpec.setNameEng("");
-                masterSpec.setActive(oldSpec.isActive());
-                masterSpec.setCode(oldSpec.getMasterCode());
-                if (newSpecialities.stream().noneMatch(
-                        speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
-                    newSpecialities.add(masterSpec);
+    private static void createNewSpecialistSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
+        if (!(oldSpec.getSpecialistName() == null || oldSpec.getSpecialistName().isEmpty())) {
+            ua.edu.chdtu.deanoffice.entity.Speciality specialistSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
+            specialistSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getSpecialistName()));
+            specialistSpec.setNameEng("");
+            specialistSpec.setActive(oldSpec.isActive());
+            if (oldSpec.getSpecialistCode().contains("-"))
+                specialistSpec.setCode(oldSpec.getSpecialistCode().split("-")[0].trim());
+            else specialistSpec.setCode(oldSpec.getSpecialistCode());
+            if (newSpecialities.stream().noneMatch(
+                    speciality -> equals(speciality.getCode(), specialistSpec.getCode()))) {
+                newSpecialities.add(specialistSpec);
+                if (!oldSpec.getSecondPartOfNewName(oldSpec.getBachelorName()).isEmpty()) {
+                    Specialization specSpecialization = createSpecialistsSpecialization(oldSpec, specialistSpec);
+                    specSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
                 }
+            } else {
+                createSpecialistsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getSpecialistCode().split("-")[0])).findFirst().get())
+                        .setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
+            }
+        }
+    }
+
+    private static void createMasterSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
+        if (!(oldSpec.getMasterName() == null || oldSpec.getMasterName().isEmpty())) {
+            ua.edu.chdtu.deanoffice.entity.Speciality masterSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
+            masterSpec.setName(oldSpec.getMasterName());
+            masterSpec.setNameEng("");
+            masterSpec.setActive(oldSpec.isActive());
+            if (oldSpec.getMasterCode().contains("-"))
+                masterSpec.setCode(oldSpec.getMasterCode().split("-")[0].trim());
+            else masterSpec.setCode(oldSpec.getMasterCode());
+            if (newSpecialities.stream().noneMatch(
+                    speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
+                newSpecialities.add(masterSpec);
+            }
+        }
+    }
+
+    private static void createNewMasterSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
+        if (!(oldSpec.getMasterName() == null || oldSpec.getMasterName().isEmpty())) {
+            ua.edu.chdtu.deanoffice.entity.Speciality masterSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
+            masterSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getMasterName()));
+            masterSpec.setNameEng("");
+            masterSpec.setActive(oldSpec.isActive());
+            if (oldSpec.getMasterCode().contains("-"))
+                masterSpec.setCode(oldSpec.getMasterCode().split("-")[0].trim());
+            else masterSpec.setCode(oldSpec.getMasterCode());
+            if (newSpecialities.stream().noneMatch(
+                    speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
+                newSpecialities.add(masterSpec);
+                if (!oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()).isEmpty()) {
+                    Specialization masterSpecialization = createMastersSpecialization(oldSpec, masterSpec);
+                    masterSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()));
+                }
+            } else {
+                createMastersSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getMasterCode().split("-")[0])).findFirst().get())
+                        .setName(oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()));
+            }
+        }
+    }
+
+    private static void migrateSpecialities() {
+        oldSpecialities.forEach(oldSpec -> {
+            oldSpec.setBachelorName(oldSpec.getBachelorName().replaceAll(" +", " "));
+            oldSpec.setBachelorName(oldSpec.getBachelorName().trim());
+            oldSpec.setSpecialistName(oldSpec.getSpecialistName().replaceAll(" +", " "));
+            oldSpec.setSpecialistName(oldSpec.getSpecialistName().trim());
+            oldSpec.setMasterName(oldSpec.getMasterName().replaceAll(" +", " "));
+            oldSpec.setMasterName(oldSpec.getMasterName().trim());
+
+            if (oldSpec.isOld()) {
+                createBachelorSpeciality(oldSpec);
+                createSpecialistSpeciality(oldSpec);
+                createMasterSpeciality(oldSpec);
+            } else {
+                createNewBachelorSpeciality(oldSpec);
+                createNewSpecialistSpeciality(oldSpec);
+                createNewMasterSpeciality(oldSpec);
             }
         });
     }
