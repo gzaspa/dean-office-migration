@@ -69,7 +69,7 @@ public class MigrationData {
     static List<Expel> oldExpels = getFirebirdSession().createQuery("from Expel", Expel.class).list();
     static List<StudentExpel> newExpels = new ArrayList<>();
 
-    static List<Expel> oldAcademicVacations = getFirebirdSession().createQuery("from Expel", Expel.class).list();
+    static List<AcademicVacation> oldAcademicVacations = getFirebirdSession().createQuery("from AcademicVacation", AcademicVacation.class).list();
     static List<StudentAcademicVacation> newAcademicVacations = new ArrayList<>();
 
     private static void saveAllItems(@NotNull List<? extends BaseEntity> entities) {

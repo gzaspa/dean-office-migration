@@ -5,6 +5,9 @@ import ua.edu.chdtu.deanoffice.oldentity.Subject;
 
 import java.math.BigDecimal;
 import java.text.Collator;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Migration extends MigrationData {
@@ -63,6 +66,9 @@ public class Migration extends MigrationData {
         });
     }
 
+    private static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private static Date nullDateReplacer;
+
     private static void migrateAcademicVacations() {
         oldAcademicVacations.forEach(oldVacation -> {
             StudentAcademicVacation vacation = new StudentAcademicVacation();
@@ -71,16 +77,24 @@ public class Migration extends MigrationData {
                     s -> s.getId() == oldVacation.getStudent().getId()).findFirst().get())));
             vacation.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
                     g -> g.getId() == oldVacation.getGroup().getId()).findFirst().get())));
-            vacation.setOrderDate(oldVacation.getOrderDate());
+            vacation.setOrderDate(oldVacation.getOrderDate() == null ? new Date() : oldVacation.getOrderDate());
             vacation.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
                     r -> r.getId() == oldVacation.getOrderReason().getId()).findFirst().get())));
-            vacation.setOrderNumber(oldVacation.getOrderNumber());
-            vacation.setApplicationDate(oldVacation.getApplicationDate());
-            vacation.setVacationStartDate(oldVacation.getExpelDate());
+            vacation.setOrderNumber(oldVacation.getOrderNumber() == null ? "0" : oldVacation.getOrderNumber());
+            //Wrong value may be used!!!
+            vacation.setApplicationDate(oldVacation.getApplicationDate() == null ? nullDateReplacer : oldVacation.getApplicationDate());
+            vacation.setVacationStartDate(oldVacation.getVacationStart());
+            //Wrong value used!!!
+            vacation.setVacationEndDate(nullDateReplacer);
         });
     }
 
     private static void migrateExpels() {
+        try {
+            nullDateReplacer = dateFormat.parse("01-01-1980");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         oldExpels.forEach(oldExpel -> {
             StudentExpel e = new StudentExpel();
             newExpels.add(e);
@@ -88,11 +102,13 @@ public class Migration extends MigrationData {
                     s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get())));
             e.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
                     g -> g.getId() == oldExpel.getGroup().getId()).findFirst().get())));
-            e.setOrderDate(oldExpel.getOrderDate());
+            //Wrong value may be used!!!
+            e.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
             e.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
                     r -> r.getId() == oldExpel.getOrderReason().getId()).findFirst().get())));
-            e.setOrderNumber(oldExpel.getOrderNumber());
-            e.setApplicationDate(oldExpel.getApplicationDate());
+            e.setOrderNumber(oldExpel.getOrderNumber() == null ? "0" : oldExpel.getOrderNumber());
+            //Wrong value may be used!!!
+            e.setApplicationDate(oldExpel.getApplicationDate() == null ? nullDateReplacer : oldExpel.getApplicationDate());
             e.setExpelDate(oldExpel.getExpelDate());
         });
     }
