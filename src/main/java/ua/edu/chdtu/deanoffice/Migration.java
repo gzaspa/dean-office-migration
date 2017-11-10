@@ -152,7 +152,7 @@ public class Migration extends MigrationData {
             c.setCourseName(courseName);
             c.setHours(oldSubj.getHours());
             if (oldSubj.getCredits() == null)
-                c.setCredits(new BigDecimal(c.getHours() / 36.0));
+                c.setCredits(new BigDecimal(c.getHours() / 30.0));
             else
                 c.setCredits(new BigDecimal(oldSubj.getCredits()));
             try {
