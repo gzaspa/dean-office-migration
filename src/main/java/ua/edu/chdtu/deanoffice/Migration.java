@@ -393,7 +393,7 @@ public class Migration extends MigrationData {
                             equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                             equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()
                             )).findFirst().get());
-            g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") ||
+            g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") &&
                     !oldGroup.getFirstPartOfName().endsWith("СКС") ?
                     's' :
                     'r');
