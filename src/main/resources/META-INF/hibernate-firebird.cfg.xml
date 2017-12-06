@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.url">
-            jdbc:firebirdsql://localhost/d:\workspace\DEKANAT.fdb?charSet=windows-1251
+            jdbc:firebirdsql://localhost/d:\databases\DEKANAT.fdb?charSet=windows-1251
         </property>
         <property name="connection.driver_class">
             org.firebirdsql.jdbc.FBDriver
