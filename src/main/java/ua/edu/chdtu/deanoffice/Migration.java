@@ -388,18 +388,15 @@ public class Migration extends MigrationData {
             g.setActive(oldGroup.isActive());
             g.setCreationYear(oldGroup.getCreationYear());
             g.setBeginYears(oldGroup.getStudyStartYear());
-            g.setSpecialization(newSpecializations.stream().filter(specialization ->
-                    equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
-                            equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
-                            equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()
-                            )).findFirst().get());
             g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") &&
                     !oldGroup.getFirstPartOfName().endsWith("СКС") ?
                     's' :
                     'r');
             g.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? 'e' : 'f');
+            Integer degreeId = 0;
             if (oldGroup.getFirstPartOfName().startsWith("М") ||
                     oldGroup.getFirstPartOfName().startsWith("ЗМ")) {
+                degreeId = 2;
                 g.setStudySemesters(3);
                 g.setStudyYears(new BigDecimal(1.5));
             } else if (g.getTuitionTerm() == 's') {
@@ -408,6 +405,21 @@ public class Migration extends MigrationData {
             } else {
                 g.setStudySemesters(8);
                 g.setStudyYears(new BigDecimal(4));
+            }
+            Degree degree = newDegrees.get(degreeId);
+            try {
+                g.setSpecialization(newSpecializations.stream().filter(specialization ->
+                        (equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
+                                equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
+                                equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()))
+                                && equals(specialization.getDegree().getName(), degree.getName())
+                ).findFirst().get());
+            } catch (NoSuchElementException e) {
+                g.setSpecialization(newSpecializations.stream().filter(specialization ->
+                        equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
+                                equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
+                                equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode())
+                ).findFirst().get());
             }
         });
     }
