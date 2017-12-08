@@ -39,6 +39,7 @@ public class Migration extends MigrationData {
         migrateGroups();
         migratePrivileges();
         migrateStudents();
+        createStudentDegrees();
         migrateTeachers();
         migrateKnowledgeControlKinds();
         migrateSubjects();
@@ -48,6 +49,50 @@ public class Migration extends MigrationData {
         migrateAcademicVacations();
 
         saveAllNewEntities();
+    }
+
+    private static void createStudentDegrees() {
+        oldStudents.forEach(student -> {
+            StudentDegree studentBachelorDegree = new StudentDegree();
+            if (student.getBachelorWorkThesis() != null && !student.getBachelorWorkThesis().isEmpty()) {
+                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(student)));
+                studentBachelorDegree.setAwarded(false);
+                studentBachelorDegree.setDegree(newDegrees.get(0));
+                studentBachelorDegree.setDiplomaDate(student.getBachelorDiplomaDate());
+                studentBachelorDegree.setDiplomaNumber(student.getBachelorDiplomaNumber());
+                studentBachelorDegree.setThesisName(student.getBachelorWorkThesis());
+
+                newStudentDegrees.add(studentBachelorDegree);
+            }
+
+            StudentDegree studentSpecialistDegree = new StudentDegree();
+            if (student.getSpecialistWorkThesis() != null && !student.getSpecialistWorkThesis().isEmpty()) {
+                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(student)));
+                studentSpecialistDegree.setAwarded(false);
+                studentSpecialistDegree.setDegree(newDegrees.get(1));
+                studentSpecialistDegree.setDiplomaDate(student.getSpecialistDiplomaDate());
+                studentSpecialistDegree.setDiplomaNumber(student.getSpecialistDiplomaNumber());
+                studentSpecialistDegree.setThesisName(student.getSpecialistWorkThesis());
+                studentSpecialistDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
+                studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
+
+                newStudentDegrees.add(studentSpecialistDegree);
+            }
+
+            StudentDegree studentMasterDegree = new StudentDegree();
+            if (student.getMasterWorkThesis() != null && !student.getMasterWorkThesis().isEmpty()) {
+                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(student)));
+                studentMasterDegree.setAwarded(false);
+                studentMasterDegree.setDegree(newDegrees.get(2));
+                studentMasterDegree.setDiplomaDate(student.getMasterDiplomaDate());
+                studentMasterDegree.setDiplomaNumber(student.getMasterDiplomaNumber());
+                studentMasterDegree.setThesisName(student.getMasterWorkThesis());
+                studentMasterDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
+                studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
+
+                newStudentDegrees.add(studentMasterDegree);
+            }
+        });
     }
 
     private static void migrateGrades() {

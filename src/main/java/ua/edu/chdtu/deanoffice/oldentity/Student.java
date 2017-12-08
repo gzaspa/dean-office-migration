@@ -48,7 +48,31 @@ public class Student {
     private Set<Grade> grades;
 
     @Column(name = "BACHALOR_DIPLOMA_WORK")
-    private String bachelorWorkTheme;
+    private String bachelorWorkThesis;
+
+    @Column(name = "SPECIALIST_DIPLOMA_WORK")
+    private String specialistWorkThesis;
+
+    @Column(name = "MASTER_DIPLOMA_WORK")
+    private String masterWorkThesis;
+
+    @Column(name = "BACHALOR_DIPLOMA_NUMBER")
+    private String bachelorDiplomaNumber;
+
+    @Column(name = "SPECIALIST_DIPLOMA_NUMBER")
+    private String specialistDiplomaNumber;
+
+    @Column(name = "MASTER_DIPLOMA_NUMBER")
+    private String masterDiplomaNumber;
+
+    @Column(name = "BACHALOR_DIPLOMA_DATE")
+    private Date bachelorDiplomaDate;
+
+    @Column(name = "SPECIALIST_DIPLOMA_DATE")
+    private Date specialistDiplomaDate;
+
+    @Column(name = "MASTER_DIPLOMA_DATE")
+    private Date masterDiplomaDate;
 
     @Column(name = "SEX")
     private char sex;
@@ -192,12 +216,12 @@ public class Student {
         this.patronimicEnglish = patronimicEnglish;
     }
 
-    public String getBachelorWorkTheme() {
-        return bachelorWorkTheme;
+    public String getBachelorWorkThesis() {
+        return bachelorWorkThesis;
     }
 
-    public void setBachelorWorkTheme(String bachelorWorkTheme) {
-        this.bachelorWorkTheme = bachelorWorkTheme;
+    public void setBachelorWorkThesis(String bachelorWorkTheme) {
+        this.bachelorWorkThesis = bachelorWorkTheme;
     }
 
     public char getSex() {
@@ -309,6 +333,70 @@ public class Student {
 
     public void setRecordBookNumber(String recordBookNumber) {
         this.recordBookNumber = recordBookNumber;
+    }
+
+    public String getSpecialistWorkThesis() {
+        return specialistWorkThesis;
+    }
+
+    public void setSpecialistWorkThesis(String specialistWorkThesis) {
+        this.specialistWorkThesis = specialistWorkThesis;
+    }
+
+    public String getMasterWorkThesis() {
+        return masterWorkThesis;
+    }
+
+    public void setMasterWorkThesis(String masterWorkThesis) {
+        this.masterWorkThesis = masterWorkThesis;
+    }
+
+    public String getBachelorDiplomaNumber() {
+        return bachelorDiplomaNumber;
+    }
+
+    public void setBachelorDiplomaNumber(String bachelorDiplomaNumber) {
+        this.bachelorDiplomaNumber = bachelorDiplomaNumber;
+    }
+
+    public String getSpecialistDiplomaNumber() {
+        return specialistDiplomaNumber;
+    }
+
+    public void setSpecialistDiplomaNumber(String specialistDiplomaNumber) {
+        this.specialistDiplomaNumber = specialistDiplomaNumber;
+    }
+
+    public String getMasterDiplomaNumber() {
+        return masterDiplomaNumber;
+    }
+
+    public void setMasterDiplomaNumber(String masterDiplomaNumber) {
+        this.masterDiplomaNumber = masterDiplomaNumber;
+    }
+
+    public Date getBachelorDiplomaDate() {
+        return bachelorDiplomaDate;
+    }
+
+    public void setBachelorDiplomaDate(Date bachelorDiplomaDate) {
+        this.bachelorDiplomaDate = bachelorDiplomaDate;
+    }
+
+    public Date getSpecialistDiplomaDate() {
+        return specialistDiplomaDate;
+    }
+
+    public void setSpecialistDiplomaDate(Date specialistDiplomaDate) {
+        this.specialistDiplomaDate = specialistDiplomaDate;
+    }
+
+    public Date getMasterDiplomaDate() {
+        return masterDiplomaDate;
+    }
+
+    public void setMasterDiplomaDate(Date masterDiplomaDate) {
+        this.masterDiplomaDate = masterDiplomaDate;
     }
 }
 

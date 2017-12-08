@@ -49,6 +49,7 @@ public class MigrationData {
 
     static List<Student> oldStudents = getFirebirdSession().createQuery("from Student", Student.class).list();
     static List<ua.edu.chdtu.deanoffice.entity.Student> newStudents = new ArrayList<>();
+    static List<StudentDegree> newStudentDegrees = new ArrayList<>();
 
     static List<Teacher> oldTeachers = getFirebirdSession().createQuery("from Teacher ", Teacher.class).list();
     static List<ua.edu.chdtu.deanoffice.entity.Teacher> newTeachers = new ArrayList<>();
@@ -88,6 +89,7 @@ public class MigrationData {
         saveAllItems(newGroups);
         saveAllItems(newPrivileges);
         saveAllItems(newStudents);
+        saveAllItems(newStudentDegrees);
         saveAllItems(newTeachers);
         saveAllItems(newKnowledgeControlKinds);
         saveAllItems(newCourseNames);
