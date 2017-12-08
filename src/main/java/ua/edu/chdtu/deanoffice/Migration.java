@@ -439,8 +439,8 @@ public class Migration extends MigrationData {
                     'r');
             g.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? 'e' : 'f');
             Integer degreeId = 0;
-            if (oldGroup.getFirstPartOfName().startsWith("М") ||
-                    oldGroup.getFirstPartOfName().startsWith("ЗМ")) {
+            if (oldGroup.getFirstPartOfName().startsWith("М")
+                    || oldGroup.getFirstPartOfName().startsWith("ЗМ")) {
                 degreeId = 2;
                 g.setStudySemesters(3);
                 g.setStudyYears(new BigDecimal(1.5));
@@ -452,19 +452,17 @@ public class Migration extends MigrationData {
                 g.setStudyYears(new BigDecimal(4));
             }
             Degree degree = newDegrees.get(degreeId);
+
+
             try {
                 g.setSpecialization(newSpecializations.stream().filter(specialization ->
                         (equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                                 equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                                 equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()))
-                                && equals(specialization.getDegree().getName(), degree.getName())
+                                && stringEquals(specialization.getDegree().getName(), degree.getName())
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
-                g.setSpecialization(newSpecializations.stream().filter(specialization ->
-                        equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
-                                equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
-                                equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode())
-                ).findFirst().get());
+                System.out.println("Exception during specialization/speciality setting for group!");
             }
         });
     }
@@ -644,6 +642,7 @@ public class Migration extends MigrationData {
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
                 newSpecialities.add(masterSpec);
+                createMastersSpecialization(oldSpec, masterSpec);
             }
         }
     }
@@ -687,7 +686,8 @@ public class Migration extends MigrationData {
                 createMasterSpeciality(oldSpec);
             } else {
                 createNewBachelorSpeciality(oldSpec);
-                createNewSpecialistSpeciality(oldSpec);
+                //Should not be necessary
+                //createNewSpecialistSpeciality(oldSpec);
                 createNewMasterSpeciality(oldSpec);
             }
         });

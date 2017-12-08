@@ -77,10 +77,15 @@ public class Speciality {
 
     public String getSecondPartOfNewName(String name) {
         if (isNew() && name != null) {
-            //Unique exception ІТ-проектами
+            //Unique exceptions
             if (name.contains(" ІТ")) {
                 return "";
             }
+            if (name.contains("Кібербезпека")) {
+                return "Кібербезпека";
+            }
+            if (name.contains("Автоматизація та комп'ютерно-інтегровані технології"))
+                return "Автоматизація та комп'ютерно-інтегровані технології";
             String result = "";
             name = name.trim();
             String[] words = name.split(" ");
