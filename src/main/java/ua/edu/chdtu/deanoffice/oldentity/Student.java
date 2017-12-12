@@ -114,6 +114,16 @@ public class Student {
     @Column(name = "N_ZALIKOVKI")
     private String recordBookNumber;
 
+    @Column(name = "MASTER_DIPLOMA_WORK_ENG")
+    private String masterDiplomaWordEngName;
+
+    public String getMasterDiplomaWorkEngName() {
+        return masterDiplomaWordEngName;
+    }
+
+    public void setMasterDiplomaWordEngName(String masterDiplomaWordEngName) {
+        this.masterDiplomaWordEngName = masterDiplomaWordEngName;
+    }
 
     @Override
     public String toString() {

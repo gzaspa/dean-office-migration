@@ -86,6 +86,8 @@ public class Speciality {
             }
             if (name.contains("Автоматизація та комп'ютерно-інтегровані технології"))
                 return "Автоматизація та комп'ютерно-інтегровані технології";
+            if (name.contains("Інформаційні системи та технології"))
+                return "Інформаційні системи та технології";
             String result = "";
             name = name.trim();
             String[] words = name.split(" ");

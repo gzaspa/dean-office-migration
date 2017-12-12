@@ -89,6 +89,7 @@ public class Migration extends MigrationData {
                 studentMasterDegree.setThesisName(student.getMasterWorkThesis());
                 studentMasterDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
                 studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
+                studentMasterDegree.setThesisNameEng(student.getMasterDiplomaWorkEngName());
 
                 newStudentDegrees.add(studentMasterDegree);
             }
@@ -397,9 +398,9 @@ public class Migration extends MigrationData {
             s.setName(oldStudent.getName());
             s.setSurname(oldStudent.getSurname());
             s.setPatronimic(oldStudent.getPatronimic());
-            s.setNameEng("");
-            s.setSurnameEng("");
-            s.setPatronimicEng("");
+            s.setNameEng(oldStudent.getNameEnglish());
+            s.setSurnameEng(oldStudent.getSurnameEnglish());
+            s.setPatronimicEng(oldStudent.getPatronimicEnglish());
             s.setEmail("");
             s.setBirthDate(oldStudent.getBirthDate());
             s.setActualAddress(oldStudent.getAddress());
@@ -451,6 +452,11 @@ public class Migration extends MigrationData {
                 g.setStudySemesters(8);
                 g.setStudyYears(new BigDecimal(4));
             }
+            if ((oldGroup.getStudyStartYear() == 5 || oldGroup.getStudyStartYear() == 6)
+                    && !oldGroup.getFirstPartOfName().startsWith("М")
+                    && !oldGroup.getFirstPartOfName().startsWith("ЗМ")
+                    && !oldGroup.getSpeciality().isNew())
+                degreeId = 1;
             Degree degree = newDegrees.get(degreeId);
 
 
