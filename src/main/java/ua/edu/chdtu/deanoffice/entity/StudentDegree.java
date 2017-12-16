@@ -23,6 +23,10 @@ public class StudentDegree extends BaseEntity {
     private String diplomaNumber;
     @Column(name="diploma_date")
     private Date diplomaDate;
+    @Column(name = "supplement_number", length = 15)
+    private String supplementNumber;
+    @Column(name = "supplement_date")
+    private Date supplementDate;
     @Column(name="thesis_name", length = 130)
     private String thesisName;
     @Column(name="thesis_name_eng", length = 130)
