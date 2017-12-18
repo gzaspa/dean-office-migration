@@ -444,8 +444,8 @@ public class Migration extends MigrationData {
 
             if (g.getTuitionTerm() == 's') { //shortened
                 if (g.getTuitionForm() == 'f') { //full-time
-                    g.setStudySemesters(6);
-                    g.setStudyYears(new BigDecimal(3));
+                    g.setStudySemesters(4);
+                    g.setStudyYears(new BigDecimal(2));
                 } else { //extramural
                     g.setStudySemesters(6);
                     g.setStudyYears(new BigDecimal(3));
