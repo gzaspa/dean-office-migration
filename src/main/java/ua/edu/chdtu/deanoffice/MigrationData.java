@@ -64,7 +64,7 @@ public class MigrationData {
     static List<GroupSubject> oldCoursesForGroups = getFirebirdSession().createQuery("from GroupSubject ", GroupSubject.class).list();
     static List<CourseForGroup> newCourseForGroups = new ArrayList<>();
 
-    static List<Grade> oldGrades = getFirebirdSession().createQuery("from Grade",Grade.class).list();
+    static List<Grade> oldGrades = getFirebirdSession().createQuery("from Grade", Grade.class).list();
     static List<ua.edu.chdtu.deanoffice.entity.Grade> newGrades = new ArrayList<>();
 
     static List<Expel> oldExpels = getFirebirdSession().createQuery("from Expel", Expel.class).list();
@@ -74,10 +74,16 @@ public class MigrationData {
     static List<StudentAcademicVacation> newAcademicVacations = new ArrayList<>();
 
     private static void saveAllItems(@NotNull List<? extends BaseEntity> entities) {
-        entities.forEach(e -> getPostgresSession().save(e));
+        entities.forEach(e -> {
+            try {
+                getPostgresSession().save(e);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        });
     }
 
-    public static void saveAllNewEntities(){
+    public static void saveAllNewEntities() {
         //Order matters!
         saveAllItems(newFaculties);
         saveAllItems(newDepartments);

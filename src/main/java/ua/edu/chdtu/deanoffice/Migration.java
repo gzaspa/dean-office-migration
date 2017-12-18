@@ -440,25 +440,35 @@ public class Migration extends MigrationData {
                     'r');
             g.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? 'e' : 'f');
             Integer degreeId = 0;
-            if (oldGroup.getFirstPartOfName().startsWith("М")
-                    || oldGroup.getFirstPartOfName().startsWith("ЗМ")) {
-                degreeId = 2;
+
+
+            if (g.getTuitionTerm() == 's') { //shortened
+                if (g.getTuitionForm() == 'f') { //full-time
+                    g.setStudySemesters(6);
+                    g.setStudyYears(new BigDecimal(3));
+                } else { //extramural
+                    g.setStudySemesters(6);
+                    g.setStudyYears(new BigDecimal(3));
+                }
+            } else if (oldGroup.getStudyStartYear() == 5 || oldGroup.getStudyStartYear() == 6) { //masters or specialists
                 g.setStudySemesters(3);
                 g.setStudyYears(new BigDecimal(1.5));
-            } else if (g.getTuitionTerm() == 's') {
-                g.setStudyYears(new BigDecimal(3));
-                g.setStudySemesters(6);
-            } else {
+                if (oldGroup.getFirstPartOfName().startsWith("М")
+                        || oldGroup.getFirstPartOfName().startsWith("ЗМ")) { //masters
+                    degreeId = 2;
+                } else if (!oldGroup.getSpeciality().isNew()) { //specialists
+                    degreeId = 1;
+                }
+            } else if (g.getTuitionForm() == 'e') { //extramural bachelors
+                g.setStudySemesters(10);
+                g.setStudyYears(new BigDecimal(5));
+                degreeId = 0;
+            } else { //full-time bachelors
                 g.setStudySemesters(8);
                 g.setStudyYears(new BigDecimal(4));
+                degreeId = 0;
             }
-            if ((oldGroup.getStudyStartYear() == 5 || oldGroup.getStudyStartYear() == 6)
-                    && !oldGroup.getFirstPartOfName().startsWith("М")
-                    && !oldGroup.getFirstPartOfName().startsWith("ЗМ")
-                    && !oldGroup.getSpeciality().isNew())
-                degreeId = 1;
             Degree degree = newDegrees.get(degreeId);
-
 
             try {
                 g.setSpecialization(newSpecializations.stream().filter(specialization ->
