@@ -47,8 +47,15 @@ public class Migration extends MigrationData {
         migrateGrades();
         migrateExpels();
         migrateAcademicVacations();
+        addCurrentYear();
 
         saveAllNewEntities();
+    }
+
+    private static void addCurrentYear() {
+        CurrentYear year = new CurrentYear();
+        year.setCurrYear(2017);
+        DatabaseConnector.getPostgresSession().save(year);
     }
 
     private static void createStudentDegrees() {
