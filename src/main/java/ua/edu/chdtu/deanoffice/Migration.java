@@ -182,6 +182,7 @@ public class Migration extends MigrationData {
             } catch (NoSuchElementException e) {
                 c.setTeacher(null);
             }
+            c.setGraded(oldCG.getSubject().getKnowledgeControl().getGrade());
         });
     }
 

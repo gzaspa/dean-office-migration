@@ -1,12 +1,16 @@
 package ua.edu.chdtu.deanoffice.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import ua.edu.chdtu.deanoffice.entity.superclasses.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@Getter
+@Setter
 @Entity
-@Table(name="courses_for_groups", uniqueConstraints={
+@Table(name = "courses_for_groups", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"course_id", "studentgroup_id"})
 })
 public class CourseForGroup extends BaseEntity {
@@ -16,38 +20,8 @@ public class CourseForGroup extends BaseEntity {
     private StudentGroup studentGroup;
     @ManyToOne
     private Teacher teacher;
-    @Column(name="exam_date", nullable = true)
+    @Column(name = "exam_date", nullable = true)
     private Date examDate;
-
-    public Course getCourse() {
-        return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
-    public StudentGroup getStudentGroup() {
-        return studentGroup;
-    }
-
-    public void setStudentGroup(StudentGroup studentGroup) {
-        this.studentGroup = studentGroup;
-    }
-
-    public Teacher getTeacher() {
-        return teacher;
-    }
-
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
-    }
-
-    public Date getExamDate() {
-        return examDate;
-    }
-
-    public void setExamDate(Date examDate) {
-        this.examDate = examDate;
-    }
+    @Column(name = "is_graded")
+    private Boolean graded;
 }
