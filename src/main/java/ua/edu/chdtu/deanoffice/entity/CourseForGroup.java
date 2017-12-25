@@ -22,6 +22,4 @@ public class CourseForGroup extends BaseEntity {
     private Teacher teacher;
     @Column(name = "exam_date", nullable = true)
     private Date examDate;
-    @Column(name = "is_graded")
-    private Boolean graded;
 }
