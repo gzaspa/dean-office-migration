@@ -378,6 +378,12 @@ public class Migration extends MigrationData {
             k.setNameEng("");
             k.setHasGrade(oldKCKind.getGrade());
         });
+
+        KnowledgeControl kc = new KnowledgeControl();
+        kc.setHasGrade(false);
+        kc.setName("практика");
+        kc.setNameEng("");
+        newKnowledgeControlKinds.add(kc);
     }
 
     private static void migrateTeachers() {
