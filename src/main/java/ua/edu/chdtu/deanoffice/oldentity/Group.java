@@ -74,6 +74,10 @@ public class Group {
         return this.getName().split("-")[0];
     }
 
+    public String getSecondPartOfName(){
+        return this.getName().split("-")[1];
+    }
+
     @Override
     public String toString() {
         return getName();

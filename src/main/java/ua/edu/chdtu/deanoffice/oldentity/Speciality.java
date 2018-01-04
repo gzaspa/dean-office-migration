@@ -52,9 +52,10 @@ public class Speciality {
     private String masterCode;
 
     public boolean isNew() {
-        return !(getSpecialistCode().contains(".") ||
-                getBachelorCode().contains(".") ||
-                getMasterCode().contains("."));
+        return getSpecialistCode().length() <= 5;
+//                ||
+//                getBachelorCode().length() <= 5 ||
+//                getMasterCode().length() <= 5;
     }
 
     public boolean isOld() {
@@ -85,19 +86,6 @@ public class Speciality {
 
     public String getSecondPartOfNewName(String name) {
         if (isNew() && name != null) {
-            //Unique exceptions
-            if (name.contains(" ІТ")) {
-                return "";
-            }
-            if (name.contains("Кібербезпека")) {
-                return "Кібербезпека";
-            }
-            if (name.contains("Автоматизація та комп'ютерно-інтегровані технології")) {
-                return "Автоматизація та комп'ютерно-інтегровані технології";
-            }
-            if (name.contains("Інформаційні системи та технології")) {
-                return "Інформаційні системи та технології";
-            }
             String result = "";
             name = name.trim();
             String[] words = name.split(" ");
