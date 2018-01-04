@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.url">
-            jdbc:postgresql://localhost/deanoffice-migrate
+            jdbc:postgresql://localhost/fet
         </property>
         <property name="connection.driver_class">
             org.postgresql.Driver
@@ -14,7 +14,7 @@
             postgres
         </property>
         <property name="connection.password">
-            admin
+            password
         </property>
         <!-- DB schema will be updated if needed -->
         <property name="hbm2ddl.auto">create</property>
