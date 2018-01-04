@@ -5,7 +5,7 @@
 <hibernate-configuration>
     <session-factory>
         <property name="connection.url">
-            jdbc:postgresql://localhost/d
+            jdbc:postgresql://localhost/fet
         </property>
         <property name="connection.driver_class">
             org.postgresql.Driver
