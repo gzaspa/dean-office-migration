@@ -21,9 +21,9 @@ public class Specialization extends NameWithEngAndActiveEntity {
     private Faculty faculty;
     @ManyToOne
     private Department department;
-    @Column(name = "qualification", unique = false, length = 100)
+    @Column(name = "qualification", unique = false, length = 200)
     private String qualification;
-    @Column(name = "qualification_eng", unique = false, length = 100)
+    @Column(name = "qualification_eng", unique = false, length = 200)
     private String qualificationEng;
     @Column(name = "payment_fulltime", nullable = true, precision = 15, scale = 2)
     private BigDecimal paymentFulltime;
@@ -39,17 +39,17 @@ public class Specialization extends NameWithEngAndActiveEntity {
     private String educationalProgramHeadInfoEng;
     @Column(name = "required_credits", precision = 4, scale = 1)
     private BigDecimal requiredCredits;
-    @Column(name = "knowledge_and_understanding_outcomes")
+    @Column(name = "knowledge_and_understanding_outcomes", length=1300)
     private String knowledgeAndUnderstandingOutcomes;
-    @Column(name = "knowledge_and_understanding_outcomes_eng")
+    @Column(name = "knowledge_and_understanding_outcomes_eng", length=1300)
     private String knowledgeAndUnderstandingOutcomesEng;
-    @Column(name = "applying_knowledge_and_understanding_outcomes")
+    @Column(name = "applying_knowledge_and_understanding_outcomes", length=1300)
     private String applyingKnowledgeAndUnderstandingOutcomes;
-    @Column(name = "applying_knowledge_and_understanding_outcomes_eng")
+    @Column(name = "applying_knowledge_and_understanding_outcomes_eng", length=1300)
     private String applyingKnowledgeAndUnderstandingOutcomesEng;
-    @Column(name = "making_judgements_outcomes")
+    @Column(name = "making_judgements_outcomes", length=1300)
     private String makingJudgementsOutcomes;
-    @Column(name = "making_judgements_outcomes_eng")
+    @Column(name = "making_judgements_outcomes_eng", length=1300)
     private String makingJudgementsOutcomesEng;
 
     public Specialization() {
