@@ -489,6 +489,9 @@ public class Migration extends MigrationData {
                                 equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                                 equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()))
                                 && stringEquals(specialization.getDegree().getName(), degree.getName())
+                                        && (oldGroup.getSpeciality().getBachelorName().contains(specialization.getName()) ||
+                                oldGroup.getSpeciality().getMasterName().contains(specialization.getName()) ||
+                                oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
                 System.out.println("Exception during specialization/speciality setting for group!");
@@ -693,9 +696,9 @@ public class Migration extends MigrationData {
                     masterSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()));
                 }
             } else {
-                createMastersSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
-                        .equals(oldSpec.getMasterCode().split("-")[0])).findFirst().get())
-                        .setName(oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()));
+                Specialization mastersSpecialization = createMastersSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getMasterCode().split("-")[0])).findFirst().get());
+                mastersSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()));
             }
         }
     }
