@@ -172,8 +172,8 @@ public class Migration extends MigrationData {
             newCourseForGroups.add(c);
             c.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(
                     subject -> equals(subject.getId(), oldCG.getSubject().getId())).findFirst().get())));
-            c.setStudentGroup(newGroups.stream().filter(group ->
-                    equals(group.getName(), oldCG.getGroup().getName())).findFirst().get());
+            c.setStudentGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
+                    g -> g.getId() == oldCG.getGroup().getId()).findFirst().get())));
             c.setExamDate(oldCG.getExamDate());
             try {
                 c.setTeacher(newTeachers.get(oldTeachers.indexOf(oldTeachers.stream().filter(teacher ->
