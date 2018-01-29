@@ -1,6 +1,7 @@
 package ua.edu.chdtu.deanoffice;
 
 import ua.edu.chdtu.deanoffice.entity.*;
+import ua.edu.chdtu.deanoffice.entity.superclasses.Sex;
 import ua.edu.chdtu.deanoffice.oldentity.Subject;
 
 import java.math.BigDecimal;
@@ -394,7 +395,7 @@ public class Migration extends MigrationData {
             t.setName(oldT.getName());
             t.setSurname(oldT.getSurname());
             t.setPatronimic(oldT.getPatronimic());
-            t.setSex(oldT.getSex());
+            t.setSex(oldT.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
             t.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(department ->
                     equals(department.getId(), oldT.getCathedra().getId())).findFirst().get())));
             t.setPosition(newPositions.get(oldPositions.indexOf(oldPositions.stream().filter(position ->
@@ -432,7 +433,8 @@ public class Migration extends MigrationData {
             else
                 s.setPrivilege(newPrivileges.get(oldPrivileges.indexOf(oldPrivileges.stream().filter(privilege ->
                         equals(privilege.getId(), oldStudent.getPrivilege().getId())).findFirst().get())));
-            s.setSex(oldStudent.getSex());
+
+            s.setSex(oldStudent.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
             s.setRecordBookNumber(oldStudent.getRecordBookNumber());
             s.setSchool(oldStudent.getSchool());
             s.setStudentCardNumber("");
@@ -449,14 +451,14 @@ public class Migration extends MigrationData {
             g.setBeginYears(oldGroup.getStudyStartYear());
             g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") &&
                     !oldGroup.getFirstPartOfName().endsWith("СКС") ?
-                    's' :
-                    'r');
-            g.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? 'e' : 'f');
+                    TuitionTerm.SHORTENED :
+                    TuitionTerm.REGULAR);
+            g.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? TuitionForm.EXTRAMURAL : TuitionForm.FULL_TIME);
             Integer degreeId = 0;
 
 
-            if (g.getTuitionTerm() == 's') { //shortened
-                if (g.getTuitionForm() == 'f') { //full-time
+            if (g.getTuitionTerm() == TuitionTerm.SHORTENED) {
+                if (g.getTuitionForm() == TuitionForm.FULL_TIME) {
                     g.setStudySemesters(4);
                     g.setStudyYears(new BigDecimal(2));
                 } else { //extramural
@@ -472,7 +474,7 @@ public class Migration extends MigrationData {
                 } else if (!oldGroup.getSpeciality().isNew()) { //specialists
                     degreeId = 1;
                 }
-            } else if (g.getTuitionForm() == 'e') { //extramural bachelors
+            } else if (g.getTuitionForm() == TuitionForm.EXTRAMURAL) { //extramural bachelors
                 g.setStudySemesters(10);
                 g.setStudyYears(new BigDecimal(5));
                 degreeId = 0;
@@ -489,7 +491,7 @@ public class Migration extends MigrationData {
                                 equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                                 equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()))
                                 && stringEquals(specialization.getDegree().getName(), degree.getName())
-                                        && (oldGroup.getSpeciality().getBachelorName().contains(specialization.getName()) ||
+                                && (oldGroup.getSpeciality().getBachelorName().contains(specialization.getName()) ||
                                 oldGroup.getSpeciality().getMasterName().contains(specialization.getName()) ||
                                 oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
