@@ -19,10 +19,12 @@ public class StudentDegree extends BaseEntity {
     @Column(name="diploma_number", length = 15)
     private String diplomaNumber;
     @Column(name="diploma_date")
+    @Temporal(TemporalType.DATE)
     private Date diplomaDate;
     @Column(name = "supplement_number", length = 15)
     private String supplementNumber;
     @Column(name = "supplement_date")
+    @Temporal(TemporalType.DATE)
     private Date supplementDate;
     @Column(name="thesis_name", length = 150)
     private String thesisName;
