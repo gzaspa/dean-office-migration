@@ -114,10 +114,57 @@ public class Migration extends MigrationData {
             g.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(course ->
                     course.getId() == oldGrade.getSubject().getId()
             ).findFirst().get())));
-            g.setEcts(oldGrade.getGradeECTS() == null ? "0" : oldGrade.getGradeECTS());
+            g.setEcts(convertEctsGrade(oldGrade));
             g.setPoints(oldGrade.getPoints() == null ? 0 : oldGrade.getPoints());
             g.setGrade(oldGrade.getGrade() == null ? 0 : oldGrade.getGrade());
         });
+    }
+
+    private static EctsGrade convertEctsGrade(ua.edu.chdtu.deanoffice.oldentity.Grade grade) {
+        if (grade.getGradeECTS() == null) {
+            return null;
+        } else {
+            if (grade.getSubject().getKnowledgeControl().getGrade()) {
+                switch (grade.getGradeECTS().trim()) {
+                    case "A": {
+                        return EctsGrade.A;
+                    }
+                    case "B": {
+                        return EctsGrade.B;
+                    }
+                    case "C": {
+                        return EctsGrade.C;
+                    }
+                    case "D": {
+                        return EctsGrade.D;
+                    }
+                    case "E": {
+                        return EctsGrade.E;
+                    }
+                    case "FX": {
+                        return EctsGrade.FX;
+                    }
+                    case "F": {
+                        return EctsGrade.F;
+                    }
+                    default: {
+                        return null;
+                    }
+                }
+            } else {
+                if (grade.getGradeECTS() == null || grade.getGradeECTS().trim().equals("")) {
+                    return null;
+                }
+                if ("ABCDE".contains(grade.getGradeECTS())) {
+                    return EctsGrade.P;
+                }
+                if ("FX".contains(grade.getGradeECTS())) {
+                    return EctsGrade.F;
+                } else {
+                    return null;
+                }
+            }
+        }
     }
 
     private static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");

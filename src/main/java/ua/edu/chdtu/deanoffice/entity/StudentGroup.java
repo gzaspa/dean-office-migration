@@ -6,6 +6,7 @@ import ua.edu.chdtu.deanoffice.entity.superclasses.NameWithActiveEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,5 +29,7 @@ public class StudentGroup extends NameWithActiveEntity {
     private BigDecimal studyYears;
     @Column(name="begin_years", nullable = false)
     private int beginYears;//курс, з якого починає навчатись група
+    @OneToMany(mappedBy = "studentGroup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Student> students;
     //CURATOR
 }

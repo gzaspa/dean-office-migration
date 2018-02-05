@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name="grade", uniqueConstraints={
+@Table(name = "grade", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"course_id", "student_id"})
 })
 public class Grade extends BaseEntity {
@@ -17,10 +17,11 @@ public class Grade extends BaseEntity {
     private Course course;
     @ManyToOne
     private Student student;
-    @Column(name="grade", nullable = false)
+    @Column(name = "grade", nullable = false)
     private int grade;
-    @Column(name="points", nullable = false)
+    @Column(name = "points", nullable = false)
     private int points;
-    @Column(name="ects", nullable = false, length = 2)
-    private String ects;
+    @Column(name = "ects", length = 2)
+    @Enumerated(value = EnumType.STRING)
+    private EctsGrade ects;
 }
