@@ -514,7 +514,7 @@ public class Migration extends MigrationData {
                 }
             } else if (oldGroup.getStudyStartYear() == 5 || oldGroup.getStudyStartYear() == 6) { //masters or specialists
                 g.setStudySemesters(3);
-                g.setStudyYears(new BigDecimal(1.5));
+                g.setStudyYears(new BigDecimal(1 + 5.0 / 12.0));
                 if (oldGroup.getFirstPartOfName().startsWith("М")
                         || oldGroup.getFirstPartOfName().startsWith("ЗМ")) { //masters
                     degreeId = 2;
@@ -543,7 +543,7 @@ public class Migration extends MigrationData {
                                 oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
-                System.out.println("Exception during specialization/speciality setting for group!");
+                System.out.printf("Exception during specialization/speciality setting for %s!", oldGroup.getName());
             }
         });
     }
