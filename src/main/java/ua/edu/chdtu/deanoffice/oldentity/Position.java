@@ -9,12 +9,11 @@ import javax.persistence.Table;
 @Table(name = "POSADI")
 public class Position {
 
-    @Id
-    @Column(name= "ID")
-    private int id;
-
     @Column(name = "NAZVA")
     String name;
+    @Id
+    @Column(name = "ID")
+    private int id;
 
     public int getId() {
         return id;

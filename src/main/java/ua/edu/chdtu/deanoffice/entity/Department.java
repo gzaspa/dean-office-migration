@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 @Getter
 @Setter
 public class Department extends NameWithActiveEntity {
-    @Column(name="abbr", nullable = false, length = 20)
+    @Column(name = "abbr", nullable = false, length = 20)
     private String abbr;
     @ManyToOne
     private Faculty faculty;

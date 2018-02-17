@@ -16,6 +16,6 @@ public class Teacher extends Person {
     private Department department;
     @ManyToOne
     private Position position;
-    @Column(name="scientific_degree")
+    @Column(name = "scientific_degree")
     private String scientificDegree;
 }

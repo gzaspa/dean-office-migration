@@ -10,6 +10,6 @@ import javax.persistence.MappedSuperclass;
 @Getter
 @Setter
 public class NameWithActiveEntity extends NameEntity {
-    @Column(name="active", nullable = false)
+    @Column(name = "active", nullable = false)
     private boolean active = true;
 }

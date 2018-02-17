@@ -1,12 +1,15 @@
 package ua.edu.chdtu.deanoffice.oldentity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
-
+@Getter
+@Setter
 @Entity
 @Table(name = "STUDENTS")
 public class Student {
@@ -117,6 +120,15 @@ public class Student {
     @Column(name = "MASTER_DIPLOMA_WORK_ENG")
     private String masterDiplomaWordEngName;
 
+    @Column(name = "BACHALOR_SUCCEEDED")
+    private boolean bachalorSucceeded;
+
+    @Column(name = "SPECIALIST_SUCCEEDED")
+    private boolean specialistSucceeded;
+
+    @Column(name = "MASTER_SUCCEEDED")
+    private boolean masterSucceeded;
+
     public String getMasterDiplomaWorkEngName() {
         return masterDiplomaWordEngName;
     }
@@ -130,172 +142,8 @@ public class Student {
         return getInitials();
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPatronimic() {
-        return patronimic;
-    }
-
-    public void setPatronimic(String patronimic) {
-        this.patronimic = patronimic;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-    }
-
-    public boolean isInActive() {
-        return inActive;
-    }
-
-    public void setInActive(boolean inActive) {
-        this.inActive = inActive;
-    }
-
-    public String getStudentFullName() {
-        return surname + " " + name + " " + patronimic;
-    }
-
-    public Set<Grade> getGrades() {
-        return grades;
-    }
-
-    public void setGrades(Set<Grade> grades) {
-        this.grades = grades;
-    }
-
     public String getInitials() {
         return surname + " " + name.substring(0, 1) + "." + patronimic.substring(0, 1) + ".";
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public String getSurnameEnglish() {
-        return surnameEnglish;
-    }
-
-    public void setSurnameEnglish(String surnameEnglish) {
-        this.surnameEnglish = surnameEnglish;
-    }
-
-    public String getNameEnglish() {
-        return nameEnglish;
-    }
-
-    public void setNameEnglish(String nameEnglish) {
-        this.nameEnglish = nameEnglish;
-    }
-
-    public String getPatronimicEnglish() {
-        return patronimicEnglish;
-    }
-
-    public void setPatronimicEnglish(String patronimicEnglish) {
-        this.patronimicEnglish = patronimicEnglish;
-    }
-
-    public String getBachelorWorkThesis() {
-        return bachelorWorkThesis;
-    }
-
-    public void setBachelorWorkThesis(String bachelorWorkTheme) {
-        this.bachelorWorkThesis = bachelorWorkTheme;
-    }
-
-    public char getSex() {
-        return sex;
-    }
-
-    public void setSex(char sex) {
-        this.sex = sex;
-    }
-
-    public String getMotherName() {
-        return motherName;
-    }
-
-    public void setMotherName(String motherName) {
-        this.motherName = motherName;
-    }
-
-    public String getMotherInfo() {
-        return motherInfo;
-    }
-
-    public void setMotherInfo(String motherInfo) {
-        this.motherInfo = motherInfo;
-    }
-
-    public String getMotherPhone() {
-        return motherPhone;
-    }
-
-    public void setMotherPhone(String motherPhone) {
-        this.motherPhone = motherPhone;
-    }
-
-    public String getFatherName() {
-        return fatherName;
-    }
-
-    public void setFatherName(String fatherName) {
-        this.fatherName = fatherName;
-    }
-
-    public String getFatherInfo() {
-        return fatherInfo;
-    }
-
-    public void setFatherInfo(String fatherInfo) {
-        this.fatherInfo = fatherInfo;
-    }
-
-    public String getFatherPhone() {
-        return fatherPhone;
-    }
-
-    public void setFatherPhone(String fatherPhone) {
-        this.fatherPhone = fatherPhone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String generateDocumentName() {
@@ -303,110 +151,6 @@ public class Student {
                 .replace('.', ' ')
                 .trim()
                 + ".docx";
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Privilege getPrivilege() {
-        return privilege;
-    }
-
-    public void setPrivilege(Privilege privilege) {
-        this.privilege = privilege;
-    }
-
-    public String getActualAddress() {
-        return actualAddress;
-    }
-
-    public void setActualAddress(String actualAddress) {
-        this.actualAddress = actualAddress;
-    }
-
-    public String getSchool() {
-        return school;
-    }
-
-    public void setSchool(String school) {
-        this.school = school;
-    }
-
-    public String getRecordBookNumber() {
-        return recordBookNumber;
-    }
-
-    public void setRecordBookNumber(String recordBookNumber) {
-        this.recordBookNumber = recordBookNumber;
-    }
-
-    public String getSpecialistWorkThesis() {
-        return specialistWorkThesis;
-    }
-
-    public void setSpecialistWorkThesis(String specialistWorkThesis) {
-        this.specialistWorkThesis = specialistWorkThesis;
-    }
-
-    public String getMasterWorkThesis() {
-        return masterWorkThesis;
-    }
-
-    public void setMasterWorkThesis(String masterWorkThesis) {
-        this.masterWorkThesis = masterWorkThesis;
-    }
-
-    public String getBachelorDiplomaNumber() {
-        return bachelorDiplomaNumber;
-    }
-
-    public void setBachelorDiplomaNumber(String bachelorDiplomaNumber) {
-        this.bachelorDiplomaNumber = bachelorDiplomaNumber;
-    }
-
-    public String getSpecialistDiplomaNumber() {
-        return specialistDiplomaNumber;
-    }
-
-    public void setSpecialistDiplomaNumber(String specialistDiplomaNumber) {
-        this.specialistDiplomaNumber = specialistDiplomaNumber;
-    }
-
-    public String getMasterDiplomaNumber() {
-        return masterDiplomaNumber;
-    }
-
-    public void setMasterDiplomaNumber(String masterDiplomaNumber) {
-        this.masterDiplomaNumber = masterDiplomaNumber;
-    }
-
-    public Date getBachelorDiplomaDate() {
-        return bachelorDiplomaDate;
-    }
-
-    public void setBachelorDiplomaDate(Date bachelorDiplomaDate) {
-        this.bachelorDiplomaDate = bachelorDiplomaDate;
-    }
-
-    public Date getSpecialistDiplomaDate() {
-        return specialistDiplomaDate;
-    }
-
-    public void setSpecialistDiplomaDate(Date specialistDiplomaDate) {
-        this.specialistDiplomaDate = specialistDiplomaDate;
-    }
-
-    public Date getMasterDiplomaDate() {
-        return masterDiplomaDate;
-    }
-
-    public void setMasterDiplomaDate(Date masterDiplomaDate) {
-        this.masterDiplomaDate = masterDiplomaDate;
     }
 }
 

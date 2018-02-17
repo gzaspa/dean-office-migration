@@ -10,25 +10,25 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
-@Table(name="student_academic_vacation")
+@Table(name = "student_academic_vacation")
 public class StudentAcademicVacation extends BaseEntity {
     @ManyToOne
     private Student student;
-    @Column(name="vacation_start_date", nullable = false)
+    @Column(name = "vacation_start_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date vacationStartDate;
-    @Column(name="vacation_end_date", nullable = false)
+    @Column(name = "vacation_end_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date vacationEndDate;
-    @Column(name="order_number", nullable = false, length = 15)
+    @Column(name = "order_number", nullable = false, length = 15)
     private String orderNumber;
-    @Column(name="order_date", nullable = false)
+    @Column(name = "order_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date orderDate;
     @ManyToOne
     private StudentGroup group;
     @ManyToOne
     private OrderReason reason;
-    @Column(name="application_date", nullable = false)
+    @Column(name = "application_date", nullable = false)
     private Date applicationDate;
 }

@@ -11,8 +11,8 @@ import javax.persistence.Table;
 @Entity
 @Getter
 @Setter
-@Table(name="current_year")
+@Table(name = "current_year")
 public class CurrentYear extends BaseEntity {
-    @Column(name="curr_year")
+    @Column(name = "curr_year")
     private int currYear;
 }

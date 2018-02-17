@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="KNOWLEDGE_CONTROL")
+@Table(name = "KNOWLEDGE_CONTROL")
 public class KnowledgeControl {
 
     @Transient
@@ -27,13 +27,13 @@ public class KnowledgeControl {
     public static final int FINAL_EXAMINATION = 7;
 
     @Id
-    @Column(name = "ID" )
+    @Column(name = "ID")
     private int id;
 
-    @Column(name = "NAME" )
+    @Column(name = "NAME")
     private String name;
 
-    @Column(name = "GRADE" )
+    @Column(name = "GRADE")
     private boolean grade;
 
     public int getId() {

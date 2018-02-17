@@ -16,9 +16,23 @@ public class StudentDegree extends BaseEntity {
     private Student student;
     @ManyToOne
     private Degree degree;
-    @Column(name="diploma_number", length = 15)
+    @ManyToOne
+    private StudentGroup studentGroup;
+    @Column(name = "record_book_number", length = 15)
+    private String recordBookNumber;
+    @Column(name = "admission_order_number", length = 15)
+    private String admissionOrderNumber;
+    @Column(name = "admission_order_date")
+    @Temporal(TemporalType.DATE)
+    private Date admissionOrderDate;
+    @Column(name = "contract_number", length = 15)
+    private String contractNumber;
+    @Column(name = "contract_date")
+    @Temporal(TemporalType.DATE)
+    private Date contractDate;
+    @Column(name = "diploma_number", length = 15)
     private String diplomaNumber;
-    @Column(name="diploma_date")
+    @Column(name = "diploma_date")
     @Temporal(TemporalType.DATE)
     private Date diplomaDate;
     @Column(name = "supplement_number", length = 15)
@@ -26,20 +40,21 @@ public class StudentDegree extends BaseEntity {
     @Column(name = "supplement_date")
     @Temporal(TemporalType.DATE)
     private Date supplementDate;
-    @Column(name="thesis_name", length = 150)
+    @Column(name = "thesis_name", length = 150)
     private String thesisName;
-    @Column(name="thesis_name_eng", length = 150)
+    @Column(name = "thesis_name_eng", length = 150)
     private String thesisNameEng;
-    @Column(name="protocol_number", length = 10)
+    @Column(name = "protocol_number", length = 10)
     private String protocolNumber;
-    @Column(name="protocol_date")
+    @Column(name = "protocol_date")
     @Temporal(TemporalType.DATE)
     private Date protocolDate;
-    @Column(name="previous_diploma_number", length = 15)
+    @Column(name = "previous_diploma_number", length = 15)
     private String previousDiplomaNumber;
-    @Column(name="previous_diploma_date")
+    @Column(name = "previous_diploma_date")
     @Temporal(TemporalType.DATE)
     private Date previousDiplomaDate;
-    @Column(name="awarded", nullable = false)
+
+    @Column(name = "awarded", nullable = false)
     private boolean awarded;
 }

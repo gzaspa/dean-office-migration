@@ -9,27 +9,27 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table (name = "FACULTETI")
+@Table(name = "FACULTETI")
 public class Department {
 
-    public static final int DEPARTMENT_ID_FITIS=18;
+    public static final int DEPARTMENT_ID_FITIS = 18;
 
     @Id
-    @Column (name = "ID" )
+    @Column(name = "ID")
     private int id;
 
-    @Column (name = "NAME")
+    @Column(name = "NAME")
     private String name;
 
-    @Column (name = "ABBR")
+    @Column(name = "ABBR")
     private String abbreviation;
 
-    @Column (name = "IN_ZVIT")
-    @Type(type="true_false")
+    @Column(name = "IN_ZVIT")
+    @Type(type = "true_false")
     private boolean accountable;
 
-    @Column (name = "ACTIVE1" )
-    @Type(type="true_false")
+    @Column(name = "ACTIVE1")
+    @Type(type = "true_false")
     private boolean active;
 
     public int getId() {

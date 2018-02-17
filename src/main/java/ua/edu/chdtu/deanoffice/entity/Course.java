@@ -19,7 +19,7 @@ public class Course extends BaseEntity {
     @Column(name = "semester", nullable = false)
     private Integer semester;
     @ManyToOne
-    @JoinColumn(name="kc_id")
+    @JoinColumn(name = "kc_id")
     private KnowledgeControl knowledgeControl;
     @Column(name = "hours", nullable = false)
     private Integer hours;

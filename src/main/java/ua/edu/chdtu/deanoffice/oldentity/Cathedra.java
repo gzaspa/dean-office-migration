@@ -6,20 +6,20 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="PIDROZDILI")
+@Table(name = "PIDROZDILI")
 public class Cathedra {
     @Id
-    @Column(name= "ID")
+    @Column(name = "ID")
     private int id;
 
-    @Column(name= "NAME")
+    @Column(name = "NAME")
     private String name;
 
-    @Column (name = "ACTIVE1" )
-    @Type(type="true_false")
+    @Column(name = "ACTIVE1")
+    @Type(type = "true_false")
     private boolean active;
 
-    @Column (name = "ABBR_NAME")
+    @Column(name = "ABBR_NAME")
     private String abbreviation;
 
     @ManyToOne(targetEntity = Department.class)

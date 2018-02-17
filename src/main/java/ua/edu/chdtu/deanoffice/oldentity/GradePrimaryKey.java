@@ -7,13 +7,13 @@ public class GradePrimaryKey implements Serializable {
     protected int studentId;
     protected int subjectId;
 
-    public GradePrimaryKey(){
+    public GradePrimaryKey() {
 
     }
 
-    public GradePrimaryKey(int student, int subject){
-        this.studentId =student;
-        this.subjectId =subject;
+    public GradePrimaryKey(int student, int subject) {
+        this.studentId = student;
+        this.subjectId = subject;
     }
 
     @Override

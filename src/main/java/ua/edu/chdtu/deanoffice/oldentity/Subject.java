@@ -25,7 +25,7 @@ public class Subject {
     @JoinColumn(name = "KC_ID")
     private KnowledgeControl knowledgeControl;
 
-    @OneToMany(mappedBy="subject",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<GroupSubject> groupSubjects;
 
     @Column(name = "SEMESTER")
@@ -105,12 +105,12 @@ public class Subject {
         this.knowledgeControl = knowledgeControl;
     }
 
-    public void setGroupSubjects(Set<GroupSubject> groupSubjects) {
-        this.groupSubjects = groupSubjects;
-    }
-
     public Set<GroupSubject> getGroupSubjects() {
         return groupSubjects;
+    }
+
+    public void setGroupSubjects(Set<GroupSubject> groupSubjects) {
+        this.groupSubjects = groupSubjects;
     }
 
     public String getNameEnglish() {

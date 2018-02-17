@@ -13,8 +13,11 @@ import java.util.*;
 
 public class Migration extends MigrationData {
 
-    private static String makeAbbreviation(String s) {
-        return s.replaceAll("\\B.|\\P{L}", "").toUpperCase();
+    private static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+    private static Date nullDateReplacer;
+
+    private static String makeAbbreviation(String name) {
+        return name.replaceAll("\\B.|\\P{L}", "").toUpperCase();
     }
 
     private static boolean equals(Object o1, Object o2) {
@@ -59,45 +62,66 @@ public class Migration extends MigrationData {
         DatabaseConnector.getPostgresSession().save(year);
     }
 
+    public static boolean isEmpty(Object str) {
+        return (str == null || "".equals(str));
+    }
+
     private static void createStudentDegrees() {
-        oldStudents.forEach(student -> {
+        oldStudents.forEach(oldStudent -> {
             StudentDegree studentBachelorDegree = new StudentDegree();
-            if (student.getBachelorWorkThesis() != null && !student.getBachelorWorkThesis().isEmpty()) {
-                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(student)));
-                studentBachelorDegree.setAwarded(false);
+            if (!isEmpty(oldStudent.getBachelorWorkThesis())) {
+                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
                 studentBachelorDegree.setDegree(newDegrees.get(0));
-                studentBachelorDegree.setDiplomaDate(student.getBachelorDiplomaDate());
-                studentBachelorDegree.setDiplomaNumber(student.getBachelorDiplomaNumber());
-                studentBachelorDegree.setThesisName(student.getBachelorWorkThesis());
+                studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
+                studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
+                studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
+                studentBachelorDegree.setAwarded(oldStudent.isBachalorSucceeded());
+                studentBachelorDegree.setStudentGroup(newGroups.stream().filter(studentGroup ->
+                                studentGroup.getName().equals(oldStudent.getGroup().getName())
+                        //&& studentGroup.getSpecialization().getDegree().equals(newDegrees.get(0))
+                ).findFirst().orElse(null));
 
                 newStudentDegrees.add(studentBachelorDegree);
             }
 
             StudentDegree studentSpecialistDegree = new StudentDegree();
-            if (student.getSpecialistWorkThesis() != null && !student.getSpecialistWorkThesis().isEmpty()) {
-                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(student)));
-                studentSpecialistDegree.setAwarded(false);
+            if (!isEmpty(oldStudent.getSpecialistWorkThesis())) {
+                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
                 studentSpecialistDegree.setDegree(newDegrees.get(1));
-                studentSpecialistDegree.setDiplomaDate(student.getSpecialistDiplomaDate());
-                studentSpecialistDegree.setDiplomaNumber(student.getSpecialistDiplomaNumber());
-                studentSpecialistDegree.setThesisName(student.getSpecialistWorkThesis());
+                studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
+                studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
+                studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
                 studentSpecialistDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
                 studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
+                studentBachelorDegree.setAwarded(oldStudent.isSpecialistSucceeded());
+                studentBachelorDegree.setStudentGroup(newGroups.stream().filter(studentGroup ->
+                                studentGroup.getName().equals(oldStudent.getGroup().getName())
+                        //&& studentGroup.getSpecialization().getDegree().equals(newDegrees.get(1))
+                ).findFirst().orElse(null));
 
                 newStudentDegrees.add(studentSpecialistDegree);
             }
 
             StudentDegree studentMasterDegree = new StudentDegree();
-            if (student.getMasterWorkThesis() != null && !student.getMasterWorkThesis().isEmpty()) {
-                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(student)));
-                studentMasterDegree.setAwarded(false);
+            if (isEmpty(oldStudent.getMasterWorkThesis())) {
+                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
                 studentMasterDegree.setDegree(newDegrees.get(2));
-                studentMasterDegree.setDiplomaDate(student.getMasterDiplomaDate());
-                studentMasterDegree.setDiplomaNumber(student.getMasterDiplomaNumber());
-                studentMasterDegree.setThesisName(student.getMasterWorkThesis());
+                studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
+                studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
+                studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
                 studentMasterDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
                 studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
-                studentMasterDegree.setThesisNameEng(student.getMasterDiplomaWorkEngName());
+                studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
+                studentBachelorDegree.setAwarded(oldStudent.isMasterSucceeded());
+                try {
+                    studentBachelorDegree.setStudentGroup(newGroups.stream().filter(studentGroup ->
+                                    studentGroup.getName().equals(oldStudent.getGroup().getName())
+                            //&& studentGroup.getSpecialization().getDegree().equals(newDegrees.get(2))
+                    ).findFirst().orElse(null));
+                } catch (NullPointerException e) {
+                    System.out.println(oldStudent.getGroup().getName() + " has not enough data");
+                }
+
 
                 newStudentDegrees.add(studentMasterDegree);
             }
@@ -106,17 +130,17 @@ public class Migration extends MigrationData {
 
     private static void migrateGrades() {
         oldGrades.forEach(oldGrade -> {
-            Grade g = new Grade();
-            newGrades.add(g);
-            g.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(student ->
+            Grade grade = new Grade();
+            newGrades.add(grade);
+            grade.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(student ->
                     student.getId() == oldGrade.getStudent().getId()
             ).findFirst().get())));
-            g.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(course ->
+            grade.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(course ->
                     course.getId() == oldGrade.getSubject().getId()
             ).findFirst().get())));
-            g.setEcts(convertEctsGrade(oldGrade));
-            g.setPoints(oldGrade.getPoints() == null ? 0 : oldGrade.getPoints());
-            g.setGrade(oldGrade.getGrade() == null ? 0 : oldGrade.getGrade());
+            grade.setEcts(convertEctsGrade(oldGrade));
+            grade.setPoints(oldGrade.getPoints() == null ? 0 : oldGrade.getPoints());
+            grade.setGrade(oldGrade.getGrade() == null ? 0 : oldGrade.getGrade());
         });
     }
 
@@ -167,9 +191,6 @@ public class Migration extends MigrationData {
         }
     }
 
-    private static DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-    private static Date nullDateReplacer;
-
     private static void migrateAcademicVacations() {
         oldAcademicVacations.forEach(oldVacation -> {
             StudentAcademicVacation vacation = new StudentAcademicVacation();
@@ -197,38 +218,38 @@ public class Migration extends MigrationData {
             e.printStackTrace();
         }
         oldExpels.forEach(oldExpel -> {
-            StudentExpel e = new StudentExpel();
-            newExpels.add(e);
-            e.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
+            StudentExpel expel = new StudentExpel();
+            newExpels.add(expel);
+            expel.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
                     s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get())));
-            e.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
+            expel.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
                     g -> g.getId() == oldExpel.getGroup().getId()).findFirst().get())));
             //Wrong value may be used!!!
-            e.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
-            e.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
+            expel.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
+            expel.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
                     r -> r.getId() == oldExpel.getOrderReason().getId()).findFirst().get())));
-            e.setOrderNumber(oldExpel.getOrderNumber() == null ? "0" : oldExpel.getOrderNumber());
+            expel.setOrderNumber(oldExpel.getOrderNumber() == null ? "0" : oldExpel.getOrderNumber());
             //Wrong value may be used!!!
-            e.setApplicationDate(oldExpel.getApplicationDate() == null ? nullDateReplacer : oldExpel.getApplicationDate());
-            e.setExpelDate(oldExpel.getExpelDate());
+            expel.setApplicationDate(oldExpel.getApplicationDate() == null ? nullDateReplacer : oldExpel.getApplicationDate());
+            expel.setExpelDate(oldExpel.getExpelDate());
         });
     }
 
     private static void migrateSubjectsForGroups() {
         oldCoursesForGroups.forEach(oldCG -> {
-            CourseForGroup c = new CourseForGroup();
-            newCourseForGroups.add(c);
-            c.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(
+            CourseForGroup courseForGroup = new CourseForGroup();
+            newCourseForGroups.add(courseForGroup);
+            courseForGroup.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(
                     subject -> equals(subject.getId(), oldCG.getSubject().getId())).findFirst().get())));
-            c.setStudentGroup(newGroups.stream().filter(group ->
+            courseForGroup.setStudentGroup(newGroups.stream().filter(group ->
                     equals(group.getName(), oldCG.getGroup().getName())).findFirst().get());
-            c.setExamDate(oldCG.getExamDate());
+            courseForGroup.setExamDate(oldCG.getExamDate());
             try {
-                c.setTeacher(newTeachers.get(oldTeachers.indexOf(oldTeachers.stream().filter(teacher ->
+                courseForGroup.setTeacher(newTeachers.get(oldTeachers.indexOf(oldTeachers.stream().filter(teacher ->
                         oldCG.getTeacher() != null &&
                                 equals(teacher.getId(), oldCG.getTeacher().getId())).findFirst().get())));
             } catch (NoSuchElementException e) {
-                c.setTeacher(null);
+                courseForGroup.setTeacher(null);
             }
         });
     }
@@ -238,8 +259,8 @@ public class Migration extends MigrationData {
         fixSubjectsNames();
         sortSubjects();
         oldSubjects.forEach(oldSubj -> {
-            Course c = new Course();
-            newCourses.add(c);
+            Course course = new Course();
+            newCourses.add(course);
             CourseName courseName;
             if (newCourseNames.stream().anyMatch(name -> stringEquals(name.getName(), (oldSubj.getName())))) {
                 courseName = newCourseNames.stream().filter(n -> stringEquals(n.getName(), oldSubj.getName())).findFirst().get();
@@ -250,21 +271,22 @@ public class Migration extends MigrationData {
                 courseName.setNameEng("");
                 courseName.setAbbreviation(oldSubj.getAbbreviation() == null ? "" : oldSubj.getAbbreviation());
             }
-            c.setCourseName(courseName);
-            c.setHours(oldSubj.getHours());
-            if (oldSubj.getCredits() == null)
-                c.setCredits(new BigDecimal(c.getHours() / 30.0));
-            else
-                c.setCredits(new BigDecimal(oldSubj.getCredits()));
+            course.setCourseName(courseName);
+            course.setHours(oldSubj.getHours());
+            if (oldSubj.getCredits() == null) {
+                course.setCredits(new BigDecimal(course.getHours() / 30.0));
+            } else {
+                course.setCredits(new BigDecimal(oldSubj.getCredits()));
+            }
             try {
-                c.setKnowledgeControl(newKnowledgeControlKinds.get(
+                course.setKnowledgeControl(newKnowledgeControlKinds.get(
                         oldKnowledgeControlKinds.indexOf(oldKnowledgeControlKinds.stream().filter(knowledgeControl ->
                                 oldSubj.getKnowledgeControl() != null &&
                                         equals(knowledgeControl.getId(), oldSubj.getKnowledgeControl().getId())).findFirst().get())));
             } catch (NoSuchElementException e) {
-                c.setKnowledgeControl(null);
+                course.setKnowledgeControl(null);
             }
-            c.setSemester(oldSubj.getSemester());
+            course.setSemester(oldSubj.getSemester());
         });
     }
 
@@ -274,8 +296,9 @@ public class Migration extends MigrationData {
             Set<Subject> allSubjects = studentGroup.getSubjects();
             List<Subject> newSubjects = new ArrayList<>();
             allSubjects.forEach(subject -> {
-                if (!changedSubjects.contains(subject))
+                if (!changedSubjects.contains(subject)) {
                     newSubjects.add(subject);
+                }
             });
             newSubjects.forEach(subject -> {
                 if (studentGroup.getFirstPartOfName().startsWith("М")) {
@@ -286,8 +309,9 @@ public class Migration extends MigrationData {
                     //shortened full time
                     if (subject.getSemester() <= 4) {
                         subject.setSemester(1);
-                    } else
+                    } else {
                         subject.setSemester(subject.getSemester() - 4);
+                    }
                 }
             });
             changedSubjects.addAll(newSubjects);
@@ -420,11 +444,11 @@ public class Migration extends MigrationData {
 
     private static void migrateKnowledgeControlKinds() {
         oldKnowledgeControlKinds.forEach(oldKCKind -> {
-            ua.edu.chdtu.deanoffice.entity.KnowledgeControl k = new ua.edu.chdtu.deanoffice.entity.KnowledgeControl();
-            newKnowledgeControlKinds.add(k);
-            k.setName(oldKCKind.getName());
-            k.setNameEng("");
-            k.setHasGrade(oldKCKind.getGrade());
+            ua.edu.chdtu.deanoffice.entity.KnowledgeControl knowledgeControl = new ua.edu.chdtu.deanoffice.entity.KnowledgeControl();
+            newKnowledgeControlKinds.add(knowledgeControl);
+            knowledgeControl.setName(oldKCKind.getName());
+            knowledgeControl.setNameEng("");
+            knowledgeControl.setHasGrade(oldKCKind.getGrade());
         });
 
         KnowledgeControl kc = new KnowledgeControl();
@@ -436,104 +460,101 @@ public class Migration extends MigrationData {
 
     private static void migrateTeachers() {
         oldTeachers.forEach(oldT -> {
-            ua.edu.chdtu.deanoffice.entity.Teacher t = new ua.edu.chdtu.deanoffice.entity.Teacher();
-            newTeachers.add(t);
-            t.setActive(oldT.isInActive());
-            t.setName(oldT.getName());
-            t.setSurname(oldT.getSurname());
-            t.setPatronimic(oldT.getPatronimic());
-            t.setSex(oldT.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
-            t.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(department ->
+            ua.edu.chdtu.deanoffice.entity.Teacher teacher = new ua.edu.chdtu.deanoffice.entity.Teacher();
+            newTeachers.add(teacher);
+            teacher.setActive(oldT.isInActive());
+            teacher.setName(oldT.getName());
+            teacher.setSurname(oldT.getSurname());
+            teacher.setPatronimic(oldT.getPatronimic());
+            teacher.setSex(oldT.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
+            teacher.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(department ->
                     equals(department.getId(), oldT.getCathedra().getId())).findFirst().get())));
-            t.setPosition(newPositions.get(oldPositions.indexOf(oldPositions.stream().filter(position ->
+            teacher.setPosition(newPositions.get(oldPositions.indexOf(oldPositions.stream().filter(position ->
                     equals(position.getId(), oldT.getPosition().getId())).findFirst().get())));
-            t.setScientificDegree(oldT.getDegree());
+            teacher.setScientificDegree(oldT.getDegree());
         });
     }
 
     private static void migrateStudents() {
         oldStudents.forEach(oldStudent -> {
-            ua.edu.chdtu.deanoffice.entity.Student s = new ua.edu.chdtu.deanoffice.entity.Student();
-            newStudents.add(s);
-            s.setActive(oldStudent.isInActive());
-            s.setName(oldStudent.getName());
-            s.setSurname(oldStudent.getSurname());
-            s.setPatronimic(oldStudent.getPatronimic());
-            s.setNameEng(oldStudent.getNameEnglish());
-            s.setSurnameEng(oldStudent.getSurnameEnglish());
-            s.setPatronimicEng(oldStudent.getPatronimicEnglish());
-            s.setEmail("");
-            s.setBirthDate(oldStudent.getBirthDate());
-            s.setActualAddress(oldStudent.getAddress());
-            s.setRegistrationAddress("");
-            s.setMotherName(oldStudent.getMotherName());
-            s.setMotherInfo(oldStudent.getMotherInfo());
-            s.setMotherPhone(oldStudent.getMotherPhone());
-            s.setFatherName(oldStudent.getFatherName());
-            s.setFatherInfo(oldStudent.getFatherInfo());
-            s.setFatherPhone(oldStudent.getFatherPhone());
-            s.setStudentGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
-                    group -> group.getId() == oldStudent.getGroup().getId()).findFirst().get())));
-            s.setNotes(oldStudent.getNotes());
-            if (s.getPrivilege() == null)
-                s.setPrivilege(newPrivileges.get(0));
-            else
-                s.setPrivilege(newPrivileges.get(oldPrivileges.indexOf(oldPrivileges.stream().filter(privilege ->
+            ua.edu.chdtu.deanoffice.entity.Student student = new ua.edu.chdtu.deanoffice.entity.Student();
+            newStudents.add(student);
+            student.setActive(oldStudent.isInActive());
+            student.setName(oldStudent.getName());
+            student.setSurname(oldStudent.getSurname());
+            student.setPatronimic(oldStudent.getPatronimic());
+            student.setNameEng(oldStudent.getNameEnglish());
+            student.setSurnameEng(oldStudent.getSurnameEnglish());
+            student.setPatronimicEng(oldStudent.getPatronimicEnglish());
+            student.setEmail("");
+            student.setBirthDate(oldStudent.getBirthDate());
+            student.setActualAddress(oldStudent.getAddress());
+            student.setRegistrationAddress("");
+            student.setMotherName(oldStudent.getMotherName());
+            student.setMotherInfo(oldStudent.getMotherInfo());
+            student.setMotherPhone(oldStudent.getMotherPhone());
+            student.setFatherName(oldStudent.getFatherName());
+            student.setFatherInfo(oldStudent.getFatherInfo());
+            student.setFatherPhone(oldStudent.getFatherPhone());
+            student.setNotes(oldStudent.getNotes());
+            if (student.getPrivilege() == null) {
+                student.setPrivilege(newPrivileges.get(0));
+            } else {
+                student.setPrivilege(newPrivileges.get(oldPrivileges.indexOf(oldPrivileges.stream().filter(privilege ->
                         equals(privilege.getId(), oldStudent.getPrivilege().getId())).findFirst().get())));
-
-            s.setSex(oldStudent.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
-            s.setRecordBookNumber(oldStudent.getRecordBookNumber());
-            s.setSchool(oldStudent.getSchool());
-            s.setStudentCardNumber("");
+            }
+            student.setSex(oldStudent.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
+            student.setSchool(oldStudent.getSchool());
+            student.setStudentCardNumber("");
         });
     }
 
     private static void migrateGroups() {
         oldGroups.forEach(oldGroup -> {
-            StudentGroup g = new StudentGroup();
-            newGroups.add(g);
-            g.setName(oldGroup.getName());
-            g.setActive(oldGroup.isActive());
-            g.setCreationYear(oldGroup.getCreationYear());
-            g.setBeginYears(oldGroup.getStudyStartYear());
-            g.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") &&
+            StudentGroup studentGroup = new StudentGroup();
+            newGroups.add(studentGroup);
+            studentGroup.setName(oldGroup.getName());
+            studentGroup.setActive(oldGroup.isActive());
+            studentGroup.setCreationYear(oldGroup.getCreationYear());
+            studentGroup.setBeginYears(oldGroup.getStudyStartYear());
+            studentGroup.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") &&
                     !oldGroup.getFirstPartOfName().endsWith("СКС") ?
                     TuitionTerm.SHORTENED :
                     TuitionTerm.REGULAR);
-            g.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? TuitionForm.EXTRAMURAL : TuitionForm.FULL_TIME);
+            studentGroup.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? TuitionForm.EXTRAMURAL : TuitionForm.FULL_TIME);
             Integer degreeId = 0;
 
 
-            if (g.getTuitionTerm() == TuitionTerm.SHORTENED) {
-                if (g.getTuitionForm() == TuitionForm.FULL_TIME) {
-                    g.setStudySemesters(4);
-                    g.setStudyYears(new BigDecimal(2));
+            if (studentGroup.getTuitionTerm() == TuitionTerm.SHORTENED) {
+                if (studentGroup.getTuitionForm() == TuitionForm.FULL_TIME) {
+                    studentGroup.setStudySemesters(4);
+                    studentGroup.setStudyYears(new BigDecimal(2));
                 } else { //extramural
-                    g.setStudySemesters(6);
-                    g.setStudyYears(new BigDecimal(3));
+                    studentGroup.setStudySemesters(6);
+                    studentGroup.setStudyYears(new BigDecimal(3));
                 }
             } else if (oldGroup.getStudyStartYear() == 5 || oldGroup.getStudyStartYear() == 6) { //masters or specialists
-                g.setStudySemesters(3);
-                g.setStudyYears(new BigDecimal(1 + 5.0 / 12.0));
+                studentGroup.setStudySemesters(3);
+                studentGroup.setStudyYears(new BigDecimal(1 + 5.0 / 12.0));
                 if (oldGroup.getFirstPartOfName().startsWith("М")
                         || oldGroup.getFirstPartOfName().startsWith("ЗМ")) { //masters
                     degreeId = 2;
                 } else if (!oldGroup.getSpeciality().isNew()) { //specialists
                     degreeId = 1;
                 }
-            } else if (g.getTuitionForm() == TuitionForm.EXTRAMURAL) { //extramural bachelors
-                g.setStudySemesters(10);
-                g.setStudyYears(new BigDecimal(5));
+            } else if (studentGroup.getTuitionForm() == TuitionForm.EXTRAMURAL) { //extramural bachelors
+                studentGroup.setStudySemesters(10);
+                studentGroup.setStudyYears(new BigDecimal(5));
                 degreeId = 0;
             } else { //full-time bachelors
-                g.setStudySemesters(8);
-                g.setStudyYears(new BigDecimal(4));
+                studentGroup.setStudySemesters(8);
+                studentGroup.setStudyYears(new BigDecimal(4));
                 degreeId = 0;
             }
             Degree degree = newDegrees.get(degreeId);
 
             try {
-                g.setSpecialization(newSpecializations.stream().filter(specialization ->
+                studentGroup.setSpecialization(newSpecializations.stream().filter(specialization ->
                         (equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                                 equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
                                 equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()))
@@ -543,17 +564,17 @@ public class Migration extends MigrationData {
                                 oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
-                System.out.printf("Exception during specialization/speciality setting for %s!", oldGroup.getName());
+                System.out.printf("Exception during specialization/speciality setting for %s!\n", oldGroup.getName());
             }
         });
     }
 
     private static void migratePrivileges() {
         oldPrivileges.forEach(oldP -> {
-            ua.edu.chdtu.deanoffice.entity.Privilege p = new ua.edu.chdtu.deanoffice.entity.Privilege();
-            newPrivileges.add(p);
-            p.setActive(oldP.getActive());
-            p.setName(oldP.getName());
+            ua.edu.chdtu.deanoffice.entity.Privilege privilege = new ua.edu.chdtu.deanoffice.entity.Privilege();
+            newPrivileges.add(privilege);
+            privilege.setActive(oldP.getActive());
+            privilege.setName(oldP.getName());
         });
     }
 
@@ -650,9 +671,11 @@ public class Migration extends MigrationData {
             bachSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getBachelorName()));
             bachSpec.setNameEng("");
             bachSpec.setActive(oldSpec.isActive());
-            if (oldSpec.getBachelorCode().contains("-"))
+            if (oldSpec.getBachelorCode().contains("-")) {
                 bachSpec.setCode(oldSpec.getBachelorCode().split("-")[0].trim());
-            else bachSpec.setCode(oldSpec.getBachelorCode());
+            } else {
+                bachSpec.setCode(oldSpec.getBachelorCode());
+            }
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), bachSpec.getCode()))) {
                 newSpecialities.add(bachSpec);
@@ -676,14 +699,17 @@ public class Migration extends MigrationData {
             specialistsSpec.setActive(oldSpec.isActive());
             if (oldSpec.getSpecialistCode().contains("-")) {
                 specialistsSpec.setCode(oldSpec.getSpecialistCode().split("-")[0].trim());
-            } else specialistsSpec.setCode(oldSpec.getSpecialistCode());
+            } else {
+                specialistsSpec.setCode(oldSpec.getSpecialistCode());
+            }
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), specialistsSpec.getCode()))) {
                 createSpecialistsSpecialization(oldSpec, specialistsSpec);
                 newSpecialities.add(specialistsSpec);
-            } else
+            } else {
                 createSpecialistsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
                         .equals(oldSpec.getSpecialistCode().split("-")[0])).findFirst().get());
+            }
         }
     }
 
@@ -693,9 +719,11 @@ public class Migration extends MigrationData {
             specialistSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getSpecialistName()));
             specialistSpec.setNameEng("");
             specialistSpec.setActive(oldSpec.isActive());
-            if (oldSpec.getSpecialistCode().contains("-"))
+            if (oldSpec.getSpecialistCode().contains("-")) {
                 specialistSpec.setCode(oldSpec.getSpecialistCode().split("-")[0].trim());
-            else specialistSpec.setCode(oldSpec.getSpecialistCode());
+            } else {
+                specialistSpec.setCode(oldSpec.getSpecialistCode());
+            }
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), specialistSpec.getCode()))) {
                 newSpecialities.add(specialistSpec);
@@ -717,9 +745,11 @@ public class Migration extends MigrationData {
             masterSpec.setName(oldSpec.getMasterName());
             masterSpec.setNameEng("");
             masterSpec.setActive(oldSpec.isActive());
-            if (oldSpec.getMasterCode().contains("-"))
+            if (oldSpec.getMasterCode().contains("-")) {
                 masterSpec.setCode(oldSpec.getMasterCode().split("-")[0].trim());
-            else masterSpec.setCode(oldSpec.getMasterCode());
+            } else {
+                masterSpec.setCode(oldSpec.getMasterCode());
+            }
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
                 newSpecialities.add(masterSpec);
@@ -734,9 +764,11 @@ public class Migration extends MigrationData {
             masterSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getMasterName()));
             masterSpec.setNameEng("");
             masterSpec.setActive(oldSpec.isActive());
-            if (oldSpec.getMasterCode().contains("-"))
+            if (oldSpec.getMasterCode().contains("-")) {
                 masterSpec.setCode(oldSpec.getMasterCode().split("-")[0].trim());
-            else masterSpec.setCode(oldSpec.getMasterCode());
+            } else {
+                masterSpec.setCode(oldSpec.getMasterCode());
+            }
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
                 newSpecialities.add(masterSpec);
@@ -776,45 +808,45 @@ public class Migration extends MigrationData {
 
     private static void migrateOrderReasons() {
         oldReasons.forEach(oldRes -> {
-            ua.edu.chdtu.deanoffice.entity.OrderReason r = new ua.edu.chdtu.deanoffice.entity.OrderReason();
-            newReasons.add(r);
-            r.setActive(oldRes.isActive());
-            r.setName(oldRes.getName());
-            r.setKind(oldRes.getKind());
+            ua.edu.chdtu.deanoffice.entity.OrderReason orderReason = new ua.edu.chdtu.deanoffice.entity.OrderReason();
+            newReasons.add(orderReason);
+            orderReason.setActive(oldRes.isActive());
+            orderReason.setName(oldRes.getName());
+            orderReason.setKind(oldRes.getKind());
         });
     }
 
     private static void migratePositions() {
         oldPositions.forEach((oPos) -> {
-            ua.edu.chdtu.deanoffice.entity.Position p = new ua.edu.chdtu.deanoffice.entity.Position();
-            newPositions.add(p);
-            p.setName(oPos.getName());
+            ua.edu.chdtu.deanoffice.entity.Position position = new ua.edu.chdtu.deanoffice.entity.Position();
+            newPositions.add(position);
+            position.setName(oPos.getName());
         });
     }
 
     private static void migrateDepartments() {
         oldDepartments.forEach((oDep) -> {
-            ua.edu.chdtu.deanoffice.entity.Department d = new ua.edu.chdtu.deanoffice.entity.Department();
-            newDepartments.add(d);
-            d.setName(oDep.getName());
-            d.setAbbr(oDep.getAbbreviation() == null ? "" : oDep.getAbbreviation());
-            d.setActive(oDep.isActive());
-            d.setFaculty(
+            ua.edu.chdtu.deanoffice.entity.Department department = new ua.edu.chdtu.deanoffice.entity.Department();
+            newDepartments.add(department);
+            department.setName(oDep.getName());
+            department.setAbbr(oDep.getAbbreviation() == null ? "" : oDep.getAbbreviation());
+            department.setActive(oDep.isActive());
+            department.setFaculty(
                     newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
                             faculty -> faculty.getId() == oDep.getDepartment().getId()).findFirst().get())));
         });
     }
 
     private static void migrateFaculties() {
-        oldFaculties.forEach((oFaculty) -> {
-            Faculty f = new Faculty();
-            newFaculties.add(f);
-            f.setName(oFaculty.getName());
-            f.setNameEng("");
-            f.setAbbr(oFaculty.getAbbreviation() == null ? makeAbbreviation(f.getName())
-                    : oFaculty.getAbbreviation()
+        oldFaculties.forEach((oldFaculty) -> {
+            Faculty faculty = new Faculty();
+            newFaculties.add(faculty);
+            faculty.setName(oldFaculty.getName());
+            faculty.setNameEng("");
+            faculty.setAbbr(oldFaculty.getAbbreviation() == null ? makeAbbreviation(faculty.getName())
+                    : oldFaculty.getAbbreviation()
             );
-            f.setActive(oFaculty.isActive());
+            faculty.setActive(oldFaculty.isActive());
         });
     }
 }

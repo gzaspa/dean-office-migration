@@ -3,7 +3,6 @@ package ua.edu.chdtu.deanoffice.oldentity;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "VIKLADACHI")

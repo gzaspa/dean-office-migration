@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * Created by Supreme on 27.04.2016.
  */
 @Entity
-@Table(name="CURRENTYEAR")
+@Table(name = "CURRENTYEAR")
 public class CurrentYear {
     @Id
     @Column(name = "CURR_YEAR")

@@ -11,15 +11,13 @@ import javax.persistence.Table;
 @Table(name = "NAKAZ_REASONS")
 public class OrderReason {
 
-    @Id
-    @Column(name= "ID")
-    private int id;
-
     @Column(name = "NAME")
     String name;
-
-    @Column (name = "ACTIVE1" )
-    @Type(type="true_false")
+    @Id
+    @Column(name = "ID")
+    private int id;
+    @Column(name = "ACTIVE1")
+    @Type(type = "true_false")
     private boolean active;
 
     @Column(name = "KIND")
