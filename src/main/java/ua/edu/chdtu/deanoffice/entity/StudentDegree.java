@@ -15,8 +15,6 @@ public class StudentDegree extends BaseEntity {
     @ManyToOne
     private Student student;
     @ManyToOne
-    private Degree degree;
-    @ManyToOne
     private StudentGroup studentGroup;
     @Column(name = "record_book_number", length = 15)
     private String recordBookNumber;
@@ -49,12 +47,17 @@ public class StudentDegree extends BaseEntity {
     @Column(name = "protocol_date")
     @Temporal(TemporalType.DATE)
     private Date protocolDate;
+    @Column(name = "previous_diploma_type", nullable = false, length = 30, columnDefinition = "varchar(30) default 'SECONDARY_SCHOOL_CERTIFICATE'")
+    @Enumerated(value = EnumType.STRING)
+    private DocumentOfEducation previousDiplomaType = DocumentOfEducation.SECONDARY_SCHOOL_CERTIFICATE;
     @Column(name = "previous_diploma_number", length = 15)
     private String previousDiplomaNumber;
     @Column(name = "previous_diploma_date")
     @Temporal(TemporalType.DATE)
     private Date previousDiplomaDate;
-
+    @Column(name = "payment", nullable = false, length = 8, columnDefinition = "varchar(8) default 'BUDGET'")
+    @Enumerated(value = EnumType.STRING)
+    private Payment payment = Payment.BUDGET;
     @Column(name = "awarded", nullable = false)
     private boolean awarded;
 }

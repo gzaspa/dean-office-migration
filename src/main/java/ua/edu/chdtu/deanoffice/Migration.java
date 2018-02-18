@@ -68,18 +68,18 @@ public class Migration extends MigrationData {
 
     private static void createStudentDegrees() {
         oldStudents.forEach(oldStudent -> {
+            StudentGroup newStudentGroup = newGroups.stream().filter(studentGroup ->
+                    studentGroup.getName().equals(oldStudent.getGroup().getName()))
+                    .findFirst().get();
+
             StudentDegree studentBachelorDegree = new StudentDegree();
             if (!isEmpty(oldStudent.getBachelorWorkThesis())) {
                 studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentBachelorDegree.setDegree(newDegrees.get(0));
                 studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
                 studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
                 studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
                 studentBachelorDegree.setAwarded(oldStudent.isBachalorSucceeded());
-                studentBachelorDegree.setStudentGroup(newGroups.stream().filter(studentGroup ->
-                                studentGroup.getName().equals(oldStudent.getGroup().getName())
-                        //&& studentGroup.getSpecialization().getDegree().equals(newDegrees.get(0))
-                ).findFirst().orElse(null));
+                studentBachelorDegree.setStudentGroup(newStudentGroup);
 
                 newStudentDegrees.add(studentBachelorDegree);
             }
@@ -87,17 +87,13 @@ public class Migration extends MigrationData {
             StudentDegree studentSpecialistDegree = new StudentDegree();
             if (!isEmpty(oldStudent.getSpecialistWorkThesis())) {
                 studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentSpecialistDegree.setDegree(newDegrees.get(1));
                 studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
                 studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
                 studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
                 studentSpecialistDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
                 studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
                 studentBachelorDegree.setAwarded(oldStudent.isSpecialistSucceeded());
-                studentBachelorDegree.setStudentGroup(newGroups.stream().filter(studentGroup ->
-                                studentGroup.getName().equals(oldStudent.getGroup().getName())
-                        //&& studentGroup.getSpecialization().getDegree().equals(newDegrees.get(1))
-                ).findFirst().orElse(null));
+                studentBachelorDegree.setStudentGroup(newStudentGroup);
 
                 newStudentDegrees.add(studentSpecialistDegree);
             }
@@ -105,7 +101,7 @@ public class Migration extends MigrationData {
             StudentDegree studentMasterDegree = new StudentDegree();
             if (isEmpty(oldStudent.getMasterWorkThesis())) {
                 studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentMasterDegree.setDegree(newDegrees.get(2));
+                studentMasterDegree.setPreviousDiplomaType(DocumentOfEducation.BACHELOR_DIPLOMA);
                 studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
                 studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
                 studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
@@ -113,15 +109,7 @@ public class Migration extends MigrationData {
                 studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
                 studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
                 studentBachelorDegree.setAwarded(oldStudent.isMasterSucceeded());
-                try {
-                    studentBachelorDegree.setStudentGroup(newGroups.stream().filter(studentGroup ->
-                                    studentGroup.getName().equals(oldStudent.getGroup().getName())
-                            //&& studentGroup.getSpecialization().getDegree().equals(newDegrees.get(2))
-                    ).findFirst().orElse(null));
-                } catch (NullPointerException e) {
-                    System.out.println(oldStudent.getGroup().getName() + " has not enough data");
-                }
-
+                studentBachelorDegree.setStudentGroup(newStudentGroup);
 
                 newStudentDegrees.add(studentMasterDegree);
             }
@@ -817,23 +805,23 @@ public class Migration extends MigrationData {
     }
 
     private static void migratePositions() {
-        oldPositions.forEach((oPos) -> {
+        oldPositions.forEach((oldPosition) -> {
             ua.edu.chdtu.deanoffice.entity.Position position = new ua.edu.chdtu.deanoffice.entity.Position();
             newPositions.add(position);
-            position.setName(oPos.getName());
+            position.setName(oldPosition.getName());
         });
     }
 
     private static void migrateDepartments() {
-        oldDepartments.forEach((oDep) -> {
+        oldDepartments.forEach((oldDepartment) -> {
             ua.edu.chdtu.deanoffice.entity.Department department = new ua.edu.chdtu.deanoffice.entity.Department();
             newDepartments.add(department);
-            department.setName(oDep.getName());
-            department.setAbbr(oDep.getAbbreviation() == null ? "" : oDep.getAbbreviation());
-            department.setActive(oDep.isActive());
+            department.setName(oldDepartment.getName());
+            department.setAbbr(oldDepartment.getAbbreviation() == null ? "" : oldDepartment.getAbbreviation());
+            department.setActive(oldDepartment.isActive());
             department.setFaculty(
                     newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
-                            faculty -> faculty.getId() == oDep.getDepartment().getId()).findFirst().get())));
+                            faculty -> faculty.getId() == oldDepartment.getDepartment().getId()).findFirst().get())));
         });
     }
 
