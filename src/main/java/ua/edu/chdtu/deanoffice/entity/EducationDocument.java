@@ -1,6 +1,6 @@
 package ua.edu.chdtu.deanoffice.entity;
 
-public enum DocumentOfEducation {
+public enum EducationDocument {
     SECONDARY_SCHOOL_CERTIFICATE, JUNIOR_BACHELOR_DIPLOMA, BACHELOR_DIPLOMA, MASTER_DIPLOMA, PHD_DIPLOMA, DOCTOR_DIPLOMA, OTHER_FOREIGN;
 
     public String getUkrainianName() {

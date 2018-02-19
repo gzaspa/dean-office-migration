@@ -10,7 +10,9 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "student_degree")
+@Table(name = "student_degree",  uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"student_id", "studentgroup_id"})
+})
 public class StudentDegree extends BaseEntity {
     @ManyToOne
     private Student student;
@@ -49,7 +51,7 @@ public class StudentDegree extends BaseEntity {
     private Date protocolDate;
     @Column(name = "previous_diploma_type", nullable = false, length = 30, columnDefinition = "varchar(30) default 'SECONDARY_SCHOOL_CERTIFICATE'")
     @Enumerated(value = EnumType.STRING)
-    private DocumentOfEducation previousDiplomaType = DocumentOfEducation.SECONDARY_SCHOOL_CERTIFICATE;
+    private EducationDocument previousDiplomaType = EducationDocument.SECONDARY_SCHOOL_CERTIFICATE;
     @Column(name = "previous_diploma_number", length = 15)
     private String previousDiplomaNumber;
     @Column(name = "previous_diploma_date")

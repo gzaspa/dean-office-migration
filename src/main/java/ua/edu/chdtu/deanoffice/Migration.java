@@ -101,7 +101,7 @@ public class Migration extends MigrationData {
             StudentDegree studentMasterDegree = new StudentDegree();
             if (isEmpty(oldStudent.getMasterWorkThesis())) {
                 studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentMasterDegree.setPreviousDiplomaType(DocumentOfEducation.BACHELOR_DIPLOMA);
+                studentMasterDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
                 studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
                 studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
                 studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
