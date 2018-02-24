@@ -6,6 +6,7 @@ import ua.edu.chdtu.deanoffice.entity.superclasses.Person;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -50,5 +51,5 @@ public class Student extends Person {
     @Column(name = "notes", length = 150)
     private String notes;
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<StudentDegree> degrees;
+    private Set<StudentDegree> degrees = new HashSet<>();
 }

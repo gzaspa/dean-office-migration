@@ -183,10 +183,19 @@ public class Migration extends MigrationData {
         oldAcademicVacations.forEach(oldVacation -> {
             StudentAcademicVacation vacation = new StudentAcademicVacation();
             newAcademicVacations.add(vacation);
-            vacation.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
-                    s -> s.getId() == oldVacation.getStudent().getId()).findFirst().get())));
-            vacation.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
-                    g -> g.getId() == oldVacation.getGroup().getId()).findFirst().get())));
+            Student student = newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
+                    s -> s.getId() == oldVacation.getStudent().getId()).findFirst().get()));
+            try {
+                vacation.setStudentDegree(student.getDegrees().iterator().next());
+            } catch (NoSuchElementException e) {
+                StudentDegree vacationStudentDegree = new StudentDegree();
+                newStudentDegrees.add(vacationStudentDegree);
+                vacation.setStudentDegree(vacationStudentDegree);
+                vacationStudentDegree.setStudent(student);
+                vacationStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
+                        g -> g.getId() == oldVacation.getGroup().getId()).findFirst().get())));
+                vacationStudentDegree.setAwarded(false);
+            }
             vacation.setOrderDate(oldVacation.getOrderDate() == null ? new Date() : oldVacation.getOrderDate());
             vacation.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
                     r -> r.getId() == oldVacation.getOrderReason().getId()).findFirst().get())));
@@ -208,10 +217,19 @@ public class Migration extends MigrationData {
         oldExpels.forEach(oldExpel -> {
             StudentExpel expel = new StudentExpel();
             newExpels.add(expel);
-            expel.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
-                    s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get())));
-            expel.setGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
-                    g -> g.getId() == oldExpel.getGroup().getId()).findFirst().get())));
+            Student student = newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
+                    s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get()));
+            try {
+                expel.setStudentDegree(student.getDegrees().iterator().next());
+            } catch (NoSuchElementException e) {
+                StudentDegree expelledStudentDegree = new StudentDegree();
+                newStudentDegrees.add(expelledStudentDegree);
+                expel.setStudentDegree(expelledStudentDegree);
+                expelledStudentDegree.setStudent(student);
+                expelledStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
+                        g -> g.getId() == oldExpel.getGroup().getId()).findFirst().get())));
+                expelledStudentDegree.setAwarded(false);
+            }
             //Wrong value may be used!!!
             expel.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
             expel.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
