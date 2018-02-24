@@ -80,6 +80,7 @@ public class Migration extends MigrationData {
                 studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
                 studentBachelorDegree.setAwarded(oldStudent.isBachalorSucceeded());
                 studentBachelorDegree.setStudentGroup(newStudentGroup);
+                studentBachelorDegree.setDegree(newDegrees.get(0));
 
                 newStudentDegrees.add(studentBachelorDegree);
             }
@@ -94,6 +95,7 @@ public class Migration extends MigrationData {
                 studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
                 studentBachelorDegree.setAwarded(oldStudent.isSpecialistSucceeded());
                 studentBachelorDegree.setStudentGroup(newStudentGroup);
+                studentBachelorDegree.setDegree(newDegrees.get(1));
 
                 newStudentDegrees.add(studentSpecialistDegree);
             }
@@ -110,6 +112,7 @@ public class Migration extends MigrationData {
                 studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
                 studentBachelorDegree.setAwarded(oldStudent.isMasterSucceeded());
                 studentBachelorDegree.setStudentGroup(newStudentGroup);
+                studentBachelorDegree.setDegree(newDegrees.get(2));
 
                 newStudentDegrees.add(studentMasterDegree);
             }

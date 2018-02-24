@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "student_degree",  uniqueConstraints = {
+@Table(name = "student_degree", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"student_id", "studentgroup_id"})
 })
 public class StudentDegree extends BaseEntity {
@@ -18,6 +18,8 @@ public class StudentDegree extends BaseEntity {
     private Student student;
     @ManyToOne
     private StudentGroup studentGroup;
+    @ManyToOne
+    private Degree degree;
     @Column(name = "record_book_number", length = 15)
     private String recordBookNumber;
     @Column(name = "admission_order_number", length = 15)
