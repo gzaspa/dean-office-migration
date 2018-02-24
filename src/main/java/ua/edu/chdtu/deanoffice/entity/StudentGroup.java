@@ -6,6 +6,7 @@ import ua.edu.chdtu.deanoffice.entity.superclasses.NameWithActiveEntity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -30,6 +31,6 @@ public class StudentGroup extends NameWithActiveEntity {
     @Column(name = "begin_years", nullable = false)
     private int beginYears;//курс, з якого починає навчатись група
     @OneToMany(mappedBy = "studentGroup", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<StudentDegree> studentDegrees;
+    private Set<StudentDegree> studentDegrees = new HashSet<>();
     //CURATOR
 }
