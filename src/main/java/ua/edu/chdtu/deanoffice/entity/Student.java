@@ -12,9 +12,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name = "student",  uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"surname","name","patronimic","birth_date"})
-})
+@Table(name = "student")
 public class Student extends Person {
     @Column(name = "surname_eng", length = 20)
     private String surnameEng;

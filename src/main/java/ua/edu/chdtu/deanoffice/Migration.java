@@ -67,56 +67,66 @@ public class Migration extends MigrationData {
     }
 
     private static void createStudentDegrees() {
-        oldStudents.forEach(oldStudent -> {
-            StudentGroup newStudentGroup = newGroups.stream().filter(studentGroup ->
-                    studentGroup.getName().equals(oldStudent.getGroup().getName()))
-                    .findFirst().get();
+        try {
+            oldStudents.forEach(oldStudent -> {
+                StudentGroup newStudentGroup = newGroups.stream().filter(studentGroup ->
+                        studentGroup.getName().equals(oldStudent.getGroup().getName()))
+                        .findFirst().get();
 
-            StudentDegree studentBachelorDegree = new StudentDegree();
-            if (!isEmpty(oldStudent.getBachelorWorkThesis())) {
-                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
-                studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
-                studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
-                studentBachelorDegree.setAwarded(oldStudent.isBachalorSucceeded());
-                studentBachelorDegree.setStudentGroup(newStudentGroup);
-                studentBachelorDegree.setDegree(newDegrees.get(0));
+                StudentDegree studentBachelorDegree = new StudentDegree();
+                if (!isEmpty(oldStudent.getBachelorWorkThesis())) {
+                    studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
+                    studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
+                    studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
+                    studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
+                    studentBachelorDegree.setActive(oldStudent.isBachalorSucceeded());
+                    studentBachelorDegree.setDegree(newDegrees.get(0));
+                    if (newStudentGroup.getSpecialization().getDegree().equals(studentBachelorDegree.getDegree())) {
+                        studentBachelorDegree.setStudentGroup(newStudentGroup);
+                    }
 
-                newStudentDegrees.add(studentBachelorDegree);
-            }
+                    newStudentDegrees.add(studentBachelorDegree);
+                }
 
-            StudentDegree studentSpecialistDegree = new StudentDegree();
-            if (!isEmpty(oldStudent.getSpecialistWorkThesis())) {
-                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
-                studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
-                studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
-                studentSpecialistDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
-                studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
-                studentBachelorDegree.setAwarded(oldStudent.isSpecialistSucceeded());
-                studentBachelorDegree.setStudentGroup(newStudentGroup);
-                studentBachelorDegree.setDegree(newDegrees.get(1));
+                StudentDegree studentSpecialistDegree = new StudentDegree();
+                if (!isEmpty(oldStudent.getSpecialistWorkThesis())) {
+                    studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
+                    studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
+                    studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
+                    studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
+                    studentSpecialistDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
+                    studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
+                    studentSpecialistDegree.setActive(false);
+                    studentSpecialistDegree.setDegree(newDegrees.get(1));
+                    if (newStudentGroup.getSpecialization().getDegree().equals(studentSpecialistDegree.getDegree())) {
+                        studentSpecialistDegree.setStudentGroup(newStudentGroup);
+                    }
 
-                newStudentDegrees.add(studentSpecialistDegree);
-            }
+                    newStudentDegrees.add(studentSpecialistDegree);
+                }
 
-            StudentDegree studentMasterDegree = new StudentDegree();
-            if (isEmpty(oldStudent.getMasterWorkThesis())) {
-                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentMasterDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
-                studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
-                studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
-                studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
-                studentMasterDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
-                studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
-                studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
-                studentBachelorDegree.setAwarded(oldStudent.isMasterSucceeded());
-                studentBachelorDegree.setStudentGroup(newStudentGroup);
-                studentBachelorDegree.setDegree(newDegrees.get(2));
+                StudentDegree studentMasterDegree = new StudentDegree();
+                if (isEmpty(oldStudent.getMasterWorkThesis())) {
+                    studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
+                    studentMasterDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+                    studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
+                    studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
+                    studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
+                    studentMasterDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
+                    studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
+                    studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
+                    studentMasterDegree.setActive(oldStudent.isMasterSucceeded());
+                    studentMasterDegree.setDegree(newDegrees.get(2));
+                    if (newStudentGroup.getSpecialization().getDegree().equals(studentMasterDegree.getDegree())) {
+                        studentMasterDegree.setStudentGroup(newStudentGroup);
+                    }
 
-                newStudentDegrees.add(studentMasterDegree);
-            }
-        });
+                    newStudentDegrees.add(studentMasterDegree);
+                }
+            });
+        } catch (NullPointerException e) {
+            //Happens when specialization for group is null
+        }
     }
 
     private static void migrateGrades() {
@@ -197,7 +207,7 @@ public class Migration extends MigrationData {
                 vacationStudentDegree.setStudent(student);
                 vacationStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
                         g -> g.getId() == oldVacation.getGroup().getId()).findFirst().get())));
-                vacationStudentDegree.setAwarded(false);
+                vacationStudentDegree.setActive(false);
             }
             vacation.setOrderDate(oldVacation.getOrderDate() == null ? new Date() : oldVacation.getOrderDate());
             vacation.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
@@ -231,7 +241,7 @@ public class Migration extends MigrationData {
                 expelledStudentDegree.setStudent(student);
                 expelledStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldGroups.stream().filter(
                         g -> g.getId() == oldExpel.getGroup().getId()).findFirst().get())));
-                expelledStudentDegree.setAwarded(false);
+                expelledStudentDegree.setActive(false);
             }
             //Wrong value may be used!!!
             expel.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
@@ -488,7 +498,6 @@ public class Migration extends MigrationData {
         oldStudents.forEach(oldStudent -> {
             ua.edu.chdtu.deanoffice.entity.Student student = new ua.edu.chdtu.deanoffice.entity.Student();
             newStudents.add(student);
-            student.setActive(oldStudent.isInActive());
             student.setName(oldStudent.getName());
             student.setSurname(oldStudent.getSurname());
             student.setPatronimic(oldStudent.getPatronimic());
@@ -573,7 +582,7 @@ public class Migration extends MigrationData {
                                 oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
-                System.out.printf("Exception during specialization/speciality setting for %s!\n", oldGroup.getName());
+                System.out.printf("Could not set specialization/speciality for %s!\n", oldGroup.getName());
             }
         });
     }

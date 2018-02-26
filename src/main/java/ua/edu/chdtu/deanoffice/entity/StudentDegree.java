@@ -10,9 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-@Table(name = "student_degree", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"student_id", "studentgroup_id"})
-})
+@Table(name = "student_degree")
 public class StudentDegree extends BaseEntity {
     @ManyToOne
     private Student student;
@@ -62,6 +60,6 @@ public class StudentDegree extends BaseEntity {
     @Column(name = "payment", nullable = false, length = 8, columnDefinition = "varchar(8) default 'BUDGET'")
     @Enumerated(value = EnumType.STRING)
     private Payment payment = Payment.BUDGET;
-    @Column(name = "awarded", nullable = false)
-    private boolean awarded;
+    @Column(name = "active", nullable = false)
+    private boolean active;
 }
