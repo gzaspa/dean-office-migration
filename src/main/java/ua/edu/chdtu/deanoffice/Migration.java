@@ -844,6 +844,17 @@ public class Migration extends MigrationData {
             newFaculties.add(faculty);
             faculty.setName(oldFaculty.getName());
             faculty.setNameEng("");
+            ua.edu.chdtu.deanoffice.oldentity.Teacher dean = oldFaculty.getDean();
+            if (dean == null) {
+                if (oldFaculty.getAbbreviation() != null && oldFaculty.getAbbreviation().equals("ФІТІС")) {
+                    faculty.setDean("Трегубенко Ірина Борисівна");
+                } else {
+                    faculty.setDean(null);
+                }
+            } else {
+                faculty.setDean(dean.getSurname() + " " + dean.getName() + " " + dean.getPatronimic());
+            }
+
             faculty.setAbbr(oldFaculty.getAbbreviation() == null ? makeAbbreviation(faculty.getName())
                     : oldFaculty.getAbbreviation()
             );

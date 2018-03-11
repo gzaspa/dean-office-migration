@@ -2,10 +2,7 @@ package ua.edu.chdtu.deanoffice.oldentity;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 @Entity
@@ -32,12 +29,24 @@ public class Department {
     @Type(type = "true_false")
     private boolean active;
 
+    @ManyToOne
+    @JoinColumn(name = "DEAN_ID")
+    private Teacher dean;
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Teacher getDean() {
+        return dean;
+    }
+
+    public void setDean(Teacher dean) {
+        this.dean = dean;
     }
 
     public String getName() {
