@@ -181,6 +181,7 @@ public class Migration extends MigrationData {
                 vacationStudentDegree.setStudentGroup(group);
                 vacationStudentDegree.setDegree(vacationStudentDegree.getStudentGroup().getSpecialization().getDegree());
                 vacationStudentDegree.setActive(false);
+                vacationStudentDegree.setRecordBookNumber(oldVacation.getStudent().getRecordBookNumber());
                 newStudentDegrees.add(vacationStudentDegree);
                 vacation.setStudentDegree(vacationStudentDegree);
             } else {
@@ -218,6 +219,7 @@ public class Migration extends MigrationData {
             expelStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldExpel.getGroup())));
             expelStudentDegree.setDegree(expelStudentDegree.getStudentGroup().getSpecialization().getDegree());
             expelStudentDegree.setActive(false);
+            expelStudentDegree.setRecordBookNumber(oldExpel.getStudent().getRecordBookNumber());
             switch (oldExpel.getOrderReason().getId()) {
                 case 7: {
                     expelStudentDegree.setDiplomaDate(oldExpel.getStudent().getBachelorDiplomaDate());
