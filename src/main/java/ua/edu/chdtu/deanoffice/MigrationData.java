@@ -76,7 +76,7 @@ public class MigrationData {
     private static void saveAllItems(@NotNull List<? extends BaseEntity> entities) {
         entities.forEach(e -> {
             try {
-                getPostgresSession().save(e);
+                getPostgresSession().saveOrUpdate(e);
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -95,7 +95,6 @@ public class MigrationData {
         saveAllItems(newGroups);
         saveAllItems(newPrivileges);
         saveAllItems(newStudents);
-        saveAllItems(newStudentDegrees);
         saveAllItems(newTeachers);
         saveAllItems(newKnowledgeControlKinds);
         saveAllItems(newCourseNames);
@@ -103,6 +102,7 @@ public class MigrationData {
         saveAllItems(newCourseForGroups);
         saveAllItems(newGrades);
         saveAllItems(newExpels);
+        saveAllItems(newStudentDegrees);
         saveAllItems(newAcademicVacations);
     }
 }

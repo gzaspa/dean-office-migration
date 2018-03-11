@@ -20,6 +20,10 @@ public class Migration extends MigrationData {
         return name.replaceAll("\\B.|\\P{L}", "").toUpperCase();
     }
 
+    public static boolean isEmpty(Object str) {
+        return (str == null || "".equals(str));
+    }
+
     private static boolean equals(Object o1, Object o2) {
         return o1 != null && o2 != null && o1.equals(o2);
     }
@@ -43,13 +47,13 @@ public class Migration extends MigrationData {
         migrateGroups();
         migratePrivileges();
         migrateStudents();
-        createStudentDegrees();
         migrateTeachers();
         migrateKnowledgeControlKinds();
         migrateSubjects();
         migrateSubjectsForGroups();
         migrateGrades();
         migrateExpels();
+        createStudentDegrees();
         migrateAcademicVacations();
         addCurrentYear();
 
@@ -58,67 +62,91 @@ public class Migration extends MigrationData {
 
     private static void addCurrentYear() {
         CurrentYear year = new CurrentYear();
-        year.setCurrYear(2017);
+        Calendar calendar = Calendar.getInstance();
+        year.setCurrYear(calendar.get(Calendar.YEAR));
         DatabaseConnector.getPostgresSession().save(year);
-    }
-
-    public static boolean isEmpty(Object str) {
-        return (str == null || "".equals(str));
     }
 
     private static void createStudentDegrees() {
         oldStudents.forEach(oldStudent -> {
-            StudentGroup newStudentGroup = newGroups.stream().filter(studentGroup ->
-                    studentGroup.getName().equals(oldStudent.getGroup().getName()))
-                    .findFirst().get();
-
-            StudentDegree studentBachelorDegree = new StudentDegree();
-            if (!isEmpty(oldStudent.getBachelorWorkThesis())) {
-                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
-                studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
-                studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
-                studentBachelorDegree.setActive(oldStudent.isInActive());
-                studentBachelorDegree.setDegree(newDegrees.get(0));
-                //if (newStudentGroup.getSpecialization().getDegree().equals(studentBachelorDegree.getDegree())) {
-                studentBachelorDegree.setStudentGroup(newStudentGroup);
-                //}
-                newStudentDegrees.add(studentBachelorDegree);
+            StudentGroup newStudentGroup = newGroups.get(oldGroups.indexOf(oldStudent.getGroup()));
+            Student newStudent = newStudents.get(oldStudents.indexOf(oldStudent));
+            if (newStudentDegrees.stream().noneMatch(
+                    studentDegree -> studentDegree.getStudent().equals(newStudent)
+                            && studentDegree.getStudentGroup().equals(newStudentGroup))) {
+                StudentDegree studentDegree = new StudentDegree();
+                studentDegree.setStudent(newStudent);
+                newStudent.getDegrees().add(studentDegree);
+                studentDegree.setStudentGroup(newStudentGroup);
+                studentDegree.setDegree(newStudentGroup.getSpecialization().getDegree());
+                studentDegree.setActive(oldStudent.isInActive());
+                studentDegree.setRecordBookNumber(oldStudent.getRecordBookNumber());
+                if (studentDegree.getDegree().equals(newDegrees.get(0))) {
+                    studentDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
+                    studentDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
+                    studentDegree.setThesisName(oldStudent.getBachelorWorkThesis());
+                    if (newStudentGroup.getTuitionTerm().equals(TuitionTerm.SHORTENED)) {
+                        studentDegree.setPreviousDiplomaType(EducationDocument.JUNIOR_BACHELOR_DIPLOMA);
+                    } else {
+                        studentDegree.setPreviousDiplomaType(EducationDocument.SECONDARY_SCHOOL_CERTIFICATE);
+                    }
+                } else if (studentDegree.getDegree().equals(newDegrees.get(1))) {
+                    studentDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
+                    studentDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
+                    studentDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
+                    studentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+                } else {
+                    studentDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
+                    studentDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
+                    studentDegree.setThesisName(oldStudent.getMasterWorkThesis());
+                    studentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+                }
             }
 
-            StudentDegree studentSpecialistDegree = new StudentDegree();
-            if (!isEmpty(oldStudent.getSpecialistWorkThesis())) {
-                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
-                studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
-                studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
-                studentSpecialistDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
-                studentSpecialistDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
-                studentSpecialistDegree.setActive(false);
-                studentSpecialistDegree.setDegree(newDegrees.get(1));
-                //if (newStudentGroup.getSpecialization().getDegree().equals(studentSpecialistDegree.getDegree())) {
-                studentSpecialistDegree.setStudentGroup(newStudentGroup);
-                //}
-                newStudentDegrees.add(studentSpecialistDegree);
-            }
-
-            StudentDegree studentMasterDegree = new StudentDegree();
-            if (isEmpty(oldStudent.getMasterWorkThesis())) {
-                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-                studentMasterDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
-                studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
-                studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
-                studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
-                studentMasterDegree.setPreviousDiplomaNumber(studentBachelorDegree.getDiplomaNumber());
-                studentMasterDegree.setPreviousDiplomaDate(studentBachelorDegree.getDiplomaDate());
-                studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
-                studentMasterDegree.setActive(oldStudent.isInActive());
-                studentMasterDegree.setDegree(newDegrees.get(2));
-                //if (newStudentGroup.getSpecialization().getDegree().equals(studentMasterDegree.getDegree())) {
-                studentMasterDegree.setStudentGroup(newStudentGroup);
-                //}
-                newStudentDegrees.add(studentMasterDegree);
-            }
+//            if (newStudent.getDegrees().stream().noneMatch(studentDegree -> studentDegree.getDegree().equals(newDegrees.get(0)))
+//                    && !isEmpty(oldStudent.getBachelorWorkThesis())) {
+//                StudentDegree studentBachelorDegree = new StudentDegree();
+//                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
+//                studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
+//                studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
+//                studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
+//                studentBachelorDegree.setActive(oldStudent.isInActive());
+//                studentBachelorDegree.setDegree(newDegrees.get(0));
+//                studentBachelorDegree.setStudentGroup(newStudentGroup);
+//                if (newStudentGroup.getTuitionTerm().equals(TuitionTerm.SHORTENED)) {
+//                    studentBachelorDegree.setPreviousDiplomaType(EducationDocument.JUNIOR_BACHELOR_DIPLOMA);
+//                } else {
+//                    studentBachelorDegree.setPreviousDiplomaType(EducationDocument.SECONDARY_SCHOOL_CERTIFICATE);
+//                }
+//                newStudentDegrees.add(studentBachelorDegree);
+//            }
+//            if (newStudent.getDegrees().stream().noneMatch(studentDegree -> studentDegree.getDegree().equals(newDegrees.get(1)))
+//                    && !isEmpty(oldStudent.getSpecialistWorkThesis())) {
+//                StudentDegree studentSpecialistDegree = new StudentDegree();
+//                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
+//                studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
+//                studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
+//                studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
+//                studentSpecialistDegree.setActive(false);
+//                studentSpecialistDegree.setDegree(newDegrees.get(1));
+//                studentSpecialistDegree.setStudentGroup(newStudentGroup);
+//                studentSpecialistDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+//                newStudentDegrees.add(studentSpecialistDegree);
+//            }
+//            if (newStudent.getDegrees().stream().noneMatch(studentDegree -> studentDegree.getDegree().equals(newDegrees.get(2)))
+//                    && !isEmpty(oldStudent.getMasterWorkThesis())) {
+//                StudentDegree studentMasterDegree = new StudentDegree();
+//                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
+//                studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
+//                studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
+//                studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
+//                studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
+//                studentMasterDegree.setActive(oldStudent.isInActive());
+//                studentMasterDegree.setDegree(newDegrees.get(2));
+//                studentMasterDegree.setStudentGroup(newStudentGroup);
+//                studentMasterDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+//                newStudentDegrees.add(studentMasterDegree);
+//            }
         });
     }
 
@@ -138,70 +166,26 @@ public class Migration extends MigrationData {
         });
     }
 
-    private static EctsGrade convertEctsGrade(ua.edu.chdtu.deanoffice.oldentity.Grade grade) {
-        if (grade.getGradeECTS() == null) {
-            return null;
-        } else {
-            if (grade.getSubject().getKnowledgeControl().getGrade()) {
-                switch (grade.getGradeECTS().trim()) {
-                    case "A": {
-                        return EctsGrade.A;
-                    }
-                    case "B": {
-                        return EctsGrade.B;
-                    }
-                    case "C": {
-                        return EctsGrade.C;
-                    }
-                    case "D": {
-                        return EctsGrade.D;
-                    }
-                    case "E": {
-                        return EctsGrade.E;
-                    }
-                    case "FX": {
-                        return EctsGrade.FX;
-                    }
-                    case "F": {
-                        return EctsGrade.F;
-                    }
-                    default: {
-                        return null;
-                    }
-                }
-            } else {
-                if (grade.getGradeECTS() == null || grade.getGradeECTS().trim().equals("")) {
-                    return null;
-                }
-                if ("ABCDE".contains(grade.getGradeECTS())) {
-                    return EctsGrade.P;
-                }
-                if ("FX".contains(grade.getGradeECTS())) {
-                    return EctsGrade.F;
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
-
     private static void migrateAcademicVacations() {
         oldAcademicVacations.forEach(oldVacation -> {
             StudentAcademicVacation vacation = new StudentAcademicVacation();
             newAcademicVacations.add(vacation);
-            Student student = newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
-                    s -> s.getId() == oldVacation.getStudent().getId()).findFirst().get()));
-            StudentDegree vacationStudentDegree = new StudentDegree();
-            vacationStudentDegree.setStudent(student);
-            vacationStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldVacation.getGroup())));
-            try {
-                vacation.setStudentDegree(newStudentDegrees.stream().filter(studentDegree -> studentDegree.getStudentGroup().equals(vacationStudentDegree.getStudentGroup())
-                        && studentDegree.getStudent().equals(vacationStudentDegree.getStudent())).findAny().get());
-            } catch (NoSuchElementException exception) {
-                vacationStudentDegree.setActive(false);
+            Student student = newStudents.get(oldStudents.indexOf(oldVacation.getStudent()));
+            StudentGroup group = newGroups.get(oldGroups.indexOf(oldVacation.getGroup()));
+
+            if (newStudentDegrees.stream().noneMatch(studentDegree -> studentDegree.getStudent().equals(student)
+                    && studentDegree.getStudentGroup().equals(group))) {
+                StudentDegree vacationStudentDegree = new StudentDegree();
+                vacationStudentDegree.setStudent(student);
+                student.getDegrees().add(vacationStudentDegree);
+                vacationStudentDegree.setStudentGroup(group);
                 vacationStudentDegree.setDegree(vacationStudentDegree.getStudentGroup().getSpecialization().getDegree());
+                vacationStudentDegree.setActive(false);
                 newStudentDegrees.add(vacationStudentDegree);
                 vacation.setStudentDegree(vacationStudentDegree);
+            } else {
+                vacation.setStudentDegree(newStudentDegrees.stream().filter(studentDegree -> studentDegree.getStudent().equals(student)
+                        && studentDegree.getStudentGroup().equals(group)).findFirst().get());
             }
 
             vacation.setOrderDate(oldVacation.getOrderDate() == null ? new Date() : oldVacation.getOrderDate());
@@ -227,18 +211,46 @@ public class Migration extends MigrationData {
             newExpels.add(expel);
             Student student = newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
                     s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get()));
+
             StudentDegree expelStudentDegree = new StudentDegree();
             expelStudentDegree.setStudent(student);
+            student.getDegrees().add(expelStudentDegree);
             expelStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldExpel.getGroup())));
-            try {
-                expel.setStudentDegree(newStudentDegrees.stream().filter(studentDegree -> studentDegree.getStudentGroup().equals(expelStudentDegree.getStudentGroup())
-                        && studentDegree.getStudent().equals(expelStudentDegree.getStudent())).findAny().get());
-            } catch (NoSuchElementException exception) {
-                expelStudentDegree.setActive(false);
-                expelStudentDegree.setDegree(expelStudentDegree.getStudentGroup().getSpecialization().getDegree());
-                newStudentDegrees.add(expelStudentDegree);
-                expel.setStudentDegree(expelStudentDegree);
+            expelStudentDegree.setDegree(expelStudentDegree.getStudentGroup().getSpecialization().getDegree());
+            expelStudentDegree.setActive(false);
+            switch (oldExpel.getOrderReason().getId()) {
+                case 7: {
+                    expelStudentDegree.setDiplomaDate(oldExpel.getStudent().getBachelorDiplomaDate());
+                    expelStudentDegree.setDiplomaNumber(oldExpel.getStudent().getBachelorDiplomaNumber());
+                    expelStudentDegree.setThesisName(oldExpel.getStudent().getBachelorWorkThesis());
+                    if (expelStudentDegree.getStudentGroup().getTuitionTerm().equals(TuitionTerm.SHORTENED)) {
+                        expelStudentDegree.setPreviousDiplomaType(EducationDocument.JUNIOR_BACHELOR_DIPLOMA);
+                    } else {
+                        expelStudentDegree.setPreviousDiplomaType(EducationDocument.SECONDARY_SCHOOL_CERTIFICATE);
+                    }
+                    break;
+                }
+                case 8: {
+                    expelStudentDegree.setDiplomaDate(oldExpel.getStudent().getSpecialistDiplomaDate());
+                    expelStudentDegree.setDiplomaNumber(oldExpel.getStudent().getSpecialistDiplomaNumber());
+                    expelStudentDegree.setThesisName(oldExpel.getStudent().getSpecialistWorkThesis());
+                    expelStudentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+                    break;
+                }
+                case 18: {
+                    expelStudentDegree.setDiplomaDate(oldExpel.getStudent().getMasterDiplomaDate());
+                    expelStudentDegree.setDiplomaNumber(oldExpel.getStudent().getMasterDiplomaNumber());
+                    expelStudentDegree.setThesisName(oldExpel.getStudent().getMasterWorkThesis());
+                    expelStudentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
+                    break;
+                }
+                default: {
+
+                }
             }
+            newStudentDegrees.add(expelStudentDegree);
+            expel.setStudentDegree(expelStudentDegree);
+
             //Wrong value may be used!!!
             expel.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
             expel.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
@@ -578,6 +590,7 @@ public class Migration extends MigrationData {
                                 oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
+                studentGroup.setSpecialization(newSpecializations.get(0));
                 System.out.printf("Could not set specialization/speciality for %s!\n", oldGroup.getName());
             }
         });
@@ -727,32 +740,6 @@ public class Migration extends MigrationData {
         }
     }
 
-    private static void createNewSpecialistSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
-        if (!(oldSpec.getSpecialistName() == null || oldSpec.getSpecialistName().isEmpty())) {
-            ua.edu.chdtu.deanoffice.entity.Speciality specialistSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
-            specialistSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getSpecialistName()));
-            specialistSpec.setNameEng("");
-            specialistSpec.setActive(oldSpec.isActive());
-            if (oldSpec.getSpecialistCode().contains("-")) {
-                specialistSpec.setCode(oldSpec.getSpecialistCode().split("-")[0].trim());
-            } else {
-                specialistSpec.setCode(oldSpec.getSpecialistCode());
-            }
-            if (newSpecialities.stream().noneMatch(
-                    speciality -> equals(speciality.getCode(), specialistSpec.getCode()))) {
-                newSpecialities.add(specialistSpec);
-                if (!oldSpec.getSecondPartOfNewName(oldSpec.getBachelorName()).isEmpty()) {
-                    Specialization specSpecialization = createSpecialistsSpecialization(oldSpec, specialistSpec);
-                    specSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
-                }
-            } else {
-                createSpecialistsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
-                        .equals(oldSpec.getSpecialistCode().split("-")[0])).findFirst().get())
-                        .setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
-            }
-        }
-    }
-
     private static void createMasterSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
         if (!(oldSpec.getMasterName() == null || oldSpec.getMasterName().isEmpty())) {
             ua.edu.chdtu.deanoffice.entity.Speciality masterSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
@@ -813,8 +800,6 @@ public class Migration extends MigrationData {
                 createMasterSpeciality(oldSpec);
             } else {
                 createNewBachelorSpeciality(oldSpec);
-                //Should not be necessary
-                //createNewSpecialistSpeciality(oldSpec);
                 createNewMasterSpeciality(oldSpec);
             }
         });
@@ -862,5 +847,52 @@ public class Migration extends MigrationData {
             );
             faculty.setActive(oldFaculty.isActive());
         });
+    }
+
+    private static EctsGrade convertEctsGrade(ua.edu.chdtu.deanoffice.oldentity.Grade grade) {
+        if (grade.getGradeECTS() == null) {
+            return null;
+        } else {
+            if (grade.getSubject().getKnowledgeControl().getGrade()) {
+                switch (grade.getGradeECTS().trim()) {
+                    case "A": {
+                        return EctsGrade.A;
+                    }
+                    case "B": {
+                        return EctsGrade.B;
+                    }
+                    case "C": {
+                        return EctsGrade.C;
+                    }
+                    case "D": {
+                        return EctsGrade.D;
+                    }
+                    case "E": {
+                        return EctsGrade.E;
+                    }
+                    case "FX": {
+                        return EctsGrade.FX;
+                    }
+                    case "F": {
+                        return EctsGrade.F;
+                    }
+                    default: {
+                        return null;
+                    }
+                }
+            } else {
+                if (grade.getGradeECTS() == null || grade.getGradeECTS().trim().equals("")) {
+                    return null;
+                }
+                if ("ABCDE".contains(grade.getGradeECTS())) {
+                    return EctsGrade.P;
+                }
+                if ("FX".contains(grade.getGradeECTS())) {
+                    return EctsGrade.F;
+                } else {
+                    return null;
+                }
+            }
+        }
     }
 }
