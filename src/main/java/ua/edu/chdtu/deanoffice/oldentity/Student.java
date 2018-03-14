@@ -118,7 +118,7 @@ public class Student {
     private String recordBookNumber;
 
     @Column(name = "MASTER_DIPLOMA_WORK_ENG")
-    private String masterDiplomaWordEngName;
+    private String masterThesisEng;
 
     @Column(name = "BACHALOR_SUCCEEDED")
     private boolean bachalorSucceeded;
@@ -130,11 +130,11 @@ public class Student {
     private boolean masterSucceeded;
 
     public String getMasterDiplomaWorkEngName() {
-        return masterDiplomaWordEngName;
+        return masterThesisEng;
     }
 
-    public void setMasterDiplomaWordEngName(String masterDiplomaWordEngName) {
-        this.masterDiplomaWordEngName = masterDiplomaWordEngName;
+    public void setMasterThesisEng(String masterDiplomaWordEngName) {
+        this.masterThesisEng = masterDiplomaWordEngName;
     }
 
     @Override

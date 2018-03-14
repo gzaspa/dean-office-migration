@@ -99,6 +99,7 @@ public class Migration extends MigrationData {
                     studentDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
                     studentDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
                     studentDegree.setThesisName(oldStudent.getMasterWorkThesis());
+                    studentDegree.setThesisNameEng(oldStudent.getMasterThesisEng());
                     studentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
                 }
             }
@@ -243,6 +244,7 @@ public class Migration extends MigrationData {
                     expelStudentDegree.setDiplomaDate(oldExpel.getStudent().getMasterDiplomaDate());
                     expelStudentDegree.setDiplomaNumber(oldExpel.getStudent().getMasterDiplomaNumber());
                     expelStudentDegree.setThesisName(oldExpel.getStudent().getMasterWorkThesis());
+                    expelStudentDegree.setThesisNameEng(oldExpel.getStudent().getMasterThesisEng());
                     expelStudentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
                     break;
                 }
