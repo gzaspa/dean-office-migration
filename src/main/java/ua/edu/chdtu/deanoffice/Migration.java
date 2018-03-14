@@ -63,7 +63,12 @@ public class Migration extends MigrationData {
     private static void addCurrentYear() {
         CurrentYear year = new CurrentYear();
         Calendar calendar = Calendar.getInstance();
-        year.setCurrYear(calendar.get(Calendar.YEAR));
+        int currentYear = calendar.get(Calendar.YEAR);
+        if (calendar.get(Calendar.MONTH) >= 9) {
+            year.setCurrYear(currentYear);
+        } else {
+            year.setCurrYear(currentYear - 1);
+        }
         DatabaseConnector.getPostgresSession().save(year);
     }
 
