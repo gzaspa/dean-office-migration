@@ -52,6 +52,7 @@ public class Migration extends MigrationData {
         migrateSubjects();
         migrateSubjectsForGroups();
         migrateGrades();
+        mergeCourses();
         migrateExpels();
         createStudentDegrees();
         migrateAcademicVacations();
@@ -59,6 +60,34 @@ public class Migration extends MigrationData {
 
         saveAllNewEntities();
     }
+
+    private static void mergeCourses() {
+        Set<Course> equalCourses = new HashSet<>();
+        List<Course> coursesToDelete = new ArrayList<>();
+        for (Course course :
+                newCourses) {
+            if (equalCourses.isEmpty()) {
+                equalCourses.add(course);
+            } else if (course.equals(equalCourses.iterator().next())) {
+                equalCourses.add(course);
+            } else {
+                Course uniqueCourse = equalCourses.iterator().next();
+                List<CourseForGroup> courseForGroups = new ArrayList<>();
+                equalCourses.forEach(course1 -> courseForGroups.addAll(course1.getCoursesForGroups()));
+                courseForGroups.forEach(courseForGroup -> {
+                    courseForGroup.setCourse(uniqueCourse);
+                });
+
+                equalCourses.remove(uniqueCourse);
+                coursesToDelete.addAll(equalCourses);
+
+                equalCourses = new HashSet<>();
+                equalCourses.add(course);
+            }
+        }
+        newCourses.removeAll(coursesToDelete);
+    }
+
 
     private static void addCurrentYear() {
         CurrentYear year = new CurrentYear();
