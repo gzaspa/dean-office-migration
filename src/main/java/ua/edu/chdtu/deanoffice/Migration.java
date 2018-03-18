@@ -1,5 +1,7 @@
 package ua.edu.chdtu.deanoffice;
 
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import ua.edu.chdtu.deanoffice.entity.*;
 import ua.edu.chdtu.deanoffice.entity.superclasses.Sex;
 import ua.edu.chdtu.deanoffice.oldentity.Subject;
@@ -52,40 +54,72 @@ public class Migration extends MigrationData {
         migrateSubjects();
         migrateSubjectsForGroups();
         migrateGrades();
-        mergeCourses();
         migrateExpels();
         createStudentDegrees();
         migrateAcademicVacations();
         addCurrentYear();
 
         saveAllNewEntities();
+        mergeCourses();
     }
 
     private static void mergeCourses() {
-        Set<Course> equalCourses = new HashSet<>();
+        List<Course> courses = DatabaseConnector.getPostgresSession()
+                .createQuery("from Course c order by c.courseName.id", Course.class).list();
+        List<Course> equalCourses = new ArrayList<>();
         List<Course> coursesToDelete = new ArrayList<>();
-        for (Course course :
-                newCourses) {
+        for (Course course : courses) {
             if (equalCourses.isEmpty()) {
                 equalCourses.add(course);
-            } else if (course.equals(equalCourses.iterator().next())) {
+            } else if (course.equals(equalCourses.get(0))) {
                 equalCourses.add(course);
             } else {
-                Course uniqueCourse = equalCourses.iterator().next();
+                Course uniqueCourse = equalCourses.get(0);
+                equalCourses.remove(uniqueCourse);
+
                 List<CourseForGroup> courseForGroups = new ArrayList<>();
-                equalCourses.forEach(course1 -> courseForGroups.addAll(course1.getCoursesForGroups()));
+                equalCourses.forEach(course1 -> courseForGroups.addAll(DatabaseConnector.getPostgresSession()
+                        .createQuery("from CourseForGroup cFg where cFg.course.id = :courseId", CourseForGroup.class)
+                        .setParameter("courseId", course1.getId()).list()));
+
                 courseForGroups.forEach(courseForGroup -> {
                     courseForGroup.setCourse(uniqueCourse);
+                    updateEntity(courseForGroup);
                 });
 
-                equalCourses.remove(uniqueCourse);
+                List<Grade> grades = new ArrayList<>();
+                equalCourses.forEach(course1 -> grades.addAll(DatabaseConnector.getPostgresSession()
+                        .createQuery("from Grade g where g.course.id = :courseId", Grade.class)
+                        .setParameter("courseId", course1.getId()).list()));
+
+                grades.forEach(grade -> {
+                    grade.setCourse(uniqueCourse);
+                    updateEntity(grade);
+                });
+
                 coursesToDelete.addAll(equalCourses);
 
-                equalCourses = new HashSet<>();
+                equalCourses = new ArrayList<>();
                 equalCourses.add(course);
             }
         }
-        newCourses.removeAll(coursesToDelete);
+        deleteCourses(coursesToDelete);
+
+    }
+
+    private static void deleteCourses(List<Course> coursesToDelete) {
+        coursesToDelete.forEach(course -> {
+            Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+            try {
+                tx.begin();
+                Query query = DatabaseConnector.getPostgresSession().createQuery("delete Course where id = :ID");
+                query.setParameter("ID", course.getId());
+                query.executeUpdate();
+                tx.commit();
+            } catch (Exception ex) {
+                tx.rollback();
+            }
+        });
     }
 
 
@@ -137,51 +171,6 @@ public class Migration extends MigrationData {
                     studentDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
                 }
             }
-
-//            if (newStudent.getDegrees().stream().noneMatch(studentDegree -> studentDegree.getDegree().equals(newDegrees.get(0)))
-//                    && !isEmpty(oldStudent.getBachelorWorkThesis())) {
-//                StudentDegree studentBachelorDegree = new StudentDegree();
-//                studentBachelorDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-//                studentBachelorDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
-//                studentBachelorDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
-//                studentBachelorDegree.setThesisName(oldStudent.getBachelorWorkThesis());
-//                studentBachelorDegree.setActive(oldStudent.isInActive());
-//                studentBachelorDegree.setDegree(newDegrees.get(0));
-//                studentBachelorDegree.setStudentGroup(newStudentGroup);
-//                if (newStudentGroup.getTuitionTerm().equals(TuitionTerm.SHORTENED)) {
-//                    studentBachelorDegree.setPreviousDiplomaType(EducationDocument.JUNIOR_BACHELOR_DIPLOMA);
-//                } else {
-//                    studentBachelorDegree.setPreviousDiplomaType(EducationDocument.SECONDARY_SCHOOL_CERTIFICATE);
-//                }
-//                newStudentDegrees.add(studentBachelorDegree);
-//            }
-//            if (newStudent.getDegrees().stream().noneMatch(studentDegree -> studentDegree.getDegree().equals(newDegrees.get(1)))
-//                    && !isEmpty(oldStudent.getSpecialistWorkThesis())) {
-//                StudentDegree studentSpecialistDegree = new StudentDegree();
-//                studentSpecialistDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-//                studentSpecialistDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
-//                studentSpecialistDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
-//                studentSpecialistDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
-//                studentSpecialistDegree.setActive(false);
-//                studentSpecialistDegree.setDegree(newDegrees.get(1));
-//                studentSpecialistDegree.setStudentGroup(newStudentGroup);
-//                studentSpecialistDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
-//                newStudentDegrees.add(studentSpecialistDegree);
-//            }
-//            if (newStudent.getDegrees().stream().noneMatch(studentDegree -> studentDegree.getDegree().equals(newDegrees.get(2)))
-//                    && !isEmpty(oldStudent.getMasterWorkThesis())) {
-//                StudentDegree studentMasterDegree = new StudentDegree();
-//                studentMasterDegree.setStudent(newStudents.get(oldStudents.indexOf(oldStudent)));
-//                studentMasterDegree.setDiplomaDate(oldStudent.getMasterDiplomaDate());
-//                studentMasterDegree.setDiplomaNumber(oldStudent.getMasterDiplomaNumber());
-//                studentMasterDegree.setThesisName(oldStudent.getMasterWorkThesis());
-//                studentMasterDegree.setThesisNameEng(oldStudent.getMasterDiplomaWorkEngName());
-//                studentMasterDegree.setActive(oldStudent.isInActive());
-//                studentMasterDegree.setDegree(newDegrees.get(2));
-//                studentMasterDegree.setStudentGroup(newStudentGroup);
-//                studentMasterDegree.setPreviousDiplomaType(EducationDocument.BACHELOR_DIPLOMA);
-//                newStudentDegrees.add(studentMasterDegree);
-//            }
         });
     }
 

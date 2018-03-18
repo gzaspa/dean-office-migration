@@ -83,6 +83,14 @@ public class MigrationData {
         });
     }
 
+    public static void updateEntity(@NotNull BaseEntity entity) {
+        try {
+            getPostgresSession().update(entity);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
     public static void saveAllNewEntities() {
         //Order matters!
         saveAllItems(newFaculties);
