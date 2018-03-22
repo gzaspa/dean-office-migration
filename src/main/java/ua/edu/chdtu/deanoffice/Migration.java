@@ -146,6 +146,7 @@ public class Migration extends MigrationData {
                 studentDegree.setStudent(newStudent);
                 newStudent.getDegrees().add(studentDegree);
                 studentDegree.setStudentGroup(newStudentGroup);
+                studentDegree.setSpecialization(studentDegree.getStudentGroup().getSpecialization());
                 studentDegree.setDegree(newStudentGroup.getSpecialization().getDegree());
                 studentDegree.setActive(oldStudent.isInActive());
                 studentDegree.setRecordBookNumber(oldStudent.getRecordBookNumber());
@@ -203,6 +204,7 @@ public class Migration extends MigrationData {
                 vacationStudentDegree.setStudent(student);
                 student.getDegrees().add(vacationStudentDegree);
                 vacationStudentDegree.setStudentGroup(group);
+                vacationStudentDegree.setSpecialization(vacationStudentDegree.getStudentGroup().getSpecialization());
                 vacationStudentDegree.setDegree(vacationStudentDegree.getStudentGroup().getSpecialization().getDegree());
                 vacationStudentDegree.setActive(false);
                 vacationStudentDegree.setRecordBookNumber(oldVacation.getStudent().getRecordBookNumber());
@@ -223,6 +225,7 @@ public class Migration extends MigrationData {
             //Wrong value used!!!
             vacation.setVacationEndDate(nullDateReplacer);
         });
+
     }
 
     private static void migrateExpels() {
@@ -241,6 +244,7 @@ public class Migration extends MigrationData {
             expelStudentDegree.setStudent(student);
             student.getDegrees().add(expelStudentDegree);
             expelStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldExpel.getGroup())));
+            expelStudentDegree.setSpecialization(expelStudentDegree.getStudentGroup().getSpecialization());
             expelStudentDegree.setDegree(expelStudentDegree.getStudentGroup().getSpecialization().getDegree());
             expelStudentDegree.setActive(false);
             expelStudentDegree.setRecordBookNumber(oldExpel.getStudent().getRecordBookNumber());

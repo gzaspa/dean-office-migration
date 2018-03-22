@@ -18,6 +18,8 @@ public class StudentDegree extends BaseEntity {
     private StudentGroup studentGroup;
     @ManyToOne
     private Degree degree;
+    @ManyToOne
+    private Specialization specialization;
     @Column(name = "record_book_number", length = 15)
     private String recordBookNumber;
     @Column(name = "admission_order_number", length = 15)
