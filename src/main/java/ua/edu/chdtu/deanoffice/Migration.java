@@ -2,7 +2,25 @@ package ua.edu.chdtu.deanoffice;
 
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import ua.edu.chdtu.deanoffice.entity.*;
+import ua.edu.chdtu.deanoffice.entity.Course;
+import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
+import ua.edu.chdtu.deanoffice.entity.CourseName;
+import ua.edu.chdtu.deanoffice.entity.CurrentYear;
+import ua.edu.chdtu.deanoffice.entity.Degree;
+import ua.edu.chdtu.deanoffice.entity.EctsGrade;
+import ua.edu.chdtu.deanoffice.entity.EducationDocument;
+import ua.edu.chdtu.deanoffice.entity.Faculty;
+import ua.edu.chdtu.deanoffice.entity.Grade;
+import ua.edu.chdtu.deanoffice.entity.KnowledgeControl;
+import ua.edu.chdtu.deanoffice.entity.Speciality;
+import ua.edu.chdtu.deanoffice.entity.Specialization;
+import ua.edu.chdtu.deanoffice.entity.Student;
+import ua.edu.chdtu.deanoffice.entity.StudentAcademicVacation;
+import ua.edu.chdtu.deanoffice.entity.StudentDegree;
+import ua.edu.chdtu.deanoffice.entity.StudentExpel;
+import ua.edu.chdtu.deanoffice.entity.StudentGroup;
+import ua.edu.chdtu.deanoffice.entity.TuitionForm;
+import ua.edu.chdtu.deanoffice.entity.TuitionTerm;
 import ua.edu.chdtu.deanoffice.entity.superclasses.Sex;
 import ua.edu.chdtu.deanoffice.oldentity.Subject;
 
@@ -11,7 +29,14 @@ import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 public class Migration extends MigrationData {
 
@@ -331,8 +356,9 @@ public class Migration extends MigrationData {
             }
             course.setCourseName(courseName);
             course.setHours(oldSubj.getHours());
+            course.setHoursPerCredit(course.getHours() % 36 == 0 ? 36 : 30);
             if (oldSubj.getCredits() == null) {
-                course.setCredits(new BigDecimal(course.getHours() / 30.0));
+                course.setCredits(new BigDecimal(course.getHours() / course.getHoursPerCredit()));
             } else {
                 course.setCredits(new BigDecimal(oldSubj.getCredits()));
             }
