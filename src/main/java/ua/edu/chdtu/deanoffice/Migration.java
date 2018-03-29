@@ -85,12 +85,12 @@ public class Migration extends MigrationData {
         addCurrentYear();
 
         saveAllNewEntities();
-        mergeCourses();
+//        mergeCourses();
     }
 
     private static void mergeCourses() {
         List<Course> courses = DatabaseConnector.getPostgresSession()
-                .createQuery("from Course c order by c.courseName.id", Course.class).list();
+                .createQuery("from Course c order by c.courseName.id,c.kc_id,c.semester,c.hours", Course.class).list();
         List<Course> equalCourses = new ArrayList<>();
         List<Course> coursesToDelete = new ArrayList<>();
         for (Course course : courses) {
