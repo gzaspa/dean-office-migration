@@ -85,12 +85,12 @@ public class Migration extends MigrationData {
         addCurrentYear();
 
         saveAllNewEntities();
-//        mergeCourses();
+        mergeCourses();
     }
 
     private static void mergeCourses() {
         List<Course> courses = DatabaseConnector.getPostgresSession()
-                .createQuery("from Course c order by c.courseName.id,c.kc_id,c.semester,c.hours", Course.class).list();
+                .createQuery("from Course c order by c.courseName.id,c.knowledgeControl.id,c.semester,c.hours", Course.class).list();
         List<Course> equalCourses = new ArrayList<>();
         List<Course> coursesToDelete = new ArrayList<>();
         for (Course course : courses) {
@@ -146,7 +146,6 @@ public class Migration extends MigrationData {
             }
         });
     }
-
 
     private static void addCurrentYear() {
         CurrentYear year = new CurrentYear();
@@ -204,12 +203,8 @@ public class Migration extends MigrationData {
         oldGrades.forEach(oldGrade -> {
             Grade grade = new Grade();
             newGrades.add(grade);
-            grade.setStudent(newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(student ->
-                    student.getId() == oldGrade.getStudent().getId()
-            ).findFirst().get())));
-            grade.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(course ->
-                    course.getId() == oldGrade.getSubject().getId()
-            ).findFirst().get())));
+            grade.setStudent(newStudents.get(oldStudents.indexOf(oldGrade.getStudent())));
+            grade.setCourse(newCourses.get(oldSubjects.indexOf(oldGrade.getSubject())));
             grade.setEcts(convertEctsGrade(oldGrade));
             grade.setPoints(oldGrade.getPoints() == null ? 0 : oldGrade.getPoints());
             grade.setGrade(oldGrade.getGrade() == null ? 0 : oldGrade.getGrade());
@@ -322,10 +317,8 @@ public class Migration extends MigrationData {
         oldCoursesForGroups.forEach(oldCG -> {
             CourseForGroup courseForGroup = new CourseForGroup();
             newCourseForGroups.add(courseForGroup);
-            courseForGroup.setCourse(newCourses.get(oldSubjects.indexOf(oldSubjects.stream().filter(
-                    subject -> equals(subject.getId(), oldCG.getSubject().getId())).findFirst().get())));
-            courseForGroup.setStudentGroup(newGroups.stream().filter(group ->
-                    equals(group.getName(), oldCG.getGroup().getName())).findFirst().get());
+            courseForGroup.setCourse(newCourses.get(oldSubjects.indexOf(oldCG.getSubject())));
+            courseForGroup.setStudentGroup(newGroups.get(oldGroups.indexOf(oldCG.getGroup())));
             courseForGroup.setExamDate(oldCG.getExamDate());
             try {
                 courseForGroup.setTeacher(newTeachers.get(oldTeachers.indexOf(oldTeachers.stream().filter(teacher ->
@@ -588,7 +581,6 @@ public class Migration extends MigrationData {
             }
             student.setSex(oldStudent.getSex() == 'M' ? Sex.MALE : Sex.FEMALE);
             student.setSchool(oldStudent.getSchool());
-            student.setStudentCardNumber("");
         });
     }
 
@@ -647,6 +639,7 @@ public class Migration extends MigrationData {
                                 oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
+                //Todo: wrong specialization is set here. Each group, that causes exception will have first specialization in table
                 studentGroup.setSpecialization(newSpecializations.get(0));
                 System.out.printf("Could not set specialization/speciality for %s!\n", oldGroup.getName());
             }
@@ -921,43 +914,29 @@ public class Migration extends MigrationData {
         if (grade.getGradeECTS() == null) {
             return null;
         } else {
-            if (grade.getSubject().getKnowledgeControl().getGrade()) {
-                switch (grade.getGradeECTS().trim()) {
-                    case "A": {
-                        return EctsGrade.A;
-                    }
-                    case "B": {
-                        return EctsGrade.B;
-                    }
-                    case "C": {
-                        return EctsGrade.C;
-                    }
-                    case "D": {
-                        return EctsGrade.D;
-                    }
-                    case "E": {
-                        return EctsGrade.E;
-                    }
-                    case "FX": {
-                        return EctsGrade.FX;
-                    }
-                    case "F": {
-                        return EctsGrade.F;
-                    }
-                    default: {
-                        return null;
-                    }
+            switch (grade.getGradeECTS().trim()) {
+                case "A": {
+                    return EctsGrade.A;
                 }
-            } else {
-                if (grade.getGradeECTS() == null || grade.getGradeECTS().trim().equals("")) {
-                    return null;
+                case "B": {
+                    return EctsGrade.B;
                 }
-                if ("ABCDE".contains(grade.getGradeECTS())) {
-                    return EctsGrade.P;
+                case "C": {
+                    return EctsGrade.C;
                 }
-                if ("FX".contains(grade.getGradeECTS())) {
+                case "D": {
+                    return EctsGrade.D;
+                }
+                case "E": {
+                    return EctsGrade.E;
+                }
+                case "FX": {
+                    return EctsGrade.FX;
+                }
+                case "F": {
                     return EctsGrade.F;
-                } else {
+                }
+                default: {
                     return null;
                 }
             }

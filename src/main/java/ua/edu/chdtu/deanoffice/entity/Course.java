@@ -23,7 +23,7 @@ public class Course extends BaseEntity {
     private KnowledgeControl knowledgeControl;
     @Column(name = "hours", nullable = false)
     private Integer hours;
-    @Column(name = "hoursPerCredit", nullable = false)
+    @Column(name = "hours_per_credit", nullable = false)
     private Integer hoursPerCredit;
     @Column(name = "credits", nullable = false, precision = 4, scale = 1)
     private BigDecimal credits;
@@ -31,7 +31,7 @@ public class Course extends BaseEntity {
     public boolean equals(Course other) {
         return this.courseName.equals(other.getCourseName())
                 && this.semester.equals(other.getSemester())
-                && this.knowledgeControl.equals(other.getKnowledgeControl())
-                && this.hours.equals(other.getHours());
+                && this.hours.equals(other.getHours())
+                && this.knowledgeControl.equals(other.getKnowledgeControl());
     }
 }

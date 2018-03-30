@@ -1,17 +1,31 @@
 package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
-import ua.edu.chdtu.deanoffice.entity.*;
+import ua.edu.chdtu.deanoffice.entity.Course;
+import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
+import ua.edu.chdtu.deanoffice.entity.CourseName;
+import ua.edu.chdtu.deanoffice.entity.Degree;
+import ua.edu.chdtu.deanoffice.entity.Faculty;
+import ua.edu.chdtu.deanoffice.entity.Specialization;
+import ua.edu.chdtu.deanoffice.entity.StudentAcademicVacation;
+import ua.edu.chdtu.deanoffice.entity.StudentDegree;
+import ua.edu.chdtu.deanoffice.entity.StudentExpel;
+import ua.edu.chdtu.deanoffice.entity.StudentGroup;
 import ua.edu.chdtu.deanoffice.entity.superclasses.BaseEntity;
-import ua.edu.chdtu.deanoffice.oldentity.*;
+import ua.edu.chdtu.deanoffice.oldentity.AcademicVacation;
+import ua.edu.chdtu.deanoffice.oldentity.Cathedra;
 import ua.edu.chdtu.deanoffice.oldentity.Department;
+import ua.edu.chdtu.deanoffice.oldentity.Expel;
 import ua.edu.chdtu.deanoffice.oldentity.Grade;
+import ua.edu.chdtu.deanoffice.oldentity.Group;
+import ua.edu.chdtu.deanoffice.oldentity.GroupSubject;
 import ua.edu.chdtu.deanoffice.oldentity.KnowledgeControl;
 import ua.edu.chdtu.deanoffice.oldentity.OrderReason;
 import ua.edu.chdtu.deanoffice.oldentity.Position;
 import ua.edu.chdtu.deanoffice.oldentity.Privilege;
 import ua.edu.chdtu.deanoffice.oldentity.Speciality;
 import ua.edu.chdtu.deanoffice.oldentity.Student;
+import ua.edu.chdtu.deanoffice.oldentity.Subject;
 import ua.edu.chdtu.deanoffice.oldentity.Teacher;
 
 import java.util.ArrayList;
@@ -84,11 +98,7 @@ public class MigrationData {
     }
 
     public static void updateEntity(@NotNull BaseEntity entity) {
-        try {
-            getPostgresSession().update(entity);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        getPostgresSession().update(entity);
     }
 
     public static void saveAllNewEntities() {
