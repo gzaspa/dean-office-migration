@@ -7,11 +7,8 @@ import org.hibernate.cfg.Configuration;
 public class DatabaseConnector {
 
     private static SessionFactory firebirdSessionFactory;
-
     private static SessionFactory postgresSessionFactory;
-
     private static Session firebirdSession;
-
     private static Session postgresSession;
 
     private static void configFirebird() {

@@ -78,14 +78,38 @@ public class Migration extends MigrationData {
         migrateKnowledgeControlKinds();
         migrateSubjects();
         migrateSubjectsForGroups();
-        migrateGrades();
         migrateExpels();
         createStudentDegrees();
+        migrateGrades();
         migrateAcademicVacations();
         addCurrentYear();
 
         saveAllNewEntities();
+        //countAverageDegrees();
         mergeCourses();
+    }
+
+    private static void countAverageDegrees() {
+        //Debug
+        double count = .0;
+        int maxValue = 0;
+        for (Student student : newStudents) {
+            if (student.getDegrees().size() > maxValue) {
+                maxValue = student.getDegrees().size();
+            }
+            count += student.getDegrees().size();
+        }
+        count /= newStudents.size();
+        System.out.printf("Average StudentDegrees per Student is %1.2f \n", count);
+        System.out.printf("Max StudentDegrees per Student is %d \n", maxValue);
+
+        int maxCount = 0;
+        for (Student student : newStudents) {
+            if (student.getDegrees().size() == maxValue) {
+                maxCount++;
+            }
+        }
+        System.out.printf("%d students have maximum amount of degrees\n", maxCount);
     }
 
     private static void mergeCourses() {
@@ -106,20 +130,16 @@ public class Migration extends MigrationData {
                 equalCourses.forEach(course1 -> courseForGroups.addAll(DatabaseConnector.getPostgresSession()
                         .createQuery("from CourseForGroup cFg where cFg.course.id = :courseId", CourseForGroup.class)
                         .setParameter("courseId", course1.getId()).list()));
-
                 courseForGroups.forEach(courseForGroup -> {
-                    courseForGroup.setCourse(uniqueCourse);
-                    updateEntity(courseForGroup);
+                    updateCourseForGroup(courseForGroup, uniqueCourse);
                 });
 
                 List<Grade> grades = new ArrayList<>();
                 equalCourses.forEach(course1 -> grades.addAll(DatabaseConnector.getPostgresSession()
                         .createQuery("from Grade g where g.course.id = :courseId", Grade.class)
                         .setParameter("courseId", course1.getId()).list()));
-
                 grades.forEach(grade -> {
-                    grade.setCourse(uniqueCourse);
-                    updateEntity(grade);
+                    updateGrade(grade, uniqueCourse);
                 });
 
                 coursesToDelete.addAll(equalCourses);
@@ -129,7 +149,41 @@ public class Migration extends MigrationData {
             }
         }
         deleteCourses(coursesToDelete);
+    }
 
+    private static void updateCourseForGroup(CourseForGroup courseForGroup, Course newCourse) {
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+            courseForGroup.setCourse(newCourse);
+            updateEntity(courseForGroup);
+//            Query query = DatabaseConnector.getPostgresSession().createNativeQuery(
+//                    "UPDATE courses_for_groups SET course_id = :newCourseId " +
+//                            "WHERE id = :currentCourseId ");
+//            query.setParameter("newCourseId", newCourse.getId());
+//            query.setParameter("currentCourseId", courseForGroup.getCourse().getId());
+//            query.executeUpdate();
+            tx.commit();
+        } catch (Exception ex) {
+            tx.rollback();
+        }
+    }
+
+    private static void updateGrade(Grade grade, Course newCourse) {
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+            grade.setCourse(newCourse);
+//            Query query = DatabaseConnector.getPostgresSession().createNativeQuery(
+//                    "UPDATE grade SET course_id = :newCourseId " +
+//                            "WHERE id = :currentCourseId ");
+//            query.setParameter("newCourseId", newCourse.getId());
+//            query.setParameter("currentCourseId", grade.getCourse().getId());
+//            query.executeUpdate();
+            tx.commit();
+        } catch (Exception ex) {
+            tx.rollback();
+        }
     }
 
     private static void deleteCourses(List<Course> coursesToDelete) {
@@ -203,12 +257,27 @@ public class Migration extends MigrationData {
         oldGrades.forEach(oldGrade -> {
             Grade grade = new Grade();
             newGrades.add(grade);
-            grade.setStudent(newStudents.get(oldStudents.indexOf(oldGrade.getStudent())));
+            grade.setStudentDegree(getStudentDegree(oldGrade));
             grade.setCourse(newCourses.get(oldSubjects.indexOf(oldGrade.getSubject())));
             grade.setEcts(convertEctsGrade(oldGrade));
             grade.setPoints(oldGrade.getPoints() == null ? 0 : oldGrade.getPoints());
             grade.setGrade(oldGrade.getGrade() == null ? 0 : oldGrade.getGrade());
         });
+    }
+
+    private static StudentDegree getStudentDegree(ua.edu.chdtu.deanoffice.oldentity.Grade grade) {
+        Student student = newStudents.get(oldStudents.indexOf(grade.getStudent()));
+        StudentGroup studentGroup = newGroups.get(oldGroups.indexOf(grade.getStudent().getGroup()));
+        StudentDegree result = student.getDegrees().stream()
+                .filter(studentDegree -> studentDegree.getStudent().equals(student)
+                        && studentDegree.getStudentGroup().equals(studentGroup)
+                ).findFirst().orElse(null);
+        if (result == null) {
+            List<StudentDegree> degrees = new ArrayList<>(student.getDegrees());
+            degrees.removeIf(studentDegree -> studentDegree.getStudentGroup().equals(studentGroup));
+            result = degrees.get(0);
+        }
+        return result;
     }
 
     private static void migrateAcademicVacations() {
@@ -257,8 +326,7 @@ public class Migration extends MigrationData {
         oldExpels.forEach(oldExpel -> {
             StudentExpel expel = new StudentExpel();
             newExpels.add(expel);
-            Student student = newStudents.get(oldStudents.indexOf(oldStudents.stream().filter(
-                    s -> s.getId() == oldExpel.getStudent().getId()).findFirst().get()));
+            Student student = newStudents.get(oldStudents.indexOf(oldExpel.getStudent()));
 
             StudentDegree expelStudentDegree = new StudentDegree();
             expelStudentDegree.setStudent(student);

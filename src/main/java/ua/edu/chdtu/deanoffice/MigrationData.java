@@ -1,6 +1,7 @@
 package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
+import org.hibernate.Transaction;
 import ua.edu.chdtu.deanoffice.entity.Course;
 import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
 import ua.edu.chdtu.deanoffice.entity.CourseName;
@@ -89,9 +90,13 @@ public class MigrationData {
 
     private static void saveAllItems(@NotNull List<? extends BaseEntity> entities) {
         entities.forEach(e -> {
+            //Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
             try {
-                getPostgresSession().saveOrUpdate(e);
+                //tx.begin();
+                e.setId((Integer) getPostgresSession().save(e));
+                //tx.commit();
             } catch (Exception exception) {
+                //tx.rollback();
                 exception.printStackTrace();
             }
         });
