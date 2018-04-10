@@ -12,7 +12,7 @@ import javax.persistence.UniqueConstraint;
 @Getter
 @Setter
 @Entity
-@Table(name = "degree", uniqueConstraints = {@UniqueConstraint(columnNames = {"id", "name"})})
+@Table(name = "degree", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
 public class Degree extends NameWithEngEntity {
 
     @Column(name = "qualification_level_descr")

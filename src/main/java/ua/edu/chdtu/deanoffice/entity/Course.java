@@ -8,13 +8,18 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
 @Getter
 @Setter
+@Table(name = "course"/*, uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"semester", "kc_id", "hours", "course_name_id"})
+}*/)
 public class Course extends BaseEntity {
     @ManyToOne
+    @JoinColumn(name = "course_name_id")
     private CourseName courseName;
     @Column(name = "semester", nullable = false)
     private Integer semester;

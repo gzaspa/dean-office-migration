@@ -10,9 +10,11 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,9 +22,12 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Table(name = "student_group")
+@Table(name = "student_group"/*, uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"name", "creation_year"})
+}*/)
 public class StudentGroup extends NameWithActiveEntity {
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Specialization specialization;
     @Column(name = "creation_year", nullable = false)
     private int creationYear;

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -20,12 +21,16 @@ import java.util.Date;
 @Table(name = "student_degree")
 public class StudentDegree extends BaseEntity {
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Student student;
     @ManyToOne
+    @JoinColumn(name = "student_group_id")
     private StudentGroup studentGroup;
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Degree degree;
     @ManyToOne
+    @JoinColumn(nullable = false)
     private Specialization specialization;
     @Column(name = "record_book_number", length = 15)
     private String recordBookNumber;

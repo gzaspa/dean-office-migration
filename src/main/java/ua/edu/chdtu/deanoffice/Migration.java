@@ -305,7 +305,7 @@ public class Migration extends MigrationData {
             }
 
             vacation.setOrderDate(oldVacation.getOrderDate() == null ? new Date() : oldVacation.getOrderDate());
-            vacation.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
+            vacation.setOrderReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
                     r -> r.getId() == oldVacation.getOrderReason().getId()).findFirst().get())));
             vacation.setOrderNumber(oldVacation.getOrderNumber() == null ? "0" : oldVacation.getOrderNumber());
             //Wrong value may be used!!!
@@ -372,7 +372,7 @@ public class Migration extends MigrationData {
 
             //Wrong value may be used!!!
             expel.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());
-            expel.setReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
+            expel.setOrderReason(newReasons.get(oldReasons.indexOf(oldReasons.stream().filter(
                     r -> r.getId() == oldExpel.getOrderReason().getId()).findFirst().get())));
             expel.setOrderNumber(oldExpel.getOrderNumber() == null ? "0" : oldExpel.getOrderNumber());
             //Wrong value may be used!!!
@@ -476,8 +476,9 @@ public class Migration extends MigrationData {
 
     private static void fixSubjectsNames() {
         oldSubjects.forEach(s -> {
+            s.setName(s.getName().replaceAll(" +", " "));
+            s.setName(s.getName().trim());
             s.setName(s.getName().replace(",", ", "));
-            s.setName(s.getName().trim().replaceAll(" +", " "));
             s.setName(s.getName().replace("- ", "-"));
             s.setName(s.getName().replace(" -", "-"));
             s.setName(s.getName().replace(" - ", "-"));
@@ -593,12 +594,12 @@ public class Migration extends MigrationData {
             newKnowledgeControlKinds.add(knowledgeControl);
             knowledgeControl.setName(oldKCKind.getName());
             knowledgeControl.setNameEng("");
-            knowledgeControl.setHasGrade(oldKCKind.getGrade());
+            knowledgeControl.setGraded(oldKCKind.getGrade());
         });
 
         KnowledgeControl kc = new KnowledgeControl();
-        kc.setHasGrade(false);
-        kc.setName("практика");
+        kc.setGraded(false);
+        kc.setName("практика (як залік)");
         kc.setNameEng("");
         newKnowledgeControlKinds.add(kc);
     }

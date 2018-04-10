@@ -16,7 +16,7 @@ public class Person extends BaseEntity {
     private String surname;
     @Column(name = "name", nullable = false, length = 20)
     private String name;
-    @Column(name = "patronimic", nullable = false, length = 20)
+    @Column(name = "patronimic", length = 20)
     private String patronimic;
     @Column(name = "sex", nullable = false, length = 6, columnDefinition = "varchar(6) default 'MALE'")
     @Enumerated(value = EnumType.STRING)
