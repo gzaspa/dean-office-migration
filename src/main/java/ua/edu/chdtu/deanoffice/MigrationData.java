@@ -1,7 +1,6 @@
 package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
-import org.hibernate.Transaction;
 import ua.edu.chdtu.deanoffice.entity.Course;
 import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
 import ua.edu.chdtu.deanoffice.entity.CourseName;

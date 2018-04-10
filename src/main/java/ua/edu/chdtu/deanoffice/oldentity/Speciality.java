@@ -2,7 +2,13 @@ package ua.edu.chdtu.deanoffice.oldentity;
 
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Set;
 
 @Entity
@@ -72,7 +78,9 @@ public class Speciality {
                 result += word + " ";
             }
             return result.trim();
-        } else return name;
+        } else {
+            return name;
+        }
     }
 
     public String getSecondPartOfNewName(String name) {
@@ -84,10 +92,12 @@ public class Speciality {
             if (name.contains("Кібербезпека")) {
                 return "Кібербезпека";
             }
-            if (name.contains("Автоматизація та комп'ютерно-інтегровані технології"))
+            if (name.contains("Автоматизація та комп'ютерно-інтегровані технології")) {
                 return "Автоматизація та комп'ютерно-інтегровані технології";
-            if (name.contains("Інформаційні системи та технології"))
+            }
+            if (name.contains("Інформаційні системи та технології")) {
                 return "Інформаційні системи та технології";
+            }
             String result = "";
             name = name.trim();
             String[] words = name.split(" ");
@@ -105,23 +115,33 @@ public class Speciality {
                 }
             }
             return result.trim();
-        } else return name;
+        } else {
+            return name;
+        }
     }
 
     public String getSpecialityNameFromNew(String name) {
         if (isNew()) {
-            if (specialistCode.contains("-"))
+            if (specialistCode.contains("-")) {
                 return "";
-            else return getFirstPartOfNewName(name);
-        } else return name;
+            } else {
+                return getFirstPartOfNewName(name);
+            }
+        } else {
+            return name;
+        }
     }
 
     public String getSpecializationNameFromNew(String name) {
         if (isNew()) {
-            if (specialistCode.contains("-"))
+            if (specialistCode.contains("-")) {
                 return name;
-            else return getSecondPartOfNewName(name);
-        } else return name;
+            } else {
+                return getSecondPartOfNewName(name);
+            }
+        } else {
+            return name;
+        }
     }
 
     public int getId() {
@@ -189,9 +209,11 @@ public class Speciality {
     }
 
     public String getMasterName() {
-        if (masterName == null)
+        if (masterName == null) {
             return "";
-        else return masterName;
+        } else {
+            return masterName;
+        }
     }
 
     public void setMasterName(String masterName) {
@@ -207,9 +229,11 @@ public class Speciality {
     }
 
     public String getMasterCode() {
-        if (masterCode == null)
+        if (masterCode == null) {
             return "";
-        else return masterCode;
+        } else {
+            return masterCode;
+        }
     }
 
     public void setMasterCode(String masterCode) {
