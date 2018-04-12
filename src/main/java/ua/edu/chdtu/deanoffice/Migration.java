@@ -2,25 +2,7 @@ package ua.edu.chdtu.deanoffice;
 
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import ua.edu.chdtu.deanoffice.entity.Course;
-import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
-import ua.edu.chdtu.deanoffice.entity.CourseName;
-import ua.edu.chdtu.deanoffice.entity.CurrentYear;
-import ua.edu.chdtu.deanoffice.entity.Degree;
-import ua.edu.chdtu.deanoffice.entity.EctsGrade;
-import ua.edu.chdtu.deanoffice.entity.EducationDocument;
-import ua.edu.chdtu.deanoffice.entity.Faculty;
-import ua.edu.chdtu.deanoffice.entity.Grade;
-import ua.edu.chdtu.deanoffice.entity.KnowledgeControl;
-import ua.edu.chdtu.deanoffice.entity.Speciality;
-import ua.edu.chdtu.deanoffice.entity.Specialization;
-import ua.edu.chdtu.deanoffice.entity.Student;
-import ua.edu.chdtu.deanoffice.entity.StudentAcademicVacation;
-import ua.edu.chdtu.deanoffice.entity.StudentDegree;
-import ua.edu.chdtu.deanoffice.entity.StudentExpel;
-import ua.edu.chdtu.deanoffice.entity.StudentGroup;
-import ua.edu.chdtu.deanoffice.entity.TuitionForm;
-import ua.edu.chdtu.deanoffice.entity.TuitionTerm;
+import ua.edu.chdtu.deanoffice.entity.*;
 import ua.edu.chdtu.deanoffice.entity.superclasses.Sex;
 import ua.edu.chdtu.deanoffice.oldentity.Subject;
 
@@ -313,6 +295,10 @@ public class Migration extends MigrationData {
             vacation.setVacationStartDate(oldVacation.getVacationStart());
             //Wrong value used!!!
             vacation.setVacationEndDate(nullDateReplacer);
+
+            vacation.setStudentGroup(vacation.getStudentDegree().getStudentGroup());
+            vacation.setStudyYear(0);
+            vacation.setExtraInformation("");
         });
 
     }
@@ -369,6 +355,10 @@ public class Migration extends MigrationData {
             }
             newStudentDegrees.add(expelStudentDegree);
             expel.setStudentDegree(expelStudentDegree);
+
+            expel.setStudyYear(0);
+            expel.setPayment(Payment.BUDGET);
+            expel.setStudentGroup(expel.getStudentDegree().getStudentGroup());
 
             //Wrong value may be used!!!
             expel.setOrderDate(oldExpel.getOrderDate() == null ? nullDateReplacer : oldExpel.getOrderDate());

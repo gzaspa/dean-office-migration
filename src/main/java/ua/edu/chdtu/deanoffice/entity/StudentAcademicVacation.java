@@ -21,21 +21,37 @@ public class StudentAcademicVacation extends BaseEntity {
     @ManyToOne
     @JoinColumn(nullable = false, name = "student_degree_id")
     private StudentDegree studentDegree;
+
+    @ManyToOne
+    @JoinColumn(name = "student_group_id", nullable = false)
+    private StudentGroup studentGroup;
+
+    @Column(name = "study_year", nullable = false)
+    private int studyYear;
+
     @Column(name = "vacation_start_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date vacationStartDate;
+
     @Column(name = "vacation_end_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date vacationEndDate;
+
     @Column(name = "order_number", nullable = false, length = 15)
     private String orderNumber;
+
     @Column(name = "order_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date orderDate;
+
     @ManyToOne
     @JoinColumn(nullable = false, name = "order_reason_id")
     private OrderReason orderReason;
+
     @Column(name = "application_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date applicationDate;
+
+    @Column(name = "extra_information")
+    private String extraInformation;
 }
