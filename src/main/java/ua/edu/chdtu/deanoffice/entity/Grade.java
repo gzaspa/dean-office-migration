@@ -27,9 +27,9 @@ public class Grade extends BaseEntity {
     @JoinColumn(nullable = false, name = "student_degree_id")
     private StudentDegree studentDegree;
     @Column(name = "grade")
-    private int grade;
+    private Integer grade;
     @Column(name = "points")
-    private int points;
+    private Integer points;
     @Column(name = "ects", length = 2)
     @Enumerated(value = EnumType.STRING)
     private EctsGrade ects;

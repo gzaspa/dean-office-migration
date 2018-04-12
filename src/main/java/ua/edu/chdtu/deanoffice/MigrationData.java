@@ -28,6 +28,7 @@ import ua.edu.chdtu.deanoffice.oldentity.Student;
 import ua.edu.chdtu.deanoffice.oldentity.Subject;
 import ua.edu.chdtu.deanoffice.oldentity.Teacher;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,20 +88,18 @@ public class MigrationData {
     static List<AcademicVacation> oldAcademicVacations = getFirebirdSession().createQuery("from AcademicVacation", AcademicVacation.class).list();
     static List<StudentAcademicVacation> newAcademicVacations = new ArrayList<>();
 
+    @Transactional
     private static void saveAllItems(@NotNull List<? extends BaseEntity> entities) {
         entities.forEach(e -> {
-            //Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
             try {
-                //tx.begin();
                 e.setId((Integer) getPostgresSession().save(e));
-                //tx.commit();
             } catch (Exception exception) {
-                //tx.rollback();
                 exception.printStackTrace();
             }
         });
     }
 
+    @Transactional
     public static void updateEntity(@NotNull BaseEntity entity) {
         getPostgresSession().update(entity);
     }

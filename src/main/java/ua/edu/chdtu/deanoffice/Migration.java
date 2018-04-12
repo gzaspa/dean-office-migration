@@ -260,8 +260,8 @@ public class Migration extends MigrationData {
             grade.setStudentDegree(getStudentDegree(oldGrade));
             grade.setCourse(newCourses.get(oldSubjects.indexOf(oldGrade.getSubject())));
             grade.setEcts(convertEctsGrade(oldGrade));
-            grade.setPoints(oldGrade.getPoints() == null ? 0 : oldGrade.getPoints());
-            grade.setGrade(oldGrade.getGrade() == null ? 0 : oldGrade.getGrade());
+            grade.setPoints(oldGrade.getPoints());
+            grade.setGrade(oldGrade.getGrade());
         });
     }
 
@@ -446,15 +446,14 @@ public class Migration extends MigrationData {
                 }
             });
             newSubjects.forEach(subject -> {
-                if (studentGroup.getFirstPartOfName().startsWith("М")) {
+                if (studentGroup.getFirstPartOfName().startsWith("М")
+                        || studentGroup.getFirstPartOfName().startsWith("ЗМ")) {
                     //masters
                     subject.setSemester(subject.getSemester() - 8);
                 } else if (studentGroup.getFirstPartOfName().endsWith("С") &&
                         !studentGroup.getFirstPartOfName().endsWith("СКС")) {
                     //shortened full time
-                    if (subject.getSemester() <= 4) {
-                        subject.setSemester(1);
-                    } else {
+                    if (subject.getSemester() - 4 > 0) {
                         subject.setSemester(subject.getSemester() - 4);
                     }
                 }
