@@ -2,7 +2,26 @@ package ua.edu.chdtu.deanoffice;
 
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import ua.edu.chdtu.deanoffice.entity.*;
+import ua.edu.chdtu.deanoffice.entity.Course;
+import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
+import ua.edu.chdtu.deanoffice.entity.CourseName;
+import ua.edu.chdtu.deanoffice.entity.CurrentYear;
+import ua.edu.chdtu.deanoffice.entity.Degree;
+import ua.edu.chdtu.deanoffice.entity.EctsGrade;
+import ua.edu.chdtu.deanoffice.entity.EducationDocument;
+import ua.edu.chdtu.deanoffice.entity.Faculty;
+import ua.edu.chdtu.deanoffice.entity.Grade;
+import ua.edu.chdtu.deanoffice.entity.KnowledgeControl;
+import ua.edu.chdtu.deanoffice.entity.Payment;
+import ua.edu.chdtu.deanoffice.entity.Speciality;
+import ua.edu.chdtu.deanoffice.entity.Specialization;
+import ua.edu.chdtu.deanoffice.entity.Student;
+import ua.edu.chdtu.deanoffice.entity.StudentAcademicVacation;
+import ua.edu.chdtu.deanoffice.entity.StudentDegree;
+import ua.edu.chdtu.deanoffice.entity.StudentExpel;
+import ua.edu.chdtu.deanoffice.entity.StudentGroup;
+import ua.edu.chdtu.deanoffice.entity.TuitionForm;
+import ua.edu.chdtu.deanoffice.entity.TuitionTerm;
 import ua.edu.chdtu.deanoffice.entity.superclasses.Sex;
 import ua.edu.chdtu.deanoffice.oldentity.Subject;
 
@@ -67,34 +86,11 @@ public class Migration extends MigrationData {
         addCurrentYear();
 
         saveAllNewEntities();
-        //countAverageDegrees();
         mergeCourses();
     }
 
-    private static void countAverageDegrees() {
-        //Debug
-        double count = .0;
-        int maxValue = 0;
-        for (Student student : newStudents) {
-            if (student.getDegrees().size() > maxValue) {
-                maxValue = student.getDegrees().size();
-            }
-            count += student.getDegrees().size();
-        }
-        count /= newStudents.size();
-        System.out.printf("Average StudentDegrees per Student is %1.2f \n", count);
-        System.out.printf("Max StudentDegrees per Student is %d \n", maxValue);
-
-        int maxCount = 0;
-        for (Student student : newStudents) {
-            if (student.getDegrees().size() == maxValue) {
-                maxCount++;
-            }
-        }
-        System.out.printf("%d students have maximum amount of degrees\n", maxCount);
-    }
-
     private static void mergeCourses() {
+        System.out.println("Started merging courses");
         List<Course> courses = DatabaseConnector.getPostgresSession()
                 .createQuery("from Course c order by c.courseName.id,c.knowledgeControl.id,c.semester,c.hours", Course.class).list();
         List<Course> equalCourses = new ArrayList<>();
@@ -116,6 +112,7 @@ public class Migration extends MigrationData {
                     updateCourseForGroup(courseForGroup, uniqueCourse);
                 });
 
+
                 List<Grade> grades = new ArrayList<>();
                 equalCourses.forEach(course1 -> grades.addAll(DatabaseConnector.getPostgresSession()
                         .createQuery("from Grade g where g.course.id = :courseId", Grade.class)
@@ -124,13 +121,19 @@ public class Migration extends MigrationData {
                     updateGrade(grade, uniqueCourse);
                 });
 
+
                 coursesToDelete.addAll(equalCourses);
 
                 equalCourses = new ArrayList<>();
                 equalCourses.add(course);
+
             }
         }
+
         deleteCourses(coursesToDelete);
+        System.out.println("Redundant courses removed");
+        System.out.println("Courses merged successfully");
+
     }
 
     private static void updateCourseForGroup(CourseForGroup courseForGroup, Course newCourse) {
@@ -245,19 +248,29 @@ public class Migration extends MigrationData {
             grade.setPoints(oldGrade.getPoints());
             grade.setGrade(oldGrade.getGrade());
         });
+        newStudentDegrees.addAll(additionalStudentDegrees);
     }
+
+    private static Set<StudentDegree> additionalStudentDegrees = new HashSet<>();
+    private static Set<Student> studentsWithAdditionalDegrees = new HashSet<>();
 
     private static StudentDegree getStudentDegree(ua.edu.chdtu.deanoffice.oldentity.Grade grade) {
         Student student = newStudents.get(oldStudents.indexOf(grade.getStudent()));
-        StudentGroup studentGroup = newGroups.get(oldGroups.indexOf(grade.getStudent().getGroup()));
         StudentDegree result = student.getDegrees().stream()
-                .filter(studentDegree -> studentDegree.getStudent().equals(student)
-                        && studentDegree.getStudentGroup().equals(studentGroup)
-                ).findFirst().orElse(null);
+                .filter(studentDegree -> oldGroups.get(newGroups.indexOf(studentDegree.getStudentGroup())).getSubjects().contains(grade.getSubject())).findFirst().orElse(null);
         if (result == null) {
-            List<StudentDegree> degrees = new ArrayList<>(student.getDegrees());
-            degrees.removeIf(studentDegree -> studentDegree.getStudentGroup().equals(studentGroup));
-            result = degrees.get(0);
+            if (studentsWithAdditionalDegrees.contains(student)) {
+                return additionalStudentDegrees.stream().filter(studentDegree -> studentDegree.getStudent().equals(student)).findFirst().get();
+            } else {
+                StudentDegree newStudentDegree = new StudentDegree();
+                newStudentDegree.setStudent(student);
+                newStudentDegree.setActive(false);
+                newStudentDegree.setDegree(newDegrees.get(0));
+                newStudentDegree.setSpecialization(newSpecializations.get(0));
+                studentsWithAdditionalDegrees.add(student);
+                additionalStudentDegrees.add(newStudentDegree);
+                return newStudentDegree;
+            }
         }
         return result;
     }
@@ -270,7 +283,7 @@ public class Migration extends MigrationData {
             StudentGroup group = newGroups.get(oldGroups.indexOf(oldVacation.getGroup()));
 
             if (newStudentDegrees.stream().noneMatch(studentDegree -> studentDegree.getStudent().equals(student)
-                    && studentDegree.getStudentGroup().equals(group))) {
+                    && group.equals(studentDegree.getStudentGroup()))) {
                 StudentDegree vacationStudentDegree = new StudentDegree();
                 vacationStudentDegree.setStudent(student);
                 student.getDegrees().add(vacationStudentDegree);

@@ -95,6 +95,7 @@ public class MigrationData {
                 e.setId((Integer) getPostgresSession().save(e));
             } catch (Exception exception) {
                 exception.printStackTrace();
+                System.out.println("Failed to save entity " + e.getClass());
             }
         });
     }
@@ -107,23 +108,60 @@ public class MigrationData {
     public static void saveAllNewEntities() {
         //Order matters!
         saveAllItems(newFaculties);
+        System.out.println("Faculties saved");
+
         saveAllItems(newDepartments);
+        System.out.println("Departments saved");
+
         saveAllItems(newPositions);
+        System.out.println("Positions saved");
+
         saveAllItems(newReasons);
+        System.out.println("Reasons saved");
+
         saveAllItems(newDegrees);
+        System.out.println("Degrees saved");
+
         saveAllItems(newSpecialities);
+        System.out.println("Specialities saved");
+
         saveAllItems(newSpecializations);
+        System.out.println("Specializations saved");
+
         saveAllItems(newGroups);
+        System.out.println("Groups saved");
+
         saveAllItems(newPrivileges);
+        System.out.println("Privileges saved");
+
         saveAllItems(newStudents);
+        System.out.println("Students saved");
+
         saveAllItems(newTeachers);
+        System.out.println("Teachers saved");
+
         saveAllItems(newKnowledgeControlKinds);
+        System.out.println("Knowledge control kinds saved");
+
         saveAllItems(newCourseNames);
+        System.out.println("Course names saved");
+
         saveAllItems(newCourses);
+        System.out.println("Courses saved");
+
         saveAllItems(newCourseForGroups);
-        saveAllItems(newGrades);
+        System.out.println("Courses for groups saved");
+
         saveAllItems(newExpels);
+        System.out.println("Expels saved");
+
         saveAllItems(newStudentDegrees);
+        System.out.println("Student degrees saved");
+
         saveAllItems(newAcademicVacations);
+        System.out.println("Academic vacations saved");
+
+        saveAllItems(newGrades);
+        System.out.println("Grades saved");
     }
 }
