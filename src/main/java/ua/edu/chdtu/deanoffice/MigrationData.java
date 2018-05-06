@@ -1,6 +1,7 @@
 package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
+import org.hibernate.Transaction;
 import ua.edu.chdtu.deanoffice.entity.Course;
 import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
 import ua.edu.chdtu.deanoffice.entity.CourseName;
@@ -100,9 +101,16 @@ public class MigrationData {
         });
     }
 
-    @Transactional
     public static void updateEntity(@NotNull BaseEntity entity) {
-        getPostgresSession().update(entity);
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+            Object mergedEntity = getPostgresSession().merge(entity);
+            getPostgresSession().saveOrUpdate(mergedEntity);
+            tx.commit();
+        } catch (Exception ex) {
+            tx.rollback();
+        }
     }
 
     public static void saveAllNewEntities() {

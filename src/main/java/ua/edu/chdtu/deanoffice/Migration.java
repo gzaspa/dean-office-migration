@@ -95,6 +95,7 @@ public class Migration extends MigrationData {
                 .createQuery("from Course c order by c.courseName.id,c.knowledgeControl.id,c.semester,c.hours", Course.class).list();
         List<Course> equalCourses = new ArrayList<>();
         List<Course> coursesToDelete = new ArrayList<>();
+
         for (Course course : courses) {
             if (equalCourses.isEmpty()) {
                 equalCourses.add(course);
@@ -131,44 +132,18 @@ public class Migration extends MigrationData {
         }
 
         deleteCourses(coursesToDelete);
-        System.out.println("Redundant courses removed");
         System.out.println("Courses merged successfully");
 
     }
 
     private static void updateCourseForGroup(CourseForGroup courseForGroup, Course newCourse) {
-        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
-        try {
-            tx.begin();
-            courseForGroup.setCourse(newCourse);
-            updateEntity(courseForGroup);
-//            Query query = DatabaseConnector.getPostgresSession().createNativeQuery(
-//                    "UPDATE courses_for_groups SET course_id = :newCourseId " +
-//                            "WHERE id = :currentCourseId ");
-//            query.setParameter("newCourseId", newCourse.getId());
-//            query.setParameter("currentCourseId", courseForGroup.getCourse().getId());
-//            query.executeUpdate();
-            tx.commit();
-        } catch (Exception ex) {
-            tx.rollback();
-        }
+        courseForGroup.setCourse(newCourse);
+        updateEntity(courseForGroup);
     }
 
     private static void updateGrade(Grade grade, Course newCourse) {
-        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
-        try {
-            tx.begin();
-            grade.setCourse(newCourse);
-//            Query query = DatabaseConnector.getPostgresSession().createNativeQuery(
-//                    "UPDATE grade SET course_id = :newCourseId " +
-//                            "WHERE id = :currentCourseId ");
-//            query.setParameter("newCourseId", newCourse.getId());
-//            query.setParameter("currentCourseId", grade.getCourse().getId());
-//            query.executeUpdate();
-            tx.commit();
-        } catch (Exception ex) {
-            tx.rollback();
-        }
+        grade.setCourse(newCourse);
+        updateEntity(grade);
     }
 
     private static void deleteCourses(List<Course> coursesToDelete) {
@@ -176,9 +151,15 @@ public class Migration extends MigrationData {
             Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
             try {
                 tx.begin();
+
+                Query deleteGradesQuery = DatabaseConnector.getPostgresSession().createQuery("delete Grade g where g.course.id = :courseId");
+                deleteGradesQuery.setParameter("courseId", course.getId());
+                deleteGradesQuery.executeUpdate();
+
                 Query query = DatabaseConnector.getPostgresSession().createQuery("delete Course where id = :ID");
                 query.setParameter("ID", course.getId());
                 query.executeUpdate();
+
                 tx.commit();
             } catch (Exception ex) {
                 tx.rollback();
