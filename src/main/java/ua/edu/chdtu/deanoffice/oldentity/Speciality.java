@@ -47,9 +47,6 @@ public class Speciality {
 
     public boolean isNew() {
         return getSpecialistCode().length() <= 5;
-//                ||
-//                getBachelorCode().length() <= 5 ||
-//                getMasterCode().length() <= 5;
     }
 
     public boolean isOld() {
@@ -58,10 +55,6 @@ public class Speciality {
 
     public String getFirstPartOfNewName(String name) {
         if (isNew() && name != null) {
-            //Unique exception ІТ-проектами
-            if (name.contains("ІТ")) {
-                return name;
-            }
             String result = "";
             name = name.trim();
             String[] words = name.split(" ");

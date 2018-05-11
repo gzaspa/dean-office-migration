@@ -52,6 +52,10 @@ public class Migration extends MigrationData {
         return (str == null || "".equals(str));
     }
 
+    public static boolean notEmpty(Object str) {
+        return !isEmpty(str);
+    }
+
     private static boolean equals(Object o1, Object o2) {
         return o1 != null && o2 != null && o1.equals(o2);
     }
@@ -383,8 +387,8 @@ public class Migration extends MigrationData {
     }
 
     private static void migrateSubjects() {
-        fixSemestersForOldSubjects();
-        //fixSubjectsNames();
+        //fixSemestersForOldSubjects();
+        fixSubjectsNames();
         sortSubjects();
         oldSubjects.forEach(oldSubj -> {
             Course course = new Course();
@@ -431,15 +435,9 @@ public class Migration extends MigrationData {
             });
             newSubjects.forEach(subject -> {
                 if (studentGroup.getFirstPartOfName().startsWith("М")
-                        || studentGroup.getFirstPartOfName().startsWith("ЗМ")) {
+                        && !studentGroup.getFirstPartOfName().equals("М")) {
                     //masters
                     subject.setSemester(subject.getSemester() - 8);
-                } else if (studentGroup.getFirstPartOfName().endsWith("С") &&
-                        !studentGroup.getFirstPartOfName().endsWith("СКС")) {
-                    //shortened full time
-                    if (subject.getSemester() - 4 > 0) {
-                        subject.setSemester(subject.getSemester() - 4);
-                    }
                 }
             });
             changedSubjects.addAll(newSubjects);
@@ -460,6 +458,7 @@ public class Migration extends MigrationData {
     private static void fixSubjectsNames() {
         oldSubjects.forEach(s -> {
             s.setName(s.getName().replaceAll(" +", " "));
+            s.setName(s.getName().replaceAll("[Ґ|ґ]+", ""));
             s.setName(s.getName().trim());
             s.setName(s.getName().replace(",", ", "));
             s.setName(s.getName().replace("- ", "-"));
@@ -477,94 +476,33 @@ public class Migration extends MigrationData {
             s.setName(s.getName().replace("п ю", "п'ю"));
             s.setName(s.getName().replace("`", "'"));
             s.setName(s.getName().replace("гое", "го"));
-            s.setName(s.getName().replace("Інженерга", "Інженерна"));
-            s.setName(s.getName().replace("WEB", "Web"));
-            s.setName(s.getName().replace("Web ", "Web-"));
-            s.setName(s.getName().replace("ком'п", "комп"));
-            s.setName(s.getName().replace("матемитки", "математики"));
-            s.setName(s.getName().replace("ии", "и"));
-            s.setName(s.getName().replace("системпи", "системи"));
-            s.setName(s.getName().replace("Охорони", "Охорона"));
-            s.setName(s.getName().replace("діялбності", "діяльності"));
-            s.setName(s.getName().replace("охоронип", "охорони п"));
-            s.setName(s.getName().replace("житте", "життє"));
-            s.setName(s.getName().replace("данних", "даних"));
-            s.setName(s.getName().replace("ФІзика", "Фізика"));
+            s.setName(s.getName().replace("прауі", "праці"));
+            s.setName(s.getName().replace("ы", "і"));
+            s.setName(s.getName().replace("(нім)", "(німецька)"));
+            s.setName(s.getName().replace("(нім.)", "(німецька)"));
+            s.setName(s.getName().replace("проф. ", "професійним "));
+            s.setName(s.getName().replace("проф ", "професійним "));
+            s.setName(s.getName().replace("мед.", "медичних"));
+            s.setName(s.getName().replace("вихованя", "виховання"));
+            s.setName(s.getName().replace("ознайомлювальнапрактика", "ознайомлювальна практика"));
+            s.setName(s.getName().replace("проблеминаукового", "проблеми наукового"));
+            s.setName(s.getName().replace("комп.юторних", "комп'ютерних"));
+            s.setName(s.getName().replace("Віртуальнівимірювальні", "Віртуальні вимірювальні"));
+            s.setName(s.getName().replace("обєктів", "об'єктів"));
+            s.setName(s.getName().replace(" ультура ", " культура "));
+            s.setName(s.getName().replace("авторську", "авторське"));
+            if (s.getName().endsWith("вихованн")) {
+                s.setName(s.getName().replace("вихованн", "виховання"));
+            }
+            if (s.getName().endsWith("спрям")) {
+                s.setName(s.getName().replace("спрям", "спрямуванням"));
+            }
+            s.setName(s.getName().replace("культуцра", "культура"));
+            s.setName(s.getName().replace("телекомунікацйних", "телекомунікаційних"));
+            s.setName(s.getName().replace("ом'п", "омп"));
             s.setName(s.getName().replace(" І ", " і "));
-            s.setName(s.getName().replace("ссемблер", "семблер"));
-            s.setName(s.getName().replace("невизначенності", "невизначеності"));
-            s.setName(s.getName().replace("іБ", "і Б"));
-            s.setName(s.getName().replace("болонський", "Болонський"));
-            s.setName(s.getName().replace("Дискретна аналіз", "Дискретний аналіз"));
-            s.setName(s.getName().replace("програмног ", "програмного "));
-            s.setName(s.getName().replace("порофес", "профес"));
-            s.setName(s.getName().replace("властність", "власність"));
-            s.setName(s.getName().replace("мернжі", "мережі"));
-            s.setName(s.getName().replace("розподіленні", "розподілені"));
-            s.setName(s.getName().replace("Корс-", "Крос-"));
-            s.setName(s.getName().replace("алгобра", "алгебра"));
-            s.setName(s.getName().replace("сиситем", "систем"));
-            s.setName(s.getName().replace("Макро-", "Макро "));
-            s.setName(s.getName().replace(" т а", " та "));
-            s.setName(s.getName().replace("Психологіл", "Психологія"));
-            s.setName(s.getName().replace("засобт", "засоби"));
-            s.setName(s.getName().replace("С ++", "С++"));
-            s.setName(s.getName().replace("С + +", "С++"));
-            s.setName(s.getName().replace("еконоліки", "економіки"));
-            s.setName(s.getName().replace("еконоліки", "економіки"));
-            s.setName(s.getName().replace("Мультимедія", "Мультимедіа"));
-            s.setName(s.getName().replace("Науковов", "Науково"));
-            s.setName(s.getName().replace("технологї", "технології"));
-            s.setName(s.getName().replace("прогрмування", "програмування"));
-            s.setName(s.getName().replace("оріентован", "орієнтован"));
-            s.setName(s.getName().replace("Операційні систем", "Операційні системи"));
-            s.setName(s.getName().replace("фукціонування", "функціонування"));
-            s.setName(s.getName().replace("екологіі", "екології"));
-            s.setName(s.getName().replace("соціцо", "соціо"));
-            s.setName(s.getName().replace("електороніки", "електроніки"));
-            s.setName(s.getName().replace("Первінні", "Первинні"));
-            s.setName(s.getName().replace("Перифериіїні", "Периферійні"));
-            s.setName(s.getName().replace("Політеконоиія", "Політекономія"));
-            s.setName(s.getName().replace("теория", "теорія"));
-            s.setName(s.getName().replace("пердачі", "передачі"));
-            s.setName(s.getName().replace("передачи", "передачі"));
-            s.setName(s.getName().replace("вбудоваваних", "вбудованих"));
-            s.setName(s.getName().replace("м'ю", "мп'ю"));
-            s.setName(s.getName().replace("dovs", "dows"));
-            s.setName(s.getName().replace("сситеми", "системи"));
-            s.setName(s.getName().replace("новоої", "нової"));
             s.setName(s.getName().replace("\n", ""));
-            s.setName(s.getName().replace("проетування", "проектування"));
-            s.setName(s.getName().replace("Спеціализовані", "Спеціалізовані"));
-            s.setName(s.getName().replace("Спеіалізовані", "Спеціалізовані"));
-            s.setName(s.getName().replace("Сснови", "Основи"));
-            s.setName(s.getName().replace("інформаціних", "інформаційних"));
-            s.setName(s.getName().replace("организація", "організація"));
-            s.setName(s.getName().replace("Сучанна", "Сучасна"));
-            s.setName(s.getName().replace("Сучасний світова", "Сучасна світова"));
-            s.setName(s.getName().replace("Теоритичні", "Теоретичні"));
-            s.setName(s.getName().replace("інфрмаційних", "інформаційних"));
-            s.setName(s.getName().replace("процкси", "процеси"));
-            s.setName(s.getName().replace("імовірністні", "імовірнісні"));
-            s.setName(s.getName().replace("ймовірністні", "імовірнісні"));
-            s.setName(s.getName().replace("експерімент", "експеримент"));
-            s.setName(s.getName().replace("засобиобчислювальної", "засоби обчислювальної"));
-            s.setName(s.getName().replace("автоматизованиї", "автоматизованої"));
-            s.setName(s.getName().replace("крептозихсті", "криптозахисту"));
-            s.setName(s.getName().replace("продктів", "продуктів"));
-            s.setName(s.getName().replace(" рограмних", " програмних"));
-            s.setName(s.getName().replace("сворення", "створення"));
-            s.setName(s.getName().replace("інфомаційних", "інформаційних"));
-            s.setName(s.getName().replace("прфесійною", "професійною"));
-            s.setName(s.getName().replace("професійною спрямуванням", "професійним спрямуванням"));
-            s.setName(s.getName().replace("за (", "(за"));
-            s.setName(s.getName().replace(" за професійним спрямуванням", " (за професійним спрямуванням)"));
-            s.setName(s.getName().replace("запрофесійним", "за професійним"));
-            s.setName(s.getName().replace("релігіознавство", "релігієзнавство"));
-            s.setName(s.getName().replace("Цивільна захист", "Цивільний захист"));
             s.setName(s.getName().replace("''", "'"));
-            s.setName(s.getName().replace("комерції та бізнесу", "комерції та бізнесі"));
-            s.setName(s.getName().replace("Периферіїні", "Периферійні"));
             s.setName(s.getName().replaceAll("[0-9]+", ""));
             s.setName(s.getName().substring(0, 1).toUpperCase() +
                     s.getName().substring(1, s.getName().length()));
@@ -644,8 +582,7 @@ public class Migration extends MigrationData {
             studentGroup.setActive(oldGroup.isActive());
             studentGroup.setCreationYear(oldGroup.getCreationYear());
             studentGroup.setBeginYears(oldGroup.getStudyStartYear());
-            studentGroup.setTuitionTerm(oldGroup.getFirstPartOfName().endsWith("С") &&
-                    !oldGroup.getFirstPartOfName().endsWith("СКС") ?
+            studentGroup.setTuitionTerm(oldGroup.getFirstPartOfName().startsWith("СК") ?
                     TuitionTerm.SHORTENED :
                     TuitionTerm.REGULAR);
             studentGroup.setTuitionForm(oldGroup.getModeOfStudy() == 'з' ? TuitionForm.EXTRAMURAL : TuitionForm.FULL_TIME);
@@ -663,8 +600,8 @@ public class Migration extends MigrationData {
             } else if (oldGroup.getStudyStartYear() == 5 || oldGroup.getStudyStartYear() == 6) { //masters or specialists
                 studentGroup.setStudySemesters(3);
                 studentGroup.setStudyYears(new BigDecimal(1 + 5.0 / 12.0));
-                if (oldGroup.getFirstPartOfName().startsWith("М")
-                        || oldGroup.getFirstPartOfName().startsWith("ЗМ")) { //masters
+                if (oldGroup.getFirstPartOfName().startsWith("М") &&
+                        !oldGroup.getFirstPartOfName().equals("М")) { //masters
                     degreeId = 2;
                 } else if (!oldGroup.getSpeciality().isNew()) { //specialists
                     degreeId = 1;
@@ -682,13 +619,10 @@ public class Migration extends MigrationData {
 
             try {
                 studentGroup.setSpecialization(newSpecializations.stream().filter(specialization ->
-                        (equals(oldGroup.getSpeciality().getBachelorCode().split("-")[0], specialization.getSpeciality().getCode()) ||
-                                equals(oldGroup.getSpeciality().getSpecialistCode().split("-")[0], specialization.getSpeciality().getCode()) ||
-                                equals(oldGroup.getSpeciality().getMasterCode().split("-")[0], specialization.getSpeciality().getCode()))
+                        (equals(oldGroup.getSpeciality().getBachelorCode(), specialization.getSpeciality().getCode()) ||
+                                equals(oldGroup.getSpeciality().getSpecialistCode(), specialization.getSpeciality().getCode()) ||
+                                equals(oldGroup.getSpeciality().getMasterCode(), specialization.getSpeciality().getCode()))
                                 && stringEquals(specialization.getDegree().getName(), degree.getName())
-                                && (oldGroup.getSpeciality().getBachelorName().contains(specialization.getName()) ||
-                                oldGroup.getSpeciality().getMasterName().contains(specialization.getName()) ||
-                                oldGroup.getSpeciality().getSpecialistName().contains(specialization.getName()))
                 ).findFirst().get());
             } catch (NoSuchElementException e) {
                 //Todo: wrong specialization is set here. Each group, that causes exception will have first specialization in table
@@ -709,28 +643,7 @@ public class Migration extends MigrationData {
 
     private static Specialization createBachelorsSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
                                                                 Speciality sp) {
-        if (oldSpec.getBachelorCode() != null && !oldSpec.getBachelorCode().isEmpty()) {
-            Specialization bachSpec = new Specialization();
-            newSpecializations.add(bachSpec);
-            bachSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
-                    faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
-            bachSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
-                    department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
-            bachSpec.setDegree(newDegrees.get(0));
-            bachSpec.setActive(oldSpec.isActive());
-            bachSpec.setName("");
-            bachSpec.setNameEng("");
-            bachSpec.setSpeciality(sp);
-            bachSpec.setQualification("");
-            bachSpec.setQualificationEng("");
-            return bachSpec;
-        }
-        return null;
-    }
-
-    private static Specialization createNewBachelorsSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
-                                                                   Speciality sp) {
-        if (oldSpec.getSpecialistCode() != null && !oldSpec.getSpecialistCode().isEmpty()) {
+        if (notEmpty(oldSpec.getBachelorCode())) {
             Specialization bachSpec = new Specialization();
             newSpecializations.add(bachSpec);
             bachSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
@@ -751,7 +664,7 @@ public class Migration extends MigrationData {
 
     private static Specialization createSpecialistsSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
                                                                   Speciality sp) {
-        if (oldSpec.getBachelorCode() != null && !oldSpec.getBachelorCode().isEmpty()) {
+        if (notEmpty(oldSpec.getBachelorCode())) {
             Specialization specialistsSpec = new Specialization();
             newSpecializations.add(specialistsSpec);
             specialistsSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
@@ -772,7 +685,7 @@ public class Migration extends MigrationData {
 
     private static Specialization createMastersSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
                                                               Speciality sp) {
-        if (oldSpec.getMasterCode() != null && !oldSpec.getMasterCode().isEmpty()) {
+        if (notEmpty(oldSpec.getMasterCode()) || (oldSpec.isNew() && notEmpty(oldSpec.getSpecialistCode()))) {
             Specialization masterSpec = new Specialization();
             newSpecializations.add(masterSpec);
             masterSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
@@ -791,26 +704,6 @@ public class Migration extends MigrationData {
         return null;
     }
 
-    private static Specialization createNewMastersSpecialization(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec,
-                                                                 Speciality sp) {
-        if (oldSpec.getSpecialistCode() != null && !oldSpec.getSpecialistCode().isEmpty()) {
-            Specialization masterSpec = new Specialization();
-            newSpecializations.add(masterSpec);
-            masterSpec.setFaculty(newFaculties.get(oldFaculties.indexOf(oldFaculties.stream().filter(
-                    faculty -> faculty.getId() == oldSpec.getDepartment().getId()).findFirst().get())));
-            masterSpec.setDepartment(newDepartments.get(oldDepartments.indexOf(oldDepartments.stream().filter(
-                    department -> department.getId() == oldSpec.getCathedra().getId()).findFirst().get())));
-            masterSpec.setDegree(newDegrees.get(2));
-            masterSpec.setActive(oldSpec.isActive());
-            masterSpec.setName("");
-            masterSpec.setNameEng("");
-            masterSpec.setSpeciality(sp);
-            masterSpec.setQualification("");
-            masterSpec.setQualificationEng("");
-            return masterSpec;
-        }
-        return null;
-    }
 
     private static void createDegrees() {
         newDegrees.add(new Degree("Бакалавр", "Bachelor"));
@@ -819,7 +712,7 @@ public class Migration extends MigrationData {
     }
 
     private static void createBachelorSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
-        if (!(oldSpec.getBachelorName() == null || oldSpec.getBachelorName().isEmpty())) {
+        if (notEmpty(oldSpec.getBachelorName())) {
             ua.edu.chdtu.deanoffice.entity.Speciality bachSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
             bachSpec.setName(oldSpec.getBachelorName());
             bachSpec.setNameEng("");
@@ -837,7 +730,7 @@ public class Migration extends MigrationData {
     }
 
     private static void createNewBachelorSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
-        if (!(oldSpec.getBachelorCode() == null || oldSpec.getBachelorCode().isEmpty())) {
+        if (notEmpty(oldSpec.getBachelorCode())) {
             ua.edu.chdtu.deanoffice.entity.Speciality bachSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
             bachSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getBachelorName().replace("_м", "")));
             bachSpec.setNameEng("");
@@ -851,10 +744,10 @@ public class Migration extends MigrationData {
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), bachSpec.getCode()))) {
                 newSpecialities.add(bachSpec);
-                Specialization bachSpecialization = createNewBachelorsSpecialization(oldSpec, bachSpec);
+                Specialization bachSpecialization = createBachelorsSpecialization(oldSpec, bachSpec);
                 bachSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
             } else {
-                Specialization s = createNewBachelorsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                Specialization s = createBachelorsSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
                         .equals(oldSpec.getSpecialistCode().substring(0, 3))).findFirst().get());
                 s.setName(oldSpec.getSecondPartOfNewName(oldSpec.getBachelorName()));
             }
@@ -862,7 +755,7 @@ public class Migration extends MigrationData {
     }
 
     private static void createSpecialistSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
-        if (!(oldSpec.getSpecialistName() == null || oldSpec.getSpecialistName().isEmpty())) {
+        if (notEmpty(oldSpec.getSpecialistName())) {
             ua.edu.chdtu.deanoffice.entity.Speciality specialistsSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
             specialistsSpec.setName(oldSpec.getSpecialistName());
             specialistsSpec.setNameEng("");
@@ -884,7 +777,7 @@ public class Migration extends MigrationData {
     }
 
     private static void createMasterSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
-        if (!(oldSpec.getMasterName() == null || oldSpec.getMasterName().isEmpty())) {
+        if (notEmpty(oldSpec.getMasterName())) {
             ua.edu.chdtu.deanoffice.entity.Speciality masterSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
             masterSpec.setName(oldSpec.getMasterName());
             masterSpec.setNameEng("");
@@ -903,25 +796,21 @@ public class Migration extends MigrationData {
     }
 
     private static void createNewMasterSpeciality(ua.edu.chdtu.deanoffice.oldentity.Speciality oldSpec) {
-        if (!(oldSpec.getSpecialistCode() == null || oldSpec.getSpecialistCode().isEmpty())) {
+        if (notEmpty(oldSpec.getSpecialistCode())) {
             ua.edu.chdtu.deanoffice.entity.Speciality masterSpec = new ua.edu.chdtu.deanoffice.entity.Speciality();
             masterSpec.setName(oldSpec.getFirstPartOfNewName(oldSpec.getSpecialistName().replace("м_", "")));
             masterSpec.setNameEng("");
             masterSpec.setActive(oldSpec.isActive());
-            if (oldSpec.getMasterCode().contains("-")) {
-                masterSpec.setCode(oldSpec.getMasterCode().split("-")[0].trim());
-            } else {
-                masterSpec.setCode(oldSpec.getMasterCode());
-            }
+            masterSpec.setCode(oldSpec.getSpecialistCode().substring(0, 3));
             if (newSpecialities.stream().noneMatch(
                     speciality -> equals(speciality.getCode(), masterSpec.getCode()))) {
                 newSpecialities.add(masterSpec);
-                Specialization masterSpecialization = createNewMastersSpecialization(oldSpec, masterSpec);
+                Specialization masterSpecialization = createMastersSpecialization(oldSpec, masterSpec);
                 masterSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
             } else {
-                Specialization mastersSpecialization = createMastersSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
-                        .equals(oldSpec.getMasterCode().split("-")[0])).findFirst().get());
-                mastersSpecialization.setName(oldSpec.getSecondPartOfNewName(oldSpec.getMasterName()));
+                Specialization s = createMastersSpecialization(oldSpec, newSpecialities.stream().filter(speciality -> speciality.getCode()
+                        .equals(oldSpec.getSpecialistCode().substring(0, 3))).findFirst().get());
+                s.setName(oldSpec.getSecondPartOfNewName(oldSpec.getSpecialistName()));
             }
         }
     }
@@ -957,13 +846,10 @@ public class Migration extends MigrationData {
                 createSpecialistSpeciality(oldSpec);
                 createMasterSpeciality(oldSpec);
             } else {
-                createNewBachelorSpeciality(oldSpec);
-                createNewMasterSpeciality(oldSpec);
                 if (oldSpec.getSpecialistName().startsWith("м_"))
                     createNewMasterSpeciality(oldSpec);
-                else {
+                else
                     createNewBachelorSpeciality(oldSpec);
-                }
             }
         });
     }
@@ -1009,6 +895,8 @@ public class Migration extends MigrationData {
             if (dean == null) {
                 if (oldFaculty.getAbbreviation() != null && oldFaculty.getAbbreviation().equals("ФІТІС")) {
                     faculty.setDean("Трегубенко Ірина Борисівна");
+                } else if ("ФЕТ".equals(oldFaculty.getAbbreviation())) {
+                    faculty.setDean("Гончаров Артем Володимирович");
                 } else {
                     faculty.setDean(null);
                 }
