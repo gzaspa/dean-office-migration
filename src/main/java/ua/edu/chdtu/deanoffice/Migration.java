@@ -411,14 +411,12 @@ public class Migration extends MigrationData {
             } else {
                 course.setCredits(new BigDecimal(oldSubj.getCredits()));
             }
-            try {
+
                 course.setKnowledgeControl(newKnowledgeControlKinds.get(
                         oldKnowledgeControlKinds.indexOf(oldKnowledgeControlKinds.stream().filter(knowledgeControl ->
                                 oldSubj.getKnowledgeControl() != null &&
-                                        equals(knowledgeControl.getId(), oldSubj.getKnowledgeControl().getId())).findFirst().get())));
-            } catch (NoSuchElementException e) {
-                course.setKnowledgeControl(null);
-            }
+                                        equals(knowledgeControl.getId(), oldSubj.getKnowledgeControl().getId())).findFirst()
+                                .orElse(oldKnowledgeControlKinds.get(0)))));
             course.setSemester(oldSubj.getSemester());
         });
     }
