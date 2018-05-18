@@ -34,9 +34,13 @@ public class Course extends BaseEntity {
     private BigDecimal credits;
 
     public boolean equals(Course other) {
-        return this.courseName.equals(other.getCourseName())
-                && this.semester.equals(other.getSemester())
-                && this.hours.equals(other.getHours())
-                && this.knowledgeControl.equals(other.getKnowledgeControl());
+        if (this.knowledgeControl == null || other.knowledgeControl == null) {
+            return false;
+        } else {
+            return this.courseName.equals(other.getCourseName())
+                    && this.semester.equals(other.getSemester())
+                    && this.hours.equals(other.getHours())
+                    && this.knowledgeControl.equals(other.getKnowledgeControl());
+        }
     }
 }
