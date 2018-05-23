@@ -18,6 +18,7 @@
         </property>
         <!-- DB schema will be updated if needed -->
         <property name="hbm2ddl.auto">create</property>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.ApplicationUser"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.CurrentYear"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.Degree"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.KnowledgeControl"/>
