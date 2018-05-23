@@ -10,16 +10,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "renewed_academic_vacation_student")
-public class RenewedAcademicVacationStudent extends BaseEntity{
+@Entity(name = "renewed_academic_vacation_student")
+public class RenewedAcademicVacationStudent extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "student_academic_vacation_id", nullable = false)
     private StudentAcademicVacation studentAcademicVacation;
@@ -38,8 +36,12 @@ public class RenewedAcademicVacationStudent extends BaseEntity{
     @Column(name = "renew_date")
     @Temporal(TemporalType.DATE)
     private Date renewDate;
-
     @Column(name = "application_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date applicationDate;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "order_date", nullable = false, columnDefinition = "date default '1980-01-01'")
+    private Date orderDate;
+    @Column(name = "order_number",nullable = false, length = 15, columnDefinition = "varchar(15) default ''")
+    private String orderNumber;
 }

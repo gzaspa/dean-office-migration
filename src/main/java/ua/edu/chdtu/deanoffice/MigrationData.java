@@ -2,6 +2,7 @@ package ua.edu.chdtu.deanoffice;
 
 import com.sun.istack.internal.NotNull;
 import org.hibernate.Transaction;
+import ua.edu.chdtu.deanoffice.entity.ApplicationUser;
 import ua.edu.chdtu.deanoffice.entity.Course;
 import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
 import ua.edu.chdtu.deanoffice.entity.CourseName;
@@ -89,6 +90,8 @@ public class MigrationData {
     static List<AcademicVacation> oldAcademicVacations = getFirebirdSession().createQuery("from AcademicVacation", AcademicVacation.class).list();
     static List<StudentAcademicVacation> newAcademicVacations = new ArrayList<>();
 
+    static List<ApplicationUser> applicationUsers = new ArrayList<>();
+
     @Transactional
     private static void saveAllItems(@NotNull List<? extends BaseEntity> entities) {
         entities.forEach(e -> {
@@ -171,5 +174,8 @@ public class MigrationData {
 
         saveAllItems(newGrades);
         System.out.println("Grades saved");
+
+        saveAllItems(applicationUsers);
+        System.out.println("Application users added");
     }
 }

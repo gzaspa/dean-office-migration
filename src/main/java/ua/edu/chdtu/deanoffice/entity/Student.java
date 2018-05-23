@@ -58,9 +58,8 @@ public class Student extends Person {
     private String motherInfo;
     @Column(name = "notes", length = 150)
     private String notes;
-    @Type(type = "org.hibernate.type.BinaryType")
-    @Column(name = "photo")
-    private byte[] photo;
+    @Column(name = "photo_url")
+    private String photoUrl;
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<StudentDegree> degrees = new HashSet<>();
 }
