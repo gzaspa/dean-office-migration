@@ -2,6 +2,7 @@ package ua.edu.chdtu.deanoffice;
 
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import ua.edu.chdtu.deanoffice.entity.ApplicationUser;
 import ua.edu.chdtu.deanoffice.entity.Course;
 import ua.edu.chdtu.deanoffice.entity.CourseForGroup;
 import ua.edu.chdtu.deanoffice.entity.CourseName;
@@ -88,10 +89,24 @@ public class Migration extends MigrationData {
         migrateGrades();
         migrateAcademicVacations();
         addCurrentYear();
+        addTestApplicationUsers();
 
         saveAllNewEntities();
         mergeCourses();
     }
+
+    private static void addTestApplicationUsers() {
+        ApplicationUser user = new ApplicationUser();
+        user.setId(3);
+        user.setFirstName("admin");
+        user.setLastName("admin");
+        user.setUsername("test");
+        user.setPassword("test");
+        user.setFaculty(newFaculties.stream().filter(faculty -> faculty.getAbbr().equals("ФІТІС")).findFirst().get());
+
+        applicationUsers.add(user);
+    }
+
 
     private static void mergeCourses() {
         System.out.println("Started merging courses");
