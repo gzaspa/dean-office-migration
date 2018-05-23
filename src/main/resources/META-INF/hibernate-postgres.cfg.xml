@@ -41,5 +41,7 @@
         <mapping class="ua.edu.chdtu.deanoffice.entity.StudentDegree"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.RenewedAcademicVacationStudent"/>
         <mapping class="ua.edu.chdtu.deanoffice.entity.RenewedExpelledStudent"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.AcquiredCompetencies"/>
+        <mapping class="ua.edu.chdtu.deanoffice.entity.ProfessionalQualification"/>
     </session-factory>
 </hibernate-configuration>
