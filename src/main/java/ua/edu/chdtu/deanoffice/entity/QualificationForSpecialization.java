@@ -14,22 +14,20 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import java.util.Date;
 
-
 @Getter
 @Setter
 @Entity
-@Table(name = "acquired_competencies", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"specialization_id", "year"})
+@Table(name = "qualifications_for_specializations", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"professional_qualification_id", "specialization_id", "year"})
 })
-public class AcquiredCompetencies extends BaseEntity {
+public class QualificationForSpecialization extends BaseEntity {
 
-    @Column(name = "competencies", nullable = false, columnDefinition = "character varying(8500)", length = 8500)
-    private String competencies;
-    @Column(name = "competencies_eng", nullable = false, columnDefinition = "character varying(8500)", length = 8500)
-    private String competenciesEng;
-    @JoinColumn(nullable = false, name = "specialization_id")
     @ManyToOne
+    @JoinColumn(nullable = false, name = "specialization_id")
     private Specialization specialization;
+    @ManyToOne
+    @JoinColumn(nullable = false, name = "professional_qualification_id")
+    private ProfessionalQualification professionalQualification;
     @Column(nullable = false, name = "year")
     @Temporal(TemporalType.DATE)
     private Date year;

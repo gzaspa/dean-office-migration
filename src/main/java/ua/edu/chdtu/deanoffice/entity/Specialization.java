@@ -58,9 +58,6 @@ public class Specialization extends NameWithEngAndActiveEntity {
     private String makingJudgementsOutcomes;
     @Column(name = "making_judgements_outcomes_eng", columnDefinition = "character varying(1200)", length = 1200)
     private String makingJudgementsOutcomesEng;
-    @ManyToOne
-    @JoinColumn(name = "professional_qualification_id")
-    private ProfessionalQualification professionalQualification;
 
     public Specialization() {
         educationalProgramHeadName = "";
