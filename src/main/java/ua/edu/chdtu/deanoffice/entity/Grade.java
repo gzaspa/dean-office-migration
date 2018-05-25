@@ -28,6 +28,8 @@ public class Grade extends BaseEntity {
     private StudentDegree studentDegree;
     @Column(name = "grade")
     private Integer grade;
+    @Column(name = "on_time")
+    private Boolean onTime;
     @Column(name = "points")
     private Integer points;
     @Column(name = "ects", length = 2)
