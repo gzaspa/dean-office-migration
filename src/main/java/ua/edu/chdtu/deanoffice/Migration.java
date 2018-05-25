@@ -88,9 +88,42 @@ public class Migration extends MigrationData {
         addTestApplicationUsers();
 
         saveAllNewEntities();
-        mergeCourses();
+//        mergeCourses();
         fixHoursPerCredit();
         fixHoursAndCredits();
+        addUpdateTriggerForSpecialization();
+    }
+
+    private static void addUpdateTriggerForSpecialization() {
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+
+            Query query = DatabaseConnector.getPostgresSession()
+                    .createNativeQuery("CREATE OR REPLACE FUNCTION update_specialization_and_degree() " +
+                            "    RETURNS trigger AS $update_specialization_and_degree$" +
+                            "    BEGIN " +
+                            "update student_degree set specialization_id = ( " +
+                            "select sp.id from specialization sp " +
+                            "join student_group gr on student_group_id = gr.id " +
+                            " where sp.id =  gr.specialization_id " +
+                            ") where id = NEW.id; " +
+                            "" +
+                            "RETURN NEW;" +
+                            "    END;" +
+                            " $update_specialization_and_degree$ LANGUAGE plpgsql; " +
+                            "" +
+                            "create trigger update_student_degree after update of student_group_id on student_degree " +
+                            "for each row " +
+                            "execute procedure update_specialization_and_degree();");
+
+            query.executeUpdate();
+
+            tx.commit();
+            System.out.println("Trigger Added");
+        } catch (Exception ex) {
+            tx.rollback();
+        }
     }
 
     private static void fixHoursAndCredits() {
