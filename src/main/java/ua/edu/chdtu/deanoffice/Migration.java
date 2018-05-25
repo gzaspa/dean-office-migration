@@ -88,7 +88,7 @@ public class Migration extends MigrationData {
         addTestApplicationUsers();
 
         saveAllNewEntities();
-        //mergeCourses();
+        mergeCourses();
         fixHoursPerCredit();
         fixHoursAndCredits();
     }
