@@ -88,9 +88,42 @@ public class Migration extends MigrationData {
         addTestApplicationUsers();
 
         saveAllNewEntities();
-        mergeCourses();
+//        mergeCourses();
         fixHoursPerCredit();
         fixHoursAndCredits();
+        addUpdateTriggerForSpecialization();
+    }
+
+    private static void addUpdateTriggerForSpecialization() {
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+
+            Query query = DatabaseConnector.getPostgresSession()
+                    .createNativeQuery("CREATE OR REPLACE FUNCTION update_specialization_and_degree() " +
+                            "    RETURNS trigger AS $update_specialization_and_degree$" +
+                            "    BEGIN " +
+                            "update student_degree set specialization_id = ( " +
+                            "select sp.id from specialization sp " +
+                            "join student_group gr on student_group_id = gr.id " +
+                            " where sp.id =  gr.specialization_id " +
+                            ") where id = NEW.id; " +
+                            "" +
+                            "RETURN NEW;" +
+                            "    END;" +
+                            " $update_specialization_and_degree$ LANGUAGE plpgsql; " +
+                            "" +
+                            "create trigger update_student_degree after update of student_group_id on student_degree " +
+                            "for each row " +
+                            "execute procedure update_specialization_and_degree();");
+
+            query.executeUpdate();
+
+            tx.commit();
+            System.out.println("Trigger Added");
+        } catch (Exception ex) {
+            tx.rollback();
+        }
     }
 
     private static void fixHoursAndCredits() {
@@ -124,6 +157,18 @@ public class Migration extends MigrationData {
                     "        join current_year cy on cy.id = 1" +
                     "      where g.creation_year = cy.curr_year - 3 or g.creation_year = cy.curr_year - 2" +
                     "     )");
+            query.executeUpdate();
+
+            query = DatabaseConnector.getPostgresSession().createNativeQuery("update course c" +
+                    " set hours_per_credit = 30, credits = CAST (hours AS numeric) / 30" +
+                    " where c.id in" +
+                    "     (select distinct cr.id" +
+                    "      from course cr" +
+                    "        join courses_for_groups cfg on cr.id = cfg.course_id" +
+                    "        join student_group g on cfg.student_group_id = g.id" +
+                    "        join current_year cy on cy.id = 1" +
+                    "      where g.creation_year = cy.curr_year - 1 and g.tuition_term = 'SHORTENED'" +
+                    ")");
             query.executeUpdate();
 
             tx.commit();
