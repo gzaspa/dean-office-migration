@@ -27,10 +27,7 @@ public class StudentDegree extends BaseEntity {
     @JoinColumn(name = "student_group_id")
     private StudentGroup studentGroup;
     @ManyToOne
-    @JoinColumn(nullable = false)
-    private Degree degree;
-    @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "specialization_id", nullable = false)
     private Specialization specialization;
     @Column(name = "record_book_number", length = 15)
     private String recordBookNumber;

@@ -88,7 +88,49 @@ public class Migration extends MigrationData {
         addTestApplicationUsers();
 
         saveAllNewEntities();
-        mergeCourses();
+        //mergeCourses();
+        fixHoursPerCredit();
+        fixHoursAndCredits();
+    }
+
+    private static void fixHoursAndCredits() {
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+
+            Query query = DatabaseConnector.getPostgresSession()
+                    .createNativeQuery("update course c set hours=0, credits=0 where c.kc_id=3 or c.kc_id=4;");
+            query.executeUpdate();
+
+            tx.commit();
+            System.out.println("Hours and credits fixed");
+        } catch (Exception ex) {
+            tx.rollback();
+        }
+    }
+
+    private static void fixHoursPerCredit() {
+        Transaction tx = DatabaseConnector.getPostgresSession().getTransaction();
+        try {
+            tx.begin();
+
+            Query query = DatabaseConnector.getPostgresSession().createNativeQuery("update course c" +
+                    " set hours_per_credit = 36, credits = CAST (hours AS numeric) / 36" +
+                    " where c.id in" +
+                    "     (select distinct cr.id" +
+                    "      from course cr" +
+                    "        join courses_for_groups cfg on cr.id = cfg.course_id" +
+                    "        join student_group g on cfg.student_group_id = g.id" +
+                    "        join current_year cy on cy.id = 1" +
+                    "      where g.creation_year = cy.curr_year - 3 or g.creation_year = cy.curr_year - 2" +
+                    "     )");
+            query.executeUpdate();
+
+            tx.commit();
+            System.out.println("Hours per credit set to 36 for required courses");
+        } catch (Exception ex) {
+            tx.rollback();
+        }
     }
 
     private static void addTestApplicationUsers() {
@@ -205,10 +247,9 @@ public class Migration extends MigrationData {
                 newStudent.getDegrees().add(studentDegree);
                 studentDegree.setStudentGroup(newStudentGroup);
                 studentDegree.setSpecialization(studentDegree.getStudentGroup().getSpecialization());
-                studentDegree.setDegree(newStudentGroup.getSpecialization().getDegree());
                 studentDegree.setActive(oldStudent.isInActive());
                 studentDegree.setRecordBookNumber(oldStudent.getRecordBookNumber());
-                if (studentDegree.getDegree().equals(newDegrees.get(0))) {
+                if (newStudentGroup.getSpecialization().getDegree().equals(newDegrees.get(0))) {
                     studentDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
                     studentDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
                     studentDegree.setThesisName(oldStudent.getBachelorWorkThesis());
@@ -217,7 +258,7 @@ public class Migration extends MigrationData {
                     } else {
                         studentDegree.setPreviousDiplomaType(EducationDocument.SECONDARY_SCHOOL_CERTIFICATE);
                     }
-                } else if (studentDegree.getDegree().equals(newDegrees.get(1))) {
+                } else if (newStudentGroup.getSpecialization().getDegree().equals(newDegrees.get(1))) {
                     studentDegree.setDiplomaDate(oldStudent.getSpecialistDiplomaDate());
                     studentDegree.setDiplomaNumber(oldStudent.getSpecialistDiplomaNumber());
                     studentDegree.setThesisName(oldStudent.getSpecialistWorkThesis());
@@ -260,7 +301,6 @@ public class Migration extends MigrationData {
                 StudentDegree newStudentDegree = new StudentDegree();
                 newStudentDegree.setStudent(student);
                 newStudentDegree.setActive(false);
-                newStudentDegree.setDegree(newDegrees.get(0));
                 newStudentDegree.setSpecialization(newSpecializations.get(0));
                 studentsWithAdditionalDegrees.add(student);
                 additionalStudentDegrees.add(newStudentDegree);
@@ -284,7 +324,6 @@ public class Migration extends MigrationData {
                 student.getDegrees().add(vacationStudentDegree);
                 vacationStudentDegree.setStudentGroup(group);
                 vacationStudentDegree.setSpecialization(vacationStudentDegree.getStudentGroup().getSpecialization());
-                vacationStudentDegree.setDegree(vacationStudentDegree.getStudentGroup().getSpecialization().getDegree());
                 vacationStudentDegree.setActive(false);
                 vacationStudentDegree.setRecordBookNumber(oldVacation.getStudent().getRecordBookNumber());
                 newStudentDegrees.add(vacationStudentDegree);
@@ -327,7 +366,6 @@ public class Migration extends MigrationData {
             student.getDegrees().add(expelStudentDegree);
             expelStudentDegree.setStudentGroup(newGroups.get(oldGroups.indexOf(oldExpel.getGroup())));
             expelStudentDegree.setSpecialization(expelStudentDegree.getStudentGroup().getSpecialization());
-            expelStudentDegree.setDegree(expelStudentDegree.getStudentGroup().getSpecialization().getDegree());
             expelStudentDegree.setActive(false);
             expelStudentDegree.setRecordBookNumber(oldExpel.getStudent().getRecordBookNumber());
             switch (oldExpel.getOrderReason().getId()) {

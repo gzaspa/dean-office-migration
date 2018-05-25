@@ -8,9 +8,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 @Setter
@@ -20,7 +23,7 @@ import java.math.BigDecimal;
 //})
 public class Specialization extends NameWithEngAndActiveEntity {
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "specizality_id", nullable = false)
     private Speciality speciality;
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -58,11 +61,22 @@ public class Specialization extends NameWithEngAndActiveEntity {
     private String makingJudgementsOutcomes;
     @Column(name = "making_judgements_outcomes_eng", columnDefinition = "character varying(1200)", length = 1200)
     private String makingJudgementsOutcomesEng;
+    @Column(name = "certificate_number", nullable = false, length = 20, columnDefinition = "varchar(20) default ''")
+    private String certificateNumber;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "certificate_date", nullable = false, columnDefinition = "date default '1980-01-01'")
+    private Date certificateDate;
 
     public Specialization() {
         educationalProgramHeadName = "";
         educationalProgramHeadNameEng = "";
         educationalProgramHeadInfo = "";
         educationalProgramHeadInfoEng = "";
+        certificateNumber = "";
+        try {
+            certificateDate = new SimpleDateFormat("yyyy-MM-dd").parse("1980-01-01");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 }
