@@ -126,6 +126,18 @@ public class Migration extends MigrationData {
                     "     )");
             query.executeUpdate();
 
+            query = DatabaseConnector.getPostgresSession().createNativeQuery("update course c" +
+                    " set hours_per_credit = 30, credits = CAST (hours AS numeric) / 30" +
+                    " where c.id in" +
+                    "     (select distinct cr.id" +
+                    "      from course cr" +
+                    "        join courses_for_groups cfg on cr.id = cfg.course_id" +
+                    "        join student_group g on cfg.student_group_id = g.id" +
+                    "        join current_year cy on cy.id = 1" +
+                    "      where g.creation_year = cy.curr_year - 1 and g.tuition_term = 'SHORTENED'" +
+                    ")");
+            query.executeUpdate();
+
             tx.commit();
             System.out.println("Hours per credit set to 36 for required courses");
         } catch (Exception ex) {
