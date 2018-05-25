@@ -23,7 +23,7 @@ import java.util.Date;
 //})
 public class Specialization extends NameWithEngAndActiveEntity {
     @ManyToOne
-    @JoinColumn(name = "specizality_id", nullable = false)
+    @JoinColumn(name = "speciality_id", nullable = false)
     private Speciality speciality;
     @ManyToOne
     @JoinColumn(nullable = false)
