@@ -36,7 +36,7 @@ public class Student extends Person {
     private String registrationAddress;
     @Column(name = "actual_address", length = 100)
     private String actualAddress;
-    @Column(name = "school", length = 100)
+    @Column(name = "school", length = 255)
     private String school;
     @Column(name = "telephone", length = 30)
     private String telephone;

@@ -91,7 +91,7 @@ public class Migration extends MigrationData {
         mergeCourses();
 //        fixHoursPerCredit();
 //        fixHoursAndCredits();
-        addUpdateTriggerForSpecialization();
+//        addUpdateTriggerForSpecialization();
     }
 
     private static void addUpdateTriggerForSpecialization() {
