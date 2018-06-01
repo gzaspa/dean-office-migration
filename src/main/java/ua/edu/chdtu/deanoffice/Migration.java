@@ -240,8 +240,10 @@ public class Migration extends MigrationData {
     private static void migrateGrades() {
         oldGrades.forEach(oldGrade -> {
             Grade grade = new Grade();
-            newGrades.add(grade);
             grade.setStudentDegree(getStudentDegree(oldGrade));
+            if (grade.getStudentDegree() != null) {
+                newGrades.add(grade);
+            }
             grade.setCourse(newCourses.get(oldSubjects.indexOf(oldGrade.getSubject())));
             grade.setEcts(convertEctsGrade(oldGrade));
             grade.setPoints(oldGrade.getPoints());
@@ -257,7 +259,10 @@ public class Migration extends MigrationData {
         Student student = newStudents.get(oldStudents.indexOf(grade.getStudent()));
         StudentDegree result = student.getDegrees().stream()
                 .filter(studentDegree -> oldGroups.get(newGroups.indexOf(studentDegree.getStudentGroup())).getSubjects().contains(grade.getSubject())).findFirst().orElse(null);
-        if (result == null) {
+        if (result == null
+                && student.getDegrees().stream().filter(studentDegree -> studentDegree.getStudentGroup() != null
+                        && !studentDegree.getStudentGroup().getSpecialization().getDegree()
+                .equals(newDegrees.get(0))).findFirst().orElse(null) != null) {
             if (studentsWithAdditionalDegrees.contains(student)) {
                 return additionalStudentDegrees.stream().filter(studentDegree -> studentDegree.getStudent().equals(student)).findFirst().get();
             } else {
@@ -423,11 +428,11 @@ public class Migration extends MigrationData {
                 course.setCredits(new BigDecimal(oldSubj.getCredits()));
             }
 
-                course.setKnowledgeControl(newKnowledgeControlKinds.get(
-                        oldKnowledgeControlKinds.indexOf(oldKnowledgeControlKinds.stream().filter(knowledgeControl ->
-                                oldSubj.getKnowledgeControl() != null &&
-                                        equals(knowledgeControl.getId(), oldSubj.getKnowledgeControl().getId())).findFirst()
-                                .orElse(oldKnowledgeControlKinds.get(0)))));
+            course.setKnowledgeControl(newKnowledgeControlKinds.get(
+                    oldKnowledgeControlKinds.indexOf(oldKnowledgeControlKinds.stream().filter(knowledgeControl ->
+                            oldSubj.getKnowledgeControl() != null &&
+                                    equals(knowledgeControl.getId(), oldSubj.getKnowledgeControl().getId())).findFirst()
+                            .orElse(oldKnowledgeControlKinds.get(0)))));
             course.setSemester(oldSubj.getSemester());
         });
     }
