@@ -28,9 +28,6 @@ public class StudentDegree extends BaseEntity {
     private StudentGroup studentGroup;
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Degree degree;
-    @ManyToOne
-    @JoinColumn(nullable = false)
     private Specialization specialization;
     @Column(name = "record_book_number", length = 15)
     private String recordBookNumber;
@@ -41,6 +38,9 @@ public class StudentDegree extends BaseEntity {
     @Column(name = "admission_order_date")
     @Temporal(TemporalType.DATE)
     private Date admissionOrderDate;
+    @Column(name = "admission_date")
+    @Temporal(TemporalType.DATE)
+    private Date admissionDate;
     @Column(name = "contract_number", length = 15)
     private String contractNumber;
     @Column(name = "contract_date")
@@ -73,6 +73,8 @@ public class StudentDegree extends BaseEntity {
     @Column(name = "previous_diploma_date")
     @Temporal(TemporalType.DATE)
     private Date previousDiplomaDate;
+    @Column(name = "previous_diploma_issued_by")
+    private String previousDiplomaIssuedBy;
     @Column(name = "payment", nullable = false, length = 8, columnDefinition = "varchar(8) default 'BUDGET'")
     @Enumerated(value = EnumType.STRING)
     private Payment payment = Payment.BUDGET;
