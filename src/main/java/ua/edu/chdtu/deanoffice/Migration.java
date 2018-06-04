@@ -216,6 +216,7 @@ public class Migration extends MigrationData {
                     studentDegree.setDiplomaDate(oldStudent.getBachelorDiplomaDate());
                     studentDegree.setDiplomaNumber(oldStudent.getBachelorDiplomaNumber());
                     studentDegree.setThesisName(oldStudent.getBachelorWorkThesis());
+                    studentDegree.setThesisNameEng(oldStudent.getBachelorThesisEng());
                     if (newStudentGroup.getTuitionTerm().equals(TuitionTerm.SHORTENED)) {
                         studentDegree.setPreviousDiplomaType(EducationDocument.JUNIOR_BACHELOR_DIPLOMA);
                     } else {
@@ -261,7 +262,7 @@ public class Migration extends MigrationData {
                 .filter(studentDegree -> oldGroups.get(newGroups.indexOf(studentDegree.getStudentGroup())).getSubjects().contains(grade.getSubject())).findFirst().orElse(null);
         if (result == null
                 && student.getDegrees().stream().filter(studentDegree -> studentDegree.getStudentGroup() != null
-                        && !studentDegree.getStudentGroup().getSpecialization().getDegree()
+                && !studentDegree.getStudentGroup().getSpecialization().getDegree()
                 .equals(newDegrees.get(0))).findFirst().orElse(null) != null) {
             if (studentsWithAdditionalDegrees.contains(student)) {
                 return additionalStudentDegrees.stream().filter(studentDegree -> studentDegree.getStudent().equals(student)).findFirst().get();

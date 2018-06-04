@@ -59,6 +59,9 @@ public class Student {
     @Column(name = "BACHALOR_DIPLOMA_WORK")
     private String bachelorWorkThesis;
 
+    @Column(name = "BACHALOR_DIPLOMA_WORK_ENG")
+    private String bachelorThesisEng;
+
     @Column(name = "SPECIALIST_DIPLOMA_WORK")
     private String specialistWorkThesis;
 
