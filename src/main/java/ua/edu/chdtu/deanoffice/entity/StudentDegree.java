@@ -38,6 +38,9 @@ public class StudentDegree extends BaseEntity {
     @Column(name = "admission_order_date")
     @Temporal(TemporalType.DATE)
     private Date admissionOrderDate;
+    @Column(name = "admission_date")
+    @Temporal(TemporalType.DATE)
+    private Date admissionDate;
     @Column(name = "contract_number", length = 15)
     private String contractNumber;
     @Column(name = "contract_date")
