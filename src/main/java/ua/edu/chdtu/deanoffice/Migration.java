@@ -323,7 +323,7 @@ public class Migration extends MigrationData {
         oldGrades.forEach(oldGrade -> {
             Grade grade = new Grade();
             grade.setStudentDegree(getStudentDegree(oldGrade));
-            if (grade.getCourse() != null) {
+            if (grade.getStudentDegree() != null) {
                 newGrades.add(grade);
             }
             grade.setCourse(newCourses.get(oldSubjects.indexOf(oldGrade.getSubject())));
