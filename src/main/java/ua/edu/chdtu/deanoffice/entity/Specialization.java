@@ -4,11 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import ua.edu.chdtu.deanoffice.entity.superclasses.NameWithEngAndActiveEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
 @Setter
@@ -52,6 +50,11 @@ public class Specialization extends NameWithEngAndActiveEntity {
     private String makingJudgementsOutcomes;
     @Column(name = "making_judgements_outcomes_eng", length=1300)
     private String makingJudgementsOutcomesEng;
+    @Column(name = "certificate_number", nullable = false)
+    private String certificateNumber;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "certificate_date", nullable = false)
+    private Date certificateDate;
 
     public Specialization() {
         educationalProgramHeadName = "";
