@@ -30,7 +30,7 @@ public class Course extends BaseEntity {
     private Integer hours;
     @Column(name = "hours_per_credit", nullable = false)
     private Integer hoursPerCredit;
-    @Column(name = "credits", nullable = false, precision = 4, scale = 1)
+    @Column(name = "credits", nullable = false, precision = 5, scale = 2)
     private BigDecimal credits;
 
     public boolean equals(Course other) {
