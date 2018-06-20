@@ -75,6 +75,8 @@ public class StudentDegree extends BaseEntity {
     private Date previousDiplomaDate;
     @Column(name = "previous_diploma_issued_by", length=255)
     private String previousDiplomaIssuedBy;
+    @Column(name = "previous_diploma_issued_by_eng", length=255)
+    private String previousDiplomaIssuedByEng;
     @Column(name = "payment", nullable = false, length = 8, columnDefinition = "varchar(8) default 'BUDGET'")
     @Enumerated(value = EnumType.STRING)
     private Payment payment = Payment.BUDGET;

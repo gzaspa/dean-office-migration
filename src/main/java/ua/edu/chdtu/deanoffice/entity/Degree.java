@@ -23,6 +23,14 @@ public class Degree extends NameWithEngEntity {
     private String admissionRequirements;
     @Column(name = "admission_requirements_eng")
     private String admissionRequirementsEng;
+    @Column(name = "admission_foreign_requirements")
+    private String admissionForeignRequirements;
+    @Column(name = "admission_foreign_requirements_eng")
+    private String admissionForeignRequirementsEng;
+    @Column(name = "admission_shortened_requirements")
+    private String admissionShortenedRequirements;
+    @Column(name = "admission_shortened_requirements_eng")
+    private String admissionShortenedRequirementsEng;
     @Column(name = "further_study_access")
     private String furtherStudyAccess;
     @Column(name = "further_study_access_eng")
